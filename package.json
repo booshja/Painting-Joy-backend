@@ -1,0 +1,42 @@
+{
+    "name": "pj-backend",
+    "version": "1.0.0",
+    "description": "Back End for PaintingJoy.art",
+    "main": "server.js",
+    "scripts": {
+        "test": "npm test",
+        "prepare": "husky install"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/booshja/Painting-Joy-backend.git"
+    },
+    "author": "Jacob Andes, jacobandes.dev",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/booshja/Painting-Joy-backend/issues"
+    },
+    "homepage": "https://github.com/booshja/Painting-Joy-backend#readme",
+    "devDependencies": {
+        "eslint": "^7.29.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-prettier": "^3.4.0",
+        "husky": "^6.0.0",
+        "lint-staged": "^11.0.0",
+        "prettier": "^2.3.2"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.{js,css}": [
+            "prettier --write",
+            "eslint --fix"
+        ],
+        "*.{html,css,json}": [
+            "prettier --write"
+        ]
+    }
+}

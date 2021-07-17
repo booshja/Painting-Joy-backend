@@ -74,7 +74,27 @@ class Admin {
         return admin;
     }
 
-    static async getSecretQuestion(username) {}
+    static async getSecretQuestion(username) {
+        /** Get Admin's Secret Question
+         *
+         * Accepts username
+         * Returns { username, secretQuestion }
+         *
+         * Throws NotFoundError if admin not found.
+         */
+        const result = await db.query(
+            `SELECT username,
+                    secret_question AS "secretQuestion"
+            FROM admins
+            WHERE username = $1`,
+            [username]
+        );
+        const questionRes = result.rows[0];
+
+        if (!questionRes) throw new NotFoundError("No such admin.");
+
+        return questionRes;
+    }
 
     static async authenticateSecretAnswer(username, secretAnswer) {
         /** Authenticate Admin Secret Answer
@@ -82,8 +102,8 @@ class Admin {
          * Accepts username, secretAnswer
          * Returns { msg: "Valid" }
          *
-         * Throws Unauthorized Error if answer is not authenticated.
-         * Throws Not Found Error if admin not found.
+         * Throws UnauthorizedError if answer is not authenticated.
+         * Throws NotFoundError if admin not found.
          */
 
         const hashedAnswer = await bcrypt.hash(
@@ -93,7 +113,7 @@ class Admin {
 
         const result = await db.query(
             `SELECT username,
-                    secret_answer
+                    secret_answer AS "secretAnswer"
             FROM admins
             WHERE username = $1`,
             [username]

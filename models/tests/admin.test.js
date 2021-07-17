@@ -2,9 +2,9 @@ const {
     NotFoundError,
     UnauthorizedError,
     BadRequestError,
-} = require("../expressError");
-const db = require("../db.js");
-const Admin = require("./admin");
+} = require("../../expressError");
+const db = require("../../db.js");
+const Admin = require("../admin");
 
 beforeAll(async function () {
     await db.query("DELETE FROM admins");

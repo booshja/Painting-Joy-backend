@@ -1,4 +1,4 @@
-const { sqlForPartialUpdate } = require("./sql");
+const { sqlForPartialUpdate } = require("../sql");
 
 describe("sqlForPartialUpdate", () => {
     it("works: 1 item", () => {

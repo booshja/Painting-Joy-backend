@@ -1,6 +1,6 @@
-const { NotFoundError, BadRequestError } = require("../expressError");
-const db = require("../db.js");
-const Mural = require("./mural");
+const { NotFoundError, BadRequestError } = require("../../expressError");
+const db = require("../../db.js");
+const Mural = require("../mural");
 
 const testMuralIds = [];
 

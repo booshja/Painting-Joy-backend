@@ -9,7 +9,8 @@ CREATE TABLE admins (
 
 CREATE TABLE homepages (
     id SERIAL PRIMARY KEY,
-    greeting VARCHAR(50) NOT NULL
+    greeting VARCHAR(50) NOT NULL,
+    message VARCHAR(200) NOT NULL
     -- image BYTEA NOT NULL
 );
 

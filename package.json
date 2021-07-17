@@ -4,7 +4,7 @@
     "description": "Back End for PaintingJoy.art",
     "main": "server.js",
     "scripts": {
-        "test": "npm test",
+        "test": "jest",
         "prepare": "husky install"
     },
     "repository": {

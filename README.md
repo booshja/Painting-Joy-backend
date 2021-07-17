@@ -17,9 +17,9 @@ This app uses the following environmental variables that you will need in order 
 | ENV | Value |
 | --------------------- | --------------------------------------------------------- |
 | `DATABASE_URI` | Postgres URI |
+| `PORT` | Port the server listens on |
 | `ADMIN_KEY` | Value referencing the current user for session |
 | `SECRET_KEY` | Secret key |
-| `PORT` | Port the server is running on |
 | `NODE_ENV` | Whether the app is in production, developement, or testing |
 | `BCRYPT_WORK_FACTOR` | # of rounds of encryption for Bcrypt to use |
 

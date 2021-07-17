@@ -31,6 +31,10 @@ class Mural {
     // }
 
     static async getAll() {
+        /** Get an array of all the murals
+         *
+         * Returns [{ id, title, description, price }, { id, title, description, price }, ...]
+         */
         const result = await db.query(
             `SELECT id,
                     title,

@@ -34,15 +34,18 @@ afterAll(async function () {
 describe("create", () => {
     let newMural = {
         title: "Test Create Mural",
-        description: "This is a test mural from the ceate method!",
+        description: "This is a test mural from the create method!",
         price: 99.99,
     };
 
     it("creates a new mural", async () => {
         let mural = await Mural.create(newMural);
         expect(mural).toEqual({
-            ...newMural,
             id: expect.any(Number),
+            title: "Test Create Mural",
+            description: "This is a test mural from the create method!",
+            price: "99.99",
+            isArchived: false,
         });
     });
 });
@@ -56,22 +59,22 @@ describe("getAll", () => {
         let murals = await Mural.getAll();
         expect(murals).toEqual([
             {
-                id: testJobIds[0],
+                id: testMuralIds[0],
                 title: "Test Mural 1",
                 description: "This is test mural #1!",
-                price: 12.99,
+                price: "12.99",
             },
             {
-                id: testJobIds[1],
+                id: testMuralIds[1],
                 title: "Test Mural 2",
                 description: "This is test mural #2!",
-                price: 24.99,
+                price: "24.99",
             },
             {
-                id: testJobIds[2],
+                id: testMuralIds[2],
                 title: "Test Mural 3",
                 description: "This is test mural #3!",
-                price: 36.99,
+                price: "36.99",
             },
         ]);
     });
@@ -86,7 +89,7 @@ describe("get", () => {
             id: testMuralIds[0],
             title: "Test Mural 1",
             description: "This is test mural #1!",
-            price: 12.99,
+            price: "12.99",
         });
     });
 
@@ -113,7 +116,9 @@ describe("update", () => {
         let mural = await Mural.update(testMuralIds[0], updateData);
         expect(mural).toEqual({
             id: testMuralIds[0],
-            ...updateData,
+            title: "Updated",
+            description: "This mural was updated!",
+            price: "1000.99",
         });
     });
 
@@ -140,7 +145,7 @@ describe("update", () => {
 
 describe("remove", () => {
     it("removes mural", async () => {
-        const result = Mural.remove(testMuralIds[0]);
+        const result = await Mural.remove(testMuralIds[0]);
         expect(result).toEqual({ msg: "Deleted." });
 
         const res = await db.query(`SELECT id FROM murals WHERE id=$1`, [

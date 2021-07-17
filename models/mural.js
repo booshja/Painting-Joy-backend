@@ -16,11 +16,10 @@ class Mural {
             `INSERT INTO murals (title,
                                 description,
                                 price,
-                                is_archived,
-                                is_deleted)
-            VALUES ($1, $2, $3, $4, $5)
+                                is_archived)
+            VALUES ($1, $2, $3, $4)
             RETURNING id, title, description, price, is_archived AS "isArchived"`,
-            [data.title, data.description, data.price, false, false]
+            [data.title, data.description, data.price, false]
         );
         const mural = result.rows[0];
 
@@ -38,8 +37,7 @@ class Mural {
                     description,
                     price
             FROM murals
-            WHERE is_archived = false
-            AND is_deleted = false`
+            WHERE is_archived = false`
         );
 
         return result.rows;
@@ -88,6 +86,7 @@ class Mural {
                             WHERE id = ${idVarIdx}
                             RETURNING id,
                                     title,
+                                    description,
                                     price`;
         const result = await db.query(querySql, [...values, id]);
         const mural = result.rows[0];

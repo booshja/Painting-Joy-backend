@@ -1,6 +1,10 @@
 const db = require("../db");
 const bcrypt = require("bcrypt");
-const { NotFoundError, UnauthorizedError } = require("../expressError");
+const {
+    NotFoundError,
+    UnauthorizedError,
+    BadRequestError,
+} = require("../expressError");
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
 
 class Admin {
@@ -30,7 +34,7 @@ class Admin {
 
         if (admin) {
             // found admin - compare pwd to hashed pwd
-            const isValid = await bcrypt.compare(password, user.password);
+            const isValid = await bcrypt.compare(password, admin.password);
             if (isValid === true) {
                 delete admin.password;
                 return admin;
@@ -39,6 +43,62 @@ class Admin {
 
         // didn't find admin, throw unauthorized error
         throw new UnauthorizedError("Invalid username/password.");
+    }
+
+    static async register({
+        username,
+        password,
+        firstName,
+        email,
+        secretQuestion,
+        secretAnswer,
+    }) {
+        /** Register admin with data
+         *
+         * Returns { username, firstName, email }
+         *
+         * Throws BadRequestError on duplicates.
+         */
+        const duplicateCheck = await db.query(
+            `SELECT username
+            FROM admins
+            WHERE username = $1`,
+            [username]
+        );
+
+        if (duplicateCheck.rows[0]) {
+            throw new BadRequestError(`Duplicate username: ${username}`);
+        }
+
+        const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
+        const hashedAnswer = await bcrypt.hash(
+            secretAnswer,
+            BCRYPT_WORK_FACTOR
+        );
+
+        const result = await db.query(
+            `INSERT INTO admins
+            (username,
+                password,
+                first_name,
+                email,
+                secret_question,
+                secret_answer)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING username, first_name AS "firstName", email`,
+            [
+                username,
+                hashedPassword,
+                firstName,
+                email,
+                secretQuestion,
+                hashedAnswer,
+            ]
+        );
+
+        const admin = result.rows[0];
+
+        return admin;
     }
 
     static async updatePwd(username, pwd) {
@@ -58,7 +118,7 @@ class Admin {
         const hashedPwd = await bcrypt.hash(pwd, BCRYPT_WORK_FACTOR);
 
         const result = await db.query(
-            `UPDATE users
+            `UPDATE admins
             SET password = $1
             WHERE username = $2
             RETURNING username,
@@ -105,12 +165,6 @@ class Admin {
          * Throws UnauthorizedError if answer is not authenticated.
          * Throws NotFoundError if admin not found.
          */
-
-        const hashedAnswer = await bcrypt.hash(
-            secretAnswer,
-            BCRYPT_WORK_FACTOR
-        );
-
         const result = await db.query(
             `SELECT username,
                     secret_answer AS "secretAnswer"
@@ -123,8 +177,8 @@ class Admin {
         if (admin) {
             // compare hashed secret answer to a new hash from secretAnswer
             const isValid = await bcrypt.compare(
-                hashedAnswer,
-                BCRYPT_WORK_FACTOR
+                secretAnswer,
+                admin.secretAnswer
             );
             if (isValid === true) {
                 return { msg: "Valid" };

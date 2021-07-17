@@ -1,4 +1,8 @@
-const { NotFoundError, UnauthorizedError } = require("../expressError");
+const {
+    NotFoundError,
+    UnauthorizedError,
+    BadRequestError,
+} = require("../expressError");
 const db = require("../db.js");
 const Admin = require("./admin");
 
@@ -7,7 +11,7 @@ beforeAll(async function () {
 
     await db.query(
         `INSERT INTO admins(username, password, email, first_name, secret_question, secret_answer)
-        VALUES ('testadmin1', 'password', 'test@email.com', 'Test', 'Secret question?', 'Secret Answer')`
+        VALUES ('testadmin1', '$2b$04$QxqQ1VjLNfDZujQ48gWKLeNK.oRMf9Wc17j9SfOy082U0ZTb4VdBq', 'test@email.com', 'Test', 'Secret question?', '$2b$04$isfjJhFR9jemJNHPFK0RDOfeC.Wm0niqWSmJgq7oApZuJGC1GL9gK')`
     );
 });
 
@@ -27,7 +31,7 @@ afterAll(async function () {
 
 describe("authenticate", () => {
     it("authenticates", async () => {
-        const admin = await Admin.authenticate("testadmin1", "password");
+        const admin = await Admin.authenticate("testadmin1", "password123");
         expect(admin).toEqual({
             username: "testadmin1",
             firstName: "Test",
@@ -50,6 +54,51 @@ describe("authenticate", () => {
             fail();
         } catch (err) {
             expect(err instanceof UnauthorizedError).toBeTruthy();
+        }
+    });
+});
+
+/************************************ register */
+
+describe("register", () => {
+    const newAdmin = {
+        username: "newadmin",
+        firstName: "Testerino",
+        email: "test@email.com",
+        secretQuestion: "Secret question?",
+        secretAnswer: "Secret Answer",
+    };
+
+    it("registers new admin", async () => {
+        const admin = await Admin.register({
+            ...newAdmin,
+            password: "password123",
+        });
+        expect(admin).toEqual({
+            username: "newadmin",
+            firstName: "Testerino",
+            email: "test@email.com",
+        });
+        const found = await db.query(
+            "SELECT * FROM admins WHERE username = 'newadmin'"
+        );
+        expect(found.rows.length).toEqual(1);
+        expect(found.rows[0].password.startsWith("$2b$")).toEqual(true);
+    });
+
+    it("throws BadRequestError with duplicate username", async () => {
+        try {
+            await Admin.register({
+                ...newAdmin,
+                password: "password",
+            });
+            await Admin.register({
+                ...newAdmin,
+                password: "password",
+            });
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
         }
     });
 });
@@ -113,7 +162,8 @@ describe("authenticateSecretAnswer", () => {
             await Admin.authenticateSecretAnswer("testadmin1", "Idk!");
             fail();
         } catch (err) {
-            exepct(err instanceof UnauthorizedError).toBeTruthy();
+            console.log(err);
+            expect(err instanceof UnauthorizedError).toBeTruthy();
         }
     });
 

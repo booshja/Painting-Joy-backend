@@ -21,7 +21,7 @@ class UnauthorizedError extends ExpressError {
     }
 }
 
-/** 403 Bad Request Error */
+/** 403 Forbidden Error */
 class ForbiddenError extends ExpressError {
     constructor(message = "Forbidden") {
         super(message, 403);

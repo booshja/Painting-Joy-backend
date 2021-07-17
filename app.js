@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const { NotFoundError } = require("./expressError");
 
 const homepageRoutes = require("./routes/homepage");
+const adminRoutes = require("./routes/admin");
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use(morgan("common"));
 
 app.use("/homepage", homepageRoutes);
+app.use("/admin", adminRoutes);
 
 /** Handle 404 Errors */
 app.use((req, res, next) => {

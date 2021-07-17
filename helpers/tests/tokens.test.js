@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { createAdminToken } = require("../tokens");
 const { SECRET_KEY } = require("../../config");
-const { expectCt } = require("helmet");
 
 describe("createAdminToken", () => {
     it("works: admin", () => {

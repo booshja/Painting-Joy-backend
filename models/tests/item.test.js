@@ -207,7 +207,7 @@ describe("getAllSold", async () => {
     );
 
     it("gets an array of all sold items", async () => {
-        const items = await Item.getAllAvailable();
+        const items = await Item.getAllSold();
         expect(items).toEqual([
             {
                 id: expect.any(Number),
@@ -226,11 +226,58 @@ describe("getAllSold", async () => {
 
 /************************************** update */
 
-// describe("update", () => {
-//     it("does a full update on an item", async () => {
+describe("update", () => {
+    it("does a full update on an item", async () => {
+        const item = await Item.update(testItemIds[0], {
+            name: "BEST THING EVER",
+            description: "It's the best thing ever!",
+            price: 1.99,
+            quantity: 987,
+        });
+        expect(item).toEqual({
+            id: expect.any(Number),
+            name: "BEST THING EVER",
+            description: "It's the best thing ever!",
+            price: "1.99",
+            quantity: 987,
+            created: expect.any(Date),
+            isSold: false,
+        });
+    });
 
-//     });
-// });
+    it("does a partial update on an item", async () => {
+        const item = await Item.update(testItemIds[1], {
+            quantity: 789,
+        });
+        expect(item).toEqual({
+            id: expect.any(Number),
+            name: "Item2",
+            description: "This is a wonderful item!",
+            price: "199.99",
+            quantity: 789,
+            created: expect.any(Date),
+            isSold: false,
+        });
+    });
+
+    it("throws BadRequestError if no data", async () => {
+        try {
+            await Item.update(testItemIds[0], {});
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Item.update(-1, { name: "Best Painting Ever" });
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
 
 /************************************** delete */
 

@@ -153,7 +153,7 @@ class Order {
         if (!id) throw new BadRequestError("No id provided.");
 
         const result = await db.query(
-            `SELECT id, email
+            `SELECT email
                 FROM orders
                 WHERE id=$1`,
             [id]
@@ -163,7 +163,7 @@ class Order {
 
         if (!email) throw new NotFoundError(`No order found: ${id}`);
 
-        return { email: email.email };
+        return email;
     }
 
     static async markShipped(id) {

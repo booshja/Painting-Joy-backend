@@ -44,33 +44,33 @@ afterAll(async function () {
 describe("create", () => {
     it("creates a new order", async () => {
         const newOrder = {
-            email: "1@email.com",
-            name: "Tester1",
-            street: "123 Main St",
-            unit: "Apt 1",
+            email: "99@email.com",
+            name: "Tester99",
+            street: "99 Main St",
+            unit: "Apt 99",
             city: "Seattle",
             state_code: "WA",
-            zipcode: 99999,
-            phone: 5555555555,
-            transaction_id: "abcd1234",
+            zipcode: 98789,
+            phone: 1111111111,
+            transaction_id: "1234abcd",
             status: "Confirmed",
-            amount: 1299.99,
+            amount: 9999.99,
         };
 
         const order = await Order.create(newOrder);
         expect(order).toEqual({
             id: expect.any(Number),
-            email: "1@email.com",
-            name: "Tester1",
-            street: "123 Main St",
-            unit: "Apt 1",
+            email: "99@email.com",
+            name: "Tester99",
+            street: "99 Main St",
+            unit: "Apt 99",
             city: "Seattle",
             state_code: "WA",
-            zipcode: 99999,
-            phone: "5555555555",
-            transaction_id: "abcd1234",
+            zipcode: 98789,
+            phone: "1111111111",
+            transaction_id: "1234abcd",
             status: "Confirmed",
-            amount: "1299.99",
+            amount: "9999.99",
         });
     });
 
@@ -103,7 +103,43 @@ describe("create", () => {
 
 /***************************************** get */
 
-// describe("get");
+describe("get", () => {
+    it("gets an order by id", async () => {
+        const order = await Order.get(testOrderIds[0]);
+        expect(order).toEqual({
+            id: testOrderIds[0],
+            email: "1@email.com",
+            name: "Tester1",
+            street: "123 Main St",
+            unit: "Apt 1",
+            city: "Seattle",
+            state_code: "WA",
+            zipcode: 99999,
+            phone: "5555555555",
+            transaction_id: "abcd1234",
+            status: "Confirmed",
+            amount: "1299.99",
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.get();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if message not found", async () => {
+        try {
+            await Order.get(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
 
 /************************************** getAll */
 

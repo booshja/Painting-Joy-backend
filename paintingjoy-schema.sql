@@ -59,8 +59,7 @@ CREATE TABLE items (
     quantity INTEGER NOT NULL,
     is_archived BOOLEAN NOT NULL DEFAULT false,
     is_sold BOOLEAN NOT NULL DEFAULT false,
-    created TIMESTAMPTZ NOT NULL,
-    is_deleted BOOLEAN NOT NULL DEFAULT false
+    created TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE orders (

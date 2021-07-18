@@ -148,9 +148,9 @@ describe("getAll", () => {
     });
 });
 
-/******************************** getAllActive */
+/***************************** getAllAvailable */
 
-describe("getAllActive", async () => {
+describe("getAllAvailable", async () => {
     await db.query(
         `INSERT INTO items(name,
                         description,
@@ -160,8 +160,8 @@ describe("getAllActive", async () => {
             VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
     );
 
-    it("gets an array of all active items", async () => {
-        const items = await Item.getAll();
+    it("gets an array of all NOT sold items", async () => {
+        const items = await Item.getAllAvailable();
         expect(items).toEqual([
             {
                 id: expect.any(Number),
@@ -170,7 +170,6 @@ describe("getAllActive", async () => {
                 price: "99.99",
                 quantity: 1,
                 created: expect.any(Date),
-                isSold: false,
             },
             {
                 id: expect.any(Number),
@@ -179,7 +178,6 @@ describe("getAllActive", async () => {
                 price: "199.99",
                 quantity: 2,
                 created: expect.any(Date),
-                isSold: false,
             },
             {
                 id: expect.any(Number),
@@ -188,7 +186,6 @@ describe("getAllActive", async () => {
                 price: "299.99",
                 quantity: 3,
                 created: expect.any(Date),
-                isSold: false,
             },
         ]);
 
@@ -197,21 +194,35 @@ describe("getAllActive", async () => {
     });
 });
 
-/***************************** getAllAvailable */
-
-// describe("getAllAvailable", () => {
-//     it("gets all items NOT marked as sold", async () => {
-
-//     });
-// });
-
 /********************************** getAllSold */
 
-// describe("getAllSold", () => {
-//     it("gets all items that ARE marked as sold", async () => {
+describe("getAllSold", async () => {
+    await db.query(
+        `INSERT INTO items(name,
+                        description,
+                        price,
+                        quantity,
+                        is_sold)
+            VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
+    );
 
-//     });
-// });
+    it("gets an array of all sold items", async () => {
+        const items = await Item.getAllAvailable();
+        expect(items).toEqual([
+            {
+                id: expect.any(Number),
+                name: "Item4",
+                description: "This is so great I bought it!!",
+                price: "399.99",
+                quantity: 1,
+                created: expect.any(Date),
+            },
+        ]);
+
+        const result = await db.query(`GET * FROM items`);
+        expect(result.rows.length).toEqual(4);
+    });
+});
 
 /************************************** update */
 

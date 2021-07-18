@@ -34,11 +34,47 @@ afterAll(async function () {
 
 /************************************** create */
 
-// describe("create", () => {
-//     it("creates a new item", () => {
+describe("create", () => {
+    const newItem = {
+        name: "Lowbrow",
+        description: "Look at this item! Buy it!",
+        price: 27.89,
+        quantity: 6,
+    };
 
-//     });
-// });
+    it("creates a new item", async () => {
+        const item = await Item.create(newItem);
+        expect(item).toEqual({
+            id: expect.any(Number),
+            name: "Lowbrow",
+            description: "Look at this item! Buy it!",
+            price: "27.89",
+            quantity: 6,
+            created: expect.any(Date),
+            is_sold: false,
+        });
+    });
+
+    it("throws BadRequestError if no data", async () => {
+        try {
+            await Item.create({});
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError if missing data", async () => {
+        try {
+            await Item.create({
+                name: "BadTest",
+            });
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+});
 
 /***************************************** get */
 

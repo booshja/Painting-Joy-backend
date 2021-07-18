@@ -262,43 +262,43 @@ describe("markShipped", () => {
 
 /******************************* markCompleted */
 
-// describe("markCompleted", () => {
-//     it("updates order status to completed", async () => {
-//         const order = await Order.markCompleted(testOrderIds[0]);
-//         expect(order).toEqual({
-//             id: testOrderIds[0],
-//             email: "1@email.com",
-//             name: "Tester1",
-//             street: "123 Main St",
-//             unit: "Apt 1",
-//             city: "Seattle",
-//             state_code: "WA",
-//             zipcode: 99999,
-//             phone: "5555555555",
-//             transaction_id: "abcd1234",
-//             status: "Completed",
-//             amount: "1299.99",
-//         });
-//     });
+describe("markCompleted", () => {
+    it("updates order status to completed", async () => {
+        const order = await Order.markCompleted(testOrderIds[0]);
+        expect(order).toEqual({
+            id: testOrderIds[0],
+            email: "1@email.com",
+            name: "Tester1",
+            street: "123 Main St",
+            unit: "Apt 1",
+            city: "Seattle",
+            state_code: "WA",
+            zipcode: 99999,
+            phone: "5555555555",
+            transaction_id: "abcd1234",
+            status: "Completed",
+            amount: "1299.99",
+        });
+    });
 
-//     it("throws BadRequestError if no id", async () => {
-//         try {
-//             await Order.markCompleted();
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof BadRequestError).toBeTruthy();
-//         }
-//     });
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.markCompleted();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
-//     it("throws NotFoundError if order not found", async () => {
-//         try {
-//             await Order.markCompleted(-1);
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof NotFoundError).toBeTruthy();
-//         }
-//     });
-// });
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.markCompleted(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
 
 // /************************************** remove */
 

@@ -72,8 +72,8 @@ CREATE TABLE orders (
     city VARCHAR(50) NOT NULL,
     state_code VARCHAR(2) NOT NULL,
     zipcode INTEGER CHECK (zipcode < 100000) NOT NULL,
-    phone INTEGER NOT NULL,
-    transaction_id NUMERIC NOT NULL,
+    phone NUMERIC NOT NULL,
+    transaction_id TEXT NOT NULL,
     status VARCHAR(10) NOT NULL DEFAULT 'Confirmed',
     amount NUMERIC NOT NULL,
     is_deleted BOOLEAN NOT NULL DEFAULT false

@@ -131,7 +131,7 @@ describe("get", () => {
         }
     });
 
-    it("throws NotFoundError if message not found", async () => {
+    it("throws NotFoundError if order not found", async () => {
         try {
             await Order.get(-1);
             fail();
@@ -195,7 +195,30 @@ describe("getAll", () => {
 
 /************************************ getEmail */
 
-// describe("getEmail");
+describe("getEmail", () => {
+    it("returns the email attached to the order by id", async () => {
+        const email = await Order.getEmail(testOrderIds[0]);
+        expect(email).toEqual({ email: "1@email.com" });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.getEmail();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.getEmail(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
 
 /********************************* markShipped */
 

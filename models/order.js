@@ -150,6 +150,20 @@ class Order {
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
          */
+        if (!id) throw new BadRequestError("No id provided.");
+
+        const result = await db.query(
+            `SELECT id, email
+                FROM orders
+                WHERE id=$1`,
+            [id]
+        );
+
+        const email = result.rows[0];
+
+        if (!email) throw new NotFoundError(`No order found: ${id}`);
+
+        return { email: email.email };
     }
 
     static async markShipped(id) {

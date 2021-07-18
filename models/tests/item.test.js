@@ -150,11 +150,52 @@ describe("getAll", () => {
 
 /******************************** getAllActive */
 
-// describe("getAllActive", () => {
-//     it("gets an array of all active items", async () => {
+describe("getAllActive", async () => {
+    await db.query(
+        `INSERT INTO items(name,
+                        description,
+                        price,
+                        quantity,
+                        is_sold)
+            VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
+    );
 
-//     });
-// });
+    it("gets an array of all active items", async () => {
+        const items = await Item.getAll();
+        expect(items).toEqual([
+            {
+                id: expect.any(Number),
+                name: "Item1",
+                description: "This is a great item!",
+                price: "99.99",
+                quantity: 1,
+                created: expect.any(Date),
+                isSold: false,
+            },
+            {
+                id: expect.any(Number),
+                name: "Item2",
+                description: "This is a wonderful item!",
+                price: "199.99",
+                quantity: 2,
+                created: expect.any(Date),
+                isSold: false,
+            },
+            {
+                id: expect.any(Number),
+                name: "Item3",
+                description: "This is a fantastic item!",
+                price: "299.99",
+                quantity: 3,
+                created: expect.any(Date),
+                isSold: false,
+            },
+        ]);
+
+        const result = await db.query(`GET * FROM items`);
+        expect(result.rows.length).toEqual(4);
+    });
+});
 
 /***************************** getAllAvailable */
 

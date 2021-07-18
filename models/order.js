@@ -86,6 +86,30 @@ class Order {
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
          */
+        if (!id) throw new BadRequestError("No id provided.");
+
+        const result = await db.query(
+            `SELECT id,
+                    email,
+                    cust_name,
+                    street,
+                    unit,
+                    city,
+                    state_code,
+                    zipcode,
+                    phone_number,
+                    transaction_id,
+                    status,
+                    amount
+                FROM orders
+                WHERE id=$1`,
+            [id]
+        );
+        const order = result.rows[0];
+
+        if (!order) throw new NotFoundError(`No order: ${id}`);
+
+        return order;
     }
 
     static async getAll() {

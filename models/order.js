@@ -121,6 +121,23 @@ class Order {
          *                  zipcode, phone_number, transaction_id, status, amount },
          *              ...]
          */
+        const result = await db.query(
+            `SELECT id,
+                    email,
+                    cust_name,
+                    street,
+                    unit,
+                    city,
+                    state_code,
+                    zipcode,
+                    phone_number,
+                    transaction_id,
+                    status,
+                    amount
+                FROM orders`
+        );
+
+        return result.rows;
     }
 
     static async getEmail(id) {

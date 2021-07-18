@@ -7,11 +7,10 @@ class Item {
     static async create(data) {
         /** Create an item (from data), update db, return new item
          *
-         * Data should be: { name, description, price, quantity, created,
-         *                      isArchived, isSold }
+         * Data should be: { name, description, price, quantity, created, isSold }
          *
          * Returns: { id, name, description, price, quantity, created,
-         *                      isArchived, isSold }
+         *                      isSold }
          *
          * Throws BadRequestError if incomplete or no data
          */
@@ -22,8 +21,7 @@ class Item {
          *
          * Accepts id
          *
-         * Returns { id, name, description, price, quantity, created,
-         *                      isArchived, isSold }
+         * Returns { id, name, description, price, quantity, created, isSold }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if no item found by id
@@ -33,25 +31,9 @@ class Item {
     static async getAll() {
         /** Gets an array of items
          *
-         * Returns [{ id, name, description, price, quantity, created,
-         *              isArchived, isSold }, { id, name, description,
-         *              price, quantity, created, isArchived, isSold }, ...]
-         */
-    }
-
-    static async getAllActive() {
-        /** Gets an array of items that are NOT archived
-         *
-         * Returns [{ id, name, description, price, quantity, created },
-         *              { id, name, description, price, quantity, created }, ...]
-         */
-    }
-
-    static async getAllArchived() {
-        /** Gets an array of items that ARE archived
-         *
-         * Returns [{ id, name, description, price, quantity, created },
-         *              { id, name, description, price, quantity, created }, ...]
+         * Returns [{ id, name, description, price, quantity, created, isSold },
+         *              { id, name, description, price, quantity, created, isSold },
+         *              ...]
          */
     }
 
@@ -78,21 +60,11 @@ class Item {
          *
          * Data can include: { name, description, price, quantity }
          *
-         * Returns: { id, name, description, price, quantity, created, isArchived,
+         * Returns: { id, name, description, price, quantity, created, ,
          *              isSold }
          *
          * Throws BadRequestError if no data
          * Throws NotFoundError if no item found
-         */
-    }
-
-    static async archive(id) {
-        /** Mark item as archived by id
-         *
-         * Accepts id
-         *
-         * Returns: { id, name, description, price, quantity, created, isArchived,
-         *              isSold }
          */
     }
 
@@ -101,7 +73,7 @@ class Item {
          *
          * Accepts id
          *
-         * Returns: { id, name, description, price, quantity, created, isArchived,
+         * Returns: { id, name, description, price, quantity, created, ,
          *              isSold }
          */
     }

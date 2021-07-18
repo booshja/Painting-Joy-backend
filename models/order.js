@@ -198,7 +198,7 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { msg: "Removed" }
+         * Returns { msg: "Removed." }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if not found

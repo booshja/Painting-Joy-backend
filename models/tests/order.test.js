@@ -222,12 +222,107 @@ describe("getEmail", () => {
 
 /********************************* markShipped */
 
-// describe("markShipped");
+describe("markShipped", () => {
+    it("updates order status to shipped", async () => {
+        const order = await Order.markShipped(testOrderIds[0]);
+        expect(order).toEqual({
+            id: testOrderIds[0],
+            email: "1@email.com",
+            name: "Tester1",
+            street: "123 Main St",
+            unit: "Apt 1",
+            city: "Seattle",
+            state_code: "WA",
+            zipcode: 99999,
+            phone: "5555555555",
+            transaction_id: "abcd1234",
+            status: "Shipped",
+            amount: "1299.99",
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.markShipped();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.markShipped(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
 
 /******************************* markCompleted */
 
-// describe("markCompleted");
+describe("markCompleted", () => {
+    it("updates order status to completed", async () => {
+        const order = await Order.markCompleted(testOrderIds[0]);
+        expect(order).toEqual({
+            id: testOrderIds[0],
+            email: "1@email.com",
+            name: "Tester1",
+            street: "123 Main St",
+            unit: "Apt 1",
+            city: "Seattle",
+            state_code: "WA",
+            zipcode: 99999,
+            phone: "5555555555",
+            transaction_id: "abcd1234",
+            status: "Completed",
+            amount: "1299.99",
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.markCompleted();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.markCompleted(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
 
 /************************************** remove */
 
-// describe("remove");
+describe("remove", () => {
+    it("removes order by id", async () => {
+        const removed = await Order.remove(testOrderIds[0]);
+        expect(removed).toEqual({ msg: "Removed." });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.remove();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.remove(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});

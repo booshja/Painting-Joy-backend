@@ -1,7 +1,7 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 
-class IGPosts {
+class IGPost {
     /** IGPosts Model */
 
     static async add(data) {
@@ -99,4 +99,4 @@ class IGPosts {
     }
 }
 
-module.exports = IGPosts;
+module.exports = IGPost;

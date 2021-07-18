@@ -55,7 +55,7 @@ class Mural {
          *
          * Throws NotFoundError if not found.
          */
-        const muralRes = await db.query(
+        const result = await db.query(
             `SELECT id,
                     title,
                     description,
@@ -64,8 +64,7 @@ class Mural {
             WHERE id = $1`,
             [id]
         );
-
-        const mural = muralRes.rows[0];
+        const mural = result.rows[0];
 
         if (!mural) throw new NotFoundError(`No mural: ${id}`);
 

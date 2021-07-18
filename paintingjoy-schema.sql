@@ -36,7 +36,7 @@ CREATE TABLE messages (
     email VARCHAR(40) NOT NULL,
     name VARCHAR(40) NOT NULL,
     message VARCHAR(200) NOT NULL,
-    received TIMESTAMPTZ NOT NULL,
+    received TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_archived BOOLEAN NOT NULL DEFAULT false,
     is_deleted BOOLEAN NOT NULL DEFAULT false
 );

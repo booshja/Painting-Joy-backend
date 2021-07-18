@@ -150,17 +150,17 @@ describe("getAll", () => {
 
 /***************************** getAllAvailable */
 
-describe("getAllAvailable", async () => {
-    await db.query(
-        `INSERT INTO items(name,
-                        description,
-                        price,
-                        quantity,
-                        is_sold)
-            VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
-    );
-
+describe("getAllAvailable", () => {
     it("gets an array of all NOT sold items", async () => {
+        await db.query(
+            `INSERT INTO items(name,
+                            description,
+                            price,
+                            quantity,
+                            is_sold)
+                VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
+        );
+
         const items = await Item.getAllAvailable();
         expect(items).toEqual([
             {
@@ -196,17 +196,17 @@ describe("getAllAvailable", async () => {
 
 /********************************** getAllSold */
 
-describe("getAllSold", async () => {
-    await db.query(
-        `INSERT INTO items(name,
-                        description,
-                        price,
-                        quantity,
-                        is_sold)
-            VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
-    );
-
+describe("getAllSold", () => {
     it("gets an array of all sold items", async () => {
+        await db.query(
+            `INSERT INTO items(name,
+                            description,
+                            price,
+                            quantity,
+                            is_sold)
+                VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
+        );
+
         const items = await Item.getAllSold();
         expect(items).toEqual([
             {
@@ -281,8 +281,27 @@ describe("update", () => {
 
 /************************************** delete */
 
-// describe("delete", () => {
-//     it("deletes an item", async () => {
+describe("delete", () => {
+    it("deletes an item by id", async () => {
+        const removed = await Item.delete(testItemIds[0]);
+        expect(removed).toEqual({ msg: "Deleted." });
+    });
 
-//     });
-// });
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Item.delete();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Item.delete(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});

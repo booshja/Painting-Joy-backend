@@ -255,6 +255,20 @@ class Order {
          * Throws BadRequestError if no id
          * Throws NotFoundError if not found
          */
+        if (!id) throw new BadRequestError("No id provided.");
+
+        const result = await db.query(
+            `UPDATE orders
+                SET is_deleted = $1
+                WHERE id = $2
+                RETURNING id`,
+            [true, id]
+        );
+        const removed = result.rows[0];
+
+        if (!removed) throw new NotFoundError(`No order found: ${id}`);
+
+        return { msg: "Removed." };
     }
 }
 module.exports = Order;

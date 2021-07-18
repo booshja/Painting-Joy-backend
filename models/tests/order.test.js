@@ -143,7 +143,55 @@ describe("get", () => {
 
 /************************************** getAll */
 
-// describe("getAll");
+describe("getAll", () => {
+    it("gets all orders", async () => {
+        const orders = await Order.getAll();
+        expect(orders).toEqual([
+            {
+                id: testOrderIds[0],
+                email: "1@email.com",
+                name: "Tester1",
+                street: "123 Main St",
+                unit: "Apt 1",
+                city: "Seattle",
+                state_code: "WA",
+                zipcode: 99999,
+                phone: "5555555555",
+                transaction_id: "abcd1234",
+                status: "Confirmed",
+                amount: "1299.99",
+            },
+            {
+                id: testOrderIds[1],
+                email: "2@email.com",
+                name: "Tester2",
+                street: "456 State St",
+                unit: null,
+                city: "Boston",
+                state_code: "MA",
+                zipcode: 88888,
+                phone: "6666666666",
+                transaction_id: "efgh5678",
+                status: "Shipped",
+                amount: "2499.99",
+            },
+            {
+                id: testOrderIds[2],
+                email: "3@email.com",
+                name: "Tester3",
+                street: "789 University St",
+                unit: "Unit 3420",
+                city: "Austin",
+                state_code: "TX",
+                zipcode: 77777,
+                phone: "7777777777",
+                transaction_id: "ijkl1234",
+                status: "Completed",
+                amount: "3699.99",
+            },
+        ]);
+    });
+});
 
 /************************************ getEmail */
 

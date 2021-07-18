@@ -78,24 +78,80 @@ describe("create", () => {
 
 /***************************************** get */
 
-// describe("get", () => {
-//     it("gets an item by id", () => {
+describe("get", () => {
+    it("gets an item by id", async () => {
+        const item = await Item.get(testItemIds[0]);
+        expect(item).toEqual({
+            id: expect.any(Number),
+            name: "Item1",
+            description: "This is a great item!",
+            price: "99.99",
+            quantity: 1,
+            created: expect.any(Date),
+            isSold: false,
+        });
+    });
 
-//     });
-// });
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Item.get();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Item.get(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
 
 /************************************** getAll */
 
-// describe("getAll", () => {
-//     it("gets an array of all items", () => {
-
-//     });
-// });
+describe("getAll", () => {
+    it("gets an array of all items", async () => {
+        const items = await Item.getAll();
+        expect(items).toEqual([
+            {
+                id: expect.any(Number),
+                name: "Item1",
+                description: "This is a great item!",
+                price: "99.99",
+                quantity: 1,
+                created: expect.any(Date),
+                isSold: false,
+            },
+            {
+                id: expect.any(Number),
+                name: "Item2",
+                description: "This is a wonderful item!",
+                price: "199.99",
+                quantity: 2,
+                created: expect.any(Date),
+                isSold: false,
+            },
+            {
+                id: expect.any(Number),
+                name: "Item3",
+                description: "This is a fantastic item!",
+                price: "299.99",
+                quantity: 3,
+                created: expect.any(Date),
+                isSold: false,
+            },
+        ]);
+    });
+});
 
 /******************************** getAllActive */
 
 // describe("getAllActive", () => {
-//     it("gets an array of all active items", () => {
+//     it("gets an array of all active items", async () => {
 
 //     });
 // });
@@ -103,7 +159,7 @@ describe("create", () => {
 /***************************** getAllAvailable */
 
 // describe("getAllAvailable", () => {
-//     it("", () => {
+//     it("gets all items NOT marked as sold", async () => {
 
 //     });
 // });
@@ -111,7 +167,7 @@ describe("create", () => {
 /********************************** getAllSold */
 
 // describe("getAllSold", () => {
-//     it("", () => {
+//     it("gets all items that ARE marked as sold", async () => {
 
 //     });
 // });
@@ -119,7 +175,7 @@ describe("create", () => {
 /************************************** update */
 
 // describe("update", () => {
-//     it("", () => {
+//     it("does a full update on an item", async () => {
 
 //     });
 // });
@@ -127,7 +183,7 @@ describe("create", () => {
 /************************************** delete */
 
 // describe("delete", () => {
-//     it("", () => {
+//     it("deletes an item", async () => {
 
 //     });
 // });

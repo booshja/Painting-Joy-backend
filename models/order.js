@@ -7,24 +7,24 @@ class Order {
     static async create(data) {
         /** Create an order (from data), update db, return new order data
          *
-         * Data should be: { email, cust_name, street, unit, city, state_code,
-         *                  zipcode, phone_number, transaction_id, status, amount }
+         * Data should be: { email, name, street, unit, city, state_code,
+         *                  zipcode, phone, transaction_id, status, amount }
          *
-         * Returns { id, email, cust_name, street, unit, city, state_code,
-         *              zipcode, phone_number, transaction_id, status, amount }
+         * Returns { id, email, name, street, unit, city, state_code,
+         *              zipcode, phone, transaction_id, status, amount }
          *
          * Throws BadRequestError if incomplete or no data
          */
         if (!data) throw new BadRequestError("No data.");
         if (
             !data.email ||
-            !data.cust_name ||
+            !data.name ||
             !data.street ||
             !data.unit ||
             !data.city ||
             !data.state_code ||
             !data.zipcode ||
-            !data.phone_number ||
+            !data.phone ||
             !data.transaction_id ||
             !data.status ||
             !data.amount
@@ -33,38 +33,38 @@ class Order {
 
         const result = await db.query(
             `INSERT INTO orders (email,
-                                cust_name,
+                                name,
                                 street,
                                 unit,
                                 city,
                                 state_code,
                                 zipcode,
-                                phone_number,
+                                phone,
                                 transaction_id,
                                 status,
                                 amount)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 RETURNING id,
                         email,
-                        cust_name,
+                        name,
                         street,
                         unit,
                         city,
                         state_code,
                         zipcode,
-                        phone_number,
+                        phone,
                         transaction_id,
                         status,
                         amount`,
             [
                 data.email,
-                data.cust_name,
+                data.name,
                 data.street,
                 data.unit,
                 data.city,
                 data.state_code,
                 data.zipcode,
-                data.phone_number,
+                data.phone,
                 data.transaction_id,
                 data.status,
                 data.amount,
@@ -80,8 +80,8 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { id, email, cust_name, street, unit, city, state_code,
-         *              zipcode, phone_number, transaction_id, status, amount }
+         * Returns { id, email, name, street, unit, city, state_code,
+         *              zipcode, phone, transaction_id, status, amount }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
@@ -91,13 +91,13 @@ class Order {
         const result = await db.query(
             `SELECT id,
                     email,
-                    cust_name,
+                    name,
                     street,
                     unit,
                     city,
                     state_code,
                     zipcode,
-                    phone_number,
+                    phone,
                     transaction_id,
                     status,
                     amount
@@ -115,22 +115,22 @@ class Order {
     static async getAll() {
         /** Get an array of all orders
          *
-         * Returns [{ id, email, cust_name, street, unit, city, state_code,
-         *                  zipcode, phone_number, transaction_id, status, amount },
-         *              { id, email, cust_name, street, unit, city, state_code,
-         *                  zipcode, phone_number, transaction_id, status, amount },
+         * Returns [{ id, email, name, street, unit, city, state_code,
+         *                  zipcode, phone, transaction_id, status, amount },
+         *              { id, email, name, street, unit, city, state_code,
+         *                  zipcode, phone, transaction_id, status, amount },
          *              ...]
          */
         const result = await db.query(
             `SELECT id,
                     email,
-                    cust_name,
+                    name,
                     street,
                     unit,
                     city,
                     state_code,
                     zipcode,
-                    phone_number,
+                    phone,
                     transaction_id,
                     status,
                     amount
@@ -157,8 +157,8 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { id, email, cust_name, street, unit, city, state_code,
-         *              zipcode, phone_number, transaction_id, status, amount }
+         * Returns { id, email, name, street, unit, city, state_code,
+         *              zipcode, phone, transaction_id, status, amount }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
@@ -170,8 +170,8 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { id, email, cust_name, street, unit, city, state_code,
-         *              zipcode, phone_number, transaction_id, status, amount }
+         * Returns { id, email, name, street, unit, city, state_code,
+         *              zipcode, phone, transaction_id, status, amount }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order

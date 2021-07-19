@@ -100,6 +100,18 @@ class Item {
          * Returns [{ id, name, description, price, quantity, created },
          *              { id, name, description, price, quantity, created }, ...]
          */
+        const result = await db.query(
+            `SELECT id,
+                    name,
+                    description,
+                    price,
+                    quantity,
+                    created
+                FROM items
+                WHERE is_sold = false`
+        );
+
+        return result.rows;
     }
 
     static async getAllSold() {

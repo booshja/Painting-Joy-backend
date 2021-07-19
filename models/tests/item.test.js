@@ -148,51 +148,51 @@ describe("getAll", () => {
     });
 });
 
-// /***************************** getAllAvailable */
+/***************************** getAllAvailable */
 
-// describe("getAllAvailable", () => {
-//     it("gets an array of all NOT sold items", async () => {
-//         await db.query(
-//             `INSERT INTO items(name,
-//                             description,
-//                             price,
-//                             quantity,
-//                             is_sold)
-//                 VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
-//         );
+describe("getAllAvailable", () => {
+    it("gets an array of all NOT sold items", async () => {
+        await db.query(
+            `INSERT INTO items(name,
+                            description,
+                            price,
+                            quantity,
+                            is_sold)
+                VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
+        );
 
-//         const items = await Item.getAllAvailable();
-//         expect(items).toEqual([
-//             {
-//                 id: expect.any(Number),
-//                 name: "Item1",
-//                 description: "This is a great item!",
-//                 price: "99.99",
-//                 quantity: 1,
-//                 created: expect.any(Date),
-//             },
-//             {
-//                 id: expect.any(Number),
-//                 name: "Item2",
-//                 description: "This is a wonderful item!",
-//                 price: "199.99",
-//                 quantity: 2,
-//                 created: expect.any(Date),
-//             },
-//             {
-//                 id: expect.any(Number),
-//                 name: "Item3",
-//                 description: "This is a fantastic item!",
-//                 price: "299.99",
-//                 quantity: 3,
-//                 created: expect.any(Date),
-//             },
-//         ]);
+        const items = await Item.getAllAvailable();
+        expect(items).toEqual([
+            {
+                id: expect.any(Number),
+                name: "Item1",
+                description: "This is a great item!",
+                price: "99.99",
+                quantity: 1,
+                created: expect.any(Date),
+            },
+            {
+                id: expect.any(Number),
+                name: "Item2",
+                description: "This is a wonderful item!",
+                price: "199.99",
+                quantity: 2,
+                created: expect.any(Date),
+            },
+            {
+                id: expect.any(Number),
+                name: "Item3",
+                description: "This is a fantastic item!",
+                price: "299.99",
+                quantity: 3,
+                created: expect.any(Date),
+            },
+        ]);
 
-//         const result = await db.query(`GET * FROM items`);
-//         expect(result.rows.length).toEqual(4);
-//     });
-// });
+        const result = await db.query(`SELECT * FROM items`);
+        expect(result.rows.length).toEqual(4);
+    });
+});
 
 // /********************************** getAllSold */
 

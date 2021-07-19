@@ -183,6 +183,15 @@ describe("remove", () => {
         expect(res.rows.length).toEqual(0);
     });
 
+    it("throws BadRequestError if no input", async () => {
+        try {
+            await Mural.remove();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
     it("throws NotFoundError if no such mural", async () => {
         try {
             await Mural.remove(0);

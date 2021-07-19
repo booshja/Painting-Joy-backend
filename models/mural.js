@@ -98,9 +98,11 @@ class Mural {
          *
          * Throws NotFoundError if not found.
          */
+        // prepare data for partial update
         const { setCols, values } = sqlForPartialUpdate(data, {});
         const idVarIdx = "$" + (values.length + 1);
 
+        // prepare sql query statement for partial update
         const querySql = `UPDATE murals
                             SET ${setCols}
                             WHERE id = ${idVarIdx}
@@ -111,6 +113,7 @@ class Mural {
         const result = await db.query(querySql, [...values, id]);
         const mural = result.rows[0];
 
+        // query db to update item
         if (!mural) throw new NotFoundError(`No mural: ${id}`);
 
         return mural;
@@ -121,6 +124,10 @@ class Mural {
          *
          * Throws NotFoundError if mural not found.
          */
+        // check for missing input
+        if (!id) throw new BadRequestError("No input.");
+
+        // query db to delete mural
         const result = await db.query(
             `DELETE
             FROM murals
@@ -130,6 +137,7 @@ class Mural {
         );
         const removed = result.rows[0];
 
+        // if no record returned, no mural found, throw NotFoundError
         if (!removed) throw new NotFoundError(`No mural: ${id}`);
 
         return { msg: "Deleted." };

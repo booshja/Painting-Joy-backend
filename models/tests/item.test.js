@@ -111,42 +111,42 @@ describe("get", () => {
     });
 });
 
-// /************************************** getAll */
+/************************************** getAll */
 
-// describe("getAll", () => {
-//     it("gets an array of all items", async () => {
-//         const items = await Item.getAll();
-//         expect(items).toEqual([
-//             {
-//                 id: expect.any(Number),
-//                 name: "Item1",
-//                 description: "This is a great item!",
-//                 price: "99.99",
-//                 quantity: 1,
-//                 created: expect.any(Date),
-//                 isSold: false,
-//             },
-//             {
-//                 id: expect.any(Number),
-//                 name: "Item2",
-//                 description: "This is a wonderful item!",
-//                 price: "199.99",
-//                 quantity: 2,
-//                 created: expect.any(Date),
-//                 isSold: false,
-//             },
-//             {
-//                 id: expect.any(Number),
-//                 name: "Item3",
-//                 description: "This is a fantastic item!",
-//                 price: "299.99",
-//                 quantity: 3,
-//                 created: expect.any(Date),
-//                 isSold: false,
-//             },
-//         ]);
-//     });
-// });
+describe("getAll", () => {
+    it("gets an array of all items", async () => {
+        const items = await Item.getAll();
+        expect(items).toEqual([
+            {
+                id: expect.any(Number),
+                name: "Item1",
+                description: "This is a great item!",
+                price: "99.99",
+                quantity: 1,
+                created: expect.any(Date),
+                isSold: false,
+            },
+            {
+                id: expect.any(Number),
+                name: "Item2",
+                description: "This is a wonderful item!",
+                price: "199.99",
+                quantity: 2,
+                created: expect.any(Date),
+                isSold: false,
+            },
+            {
+                id: expect.any(Number),
+                name: "Item3",
+                description: "This is a fantastic item!",
+                price: "299.99",
+                quantity: 3,
+                created: expect.any(Date),
+                isSold: false,
+            },
+        ]);
+    });
+});
 
 // /***************************** getAllAvailable */
 

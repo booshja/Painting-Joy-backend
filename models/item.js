@@ -80,6 +80,18 @@ class Item {
          *              { id, name, description, price, quantity, created, isSold },
          *              ...]
          */
+        const result = await db.query(
+            `SELECT id,
+                    name,
+                    description,
+                    price,
+                    quantity,
+                    created,
+                    is_sold AS "isSold"
+                FROM items`
+        );
+
+        return result.rows;
     }
 
     static async getAllAvailable() {

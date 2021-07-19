@@ -14,11 +14,13 @@ class Homepage {
          *
          * Throws BadRequestError if no data or missing data
          */
+        // check for missing / incomplete data
         const keys = Object.keys(data);
         if (keys.length === 0) throw new BadRequestError("No data.");
         if (!data.greeting || !data.message)
             throw new BadRequestError("Missing data.");
 
+        // query db for creating new homepage data
         const result = await db.query(
             `INSERT INTO homepages (greeting, message)
             VALUES ($1, $2)
@@ -35,6 +37,7 @@ class Homepage {
          *
          * Returns { id, greeting, message }
          */
+        // query the db for the data
         const result = await db.query(
             `SELECT id,
                     greeting,
@@ -61,19 +64,21 @@ class Homepage {
          *
          * WARNING: This method deletes all the data in the homepages table.
          */
+        // check for missing / incomplete data
         if (!data) throw new BadRequestError("No data.");
         if (!data.greeting || !data.message)
             throw new BadRequestError("Missing data.");
 
+        // delete all records from db for homepage
         await db.query("DELETE FROM homepages");
 
+        // query the db to create new homepage data
         const result = await db.query(
             `INSERT INTO homepages (greeting, message)
             VALUES ($1, $2)
             RETURNING id, greeting, message`,
             [data.greeting, data.message]
         );
-
         const info = result.rows[0];
 
         return info;

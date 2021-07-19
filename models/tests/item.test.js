@@ -194,35 +194,35 @@ describe("getAllAvailable", () => {
     });
 });
 
-// /********************************** getAllSold */
+/********************************** getAllSold */
 
-// describe("getAllSold", () => {
-//     it("gets an array of all sold items", async () => {
-//         await db.query(
-//             `INSERT INTO items(name,
-//                             description,
-//                             price,
-//                             quantity,
-//                             is_sold)
-//                 VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
-//         );
+describe("getAllSold", () => {
+    it("gets an array of all sold items", async () => {
+        await db.query(
+            `INSERT INTO items(name,
+                            description,
+                            price,
+                            quantity,
+                            is_sold)
+                VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
+        );
 
-//         const items = await Item.getAllSold();
-//         expect(items).toEqual([
-//             {
-//                 id: expect.any(Number),
-//                 name: "Item4",
-//                 description: "This is so great I bought it!!",
-//                 price: "399.99",
-//                 quantity: 1,
-//                 created: expect.any(Date),
-//             },
-//         ]);
+        const items = await Item.getAllSold();
+        expect(items).toEqual([
+            {
+                id: expect.any(Number),
+                name: "Item4",
+                description: "This is so great I bought it!",
+                price: "399.99",
+                quantity: 1,
+                created: expect.any(Date),
+            },
+        ]);
 
-//         const result = await db.query(`GET * FROM items`);
-//         expect(result.rows.length).toEqual(4);
-//     });
-// });
+        const result = await db.query(`SELECT * FROM items`);
+        expect(result.rows.length).toEqual(4);
+    });
+});
 
 // /************************************** update */
 

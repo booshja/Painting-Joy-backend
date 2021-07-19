@@ -119,6 +119,24 @@ describe("register", () => {
             expect(err instanceof BadRequestError).toBeTruthy();
         }
     });
+
+    it("throws BadRequestError with no input", async () => {
+        try {
+            await Admin.register();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError with missing input", async () => {
+        try {
+            await Admin.register({ firstName: "hello" });
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 });
 
 /*********************************** updatePwd */

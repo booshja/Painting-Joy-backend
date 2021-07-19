@@ -11,10 +11,10 @@ class Admin {
     /** Admin Model */
 
     static async authenticate(username, password) {
-        /**
-         * Authenticate admin with username, password
+        /**Authenticate admin with username, password
          *
          * Accepts username, password
+         *
          * Returns { username, firstName, email }
          *
          * Throws UnauthorizedError if user not found or incorrect password
@@ -46,34 +46,45 @@ class Admin {
         throw new UnauthorizedError("Invalid username/password.");
     }
 
-    static async register({
-        username,
-        password,
-        firstName,
-        email,
-        secretQuestion,
-        secretAnswer,
-    }) {
+    static async register(data) {
         /** Register admin with data
+         *
+         * Accepts { username, password, firstName, email, secretQuestion,
+         *              secretAnswer }
          *
          * Returns { username, firstName, email }
          *
          * Throws BadRequestError on duplicates.
+         * Throws BadRequestError if no or missing data
          */
+        if (!data) throw new BadRequestError("No input.");
+        if (
+            !data.username ||
+            !data.password ||
+            !data.firstName ||
+            !data.email ||
+            !data.secretQuestion ||
+            !data.secretAnswer
+        )
+            throw new BadRequestError("Missing input.");
+
         const duplicateCheck = await db.query(
             `SELECT username
             FROM admins
             WHERE username = $1`,
-            [username]
+            [data.username]
         );
 
         if (duplicateCheck.rows[0]) {
-            throw new BadRequestError(`Duplicate username: ${username}`);
+            throw new BadRequestError(`Duplicate username: ${data.username}`);
         }
 
-        const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
+        const hashedPassword = await bcrypt.hash(
+            data.password,
+            BCRYPT_WORK_FACTOR
+        );
         const hashedAnswer = await bcrypt.hash(
-            secretAnswer,
+            data.secretAnswer,
             BCRYPT_WORK_FACTOR
         );
 
@@ -88,11 +99,11 @@ class Admin {
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING username, first_name AS "firstName", email`,
             [
-                username,
+                data.username,
                 hashedPassword,
-                firstName,
-                email,
-                secretQuestion,
+                data.firstName,
+                data.email,
+                data.secretQuestion,
                 hashedAnswer,
             ]
         );

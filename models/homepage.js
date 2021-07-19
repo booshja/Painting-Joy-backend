@@ -61,8 +61,7 @@ class Homepage {
          *
          * WARNING: This method deletes all the data in the homepages table.
          */
-        const keys = Object.keys(data);
-        if (keys.length === 0) throw new BadRequestError("No data.");
+        if (!data) throw new BadRequestError("No data.");
         if (!data.greeting || !data.message)
             throw new BadRequestError("Missing data.");
 

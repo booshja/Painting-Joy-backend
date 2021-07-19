@@ -8,17 +8,19 @@ class IGPost {
         /** Add post to db
          *
          * Accepts data
-         *      Data is: { ig_id, caption, perm_url, image_url }
+         *      Data should be: { ig_id, caption, perm_url, image_url }
          *
          * Returns { ig_id, caption, perm_url, image_url }
          *
          * Throws BadRequestError if no data or data missing
          */
+        // check for missing / incomplete data
         const keys = Object.keys(data);
         if (keys.length === 0) throw new BadRequestError("No data.");
         if (!data.ig_id || !data.caption || !data.perm_url || !data.image_url)
             throw new BadRequestError("Missing data.");
 
+        // query db to create new igpost record
         const result = await db.query(
             `INSERT INTO igposts (ig_id, caption, perm_url, image_url)
             VALUES ($1, $2, $3, $4)
@@ -40,8 +42,10 @@ class IGPost {
          * Throws NotFoundError if post not found via ig_id
          * Throws BadRequestError if no ig_id
          */
+        // check for missing input
         if (!ig_id) throw new BadRequestError("No id provided.");
 
+        // query db for igpost by ig_id
         const result = await db.query(
             `SELECT ig_id,
                     caption,
@@ -53,6 +57,7 @@ class IGPost {
         );
         const post = result.rows[0];
 
+        // if no record returned, no igpost is found, throw NotFoundError
         if (!post) throw new NotFoundError(`No post found for: ${ig_id}`);
 
         return post;
@@ -64,6 +69,7 @@ class IGPost {
          * Returns [{ ig_id, caption, perm_url, image_url },
          *              { ig_id, caption, perm_url, image_url }, ...]
          */
+        // query db for list of igposts
         const result = await db.query(
             `SELECT ig_id,
                     caption,
@@ -75,15 +81,20 @@ class IGPost {
         return result.rows;
     }
 
-    static async remove(ig_id) {
-        /** Remove post by ig_id
+    static async delete(ig_id) {
+        /** Delete post by ig_id
          *
          * Accepts ig_id
          *
-         * Returns { msg: "Removed" }
+         * Returns { msg: "Deleted." }
          *
-         * ThrowsNotFoundError if post not found via ig_id
+         * Throws NotFoundError if post not found via ig_id
+         * Throw BadRequestError if no input
          */
+        // check for missing input
+        if (!ig_id) throw new BadRequestError("No input.");
+
+        // query db to delete igpost
         const result = await db.query(
             `DELETE
             FROM igposts
@@ -93,9 +104,10 @@ class IGPost {
         );
         const removed = result.rows[0];
 
+        // if no record returned, no igpost found, throw NotFoundError
         if (!removed) throw new NotFoundError(`No post: ${ig_id}`);
 
-        return { msg: "Removed." };
+        return { msg: "Deleted." };
     }
 }
 

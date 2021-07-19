@@ -131,10 +131,10 @@ describe("getAll", () => {
 
 /************************************** remove */
 
-describe("remove", () => {
-    it("removes post", async () => {
-        const result = await IGPost.remove(testIgpostIds[0]);
-        expect(result).toEqual({ msg: "Removed." });
+describe("delete", () => {
+    it("deletes post", async () => {
+        const result = await IGPost.delete(testIgpostIds[0]);
+        expect(result).toEqual({ msg: "Deleted." });
 
         const res = await db.query(`SELECT ig_id FROM igposts WHERE ig_id=$1`, [
             testIgpostIds[0],
@@ -142,9 +142,18 @@ describe("remove", () => {
         expect(res.rows.length).toEqual(0);
     });
 
+    it("throws BadRequestError if no input", async () => {
+        try {
+            await IGPost.delete();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
     it("throws NotFoundError if no such post", async () => {
         try {
-            await IGPost.remove(0);
+            await IGPost.delete(-1);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();

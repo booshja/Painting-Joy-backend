@@ -7,13 +7,39 @@ class Item {
     static async create(data) {
         /** Create an item (from data), update db, return new item
          *
-         * Data should be: { name, description, price, quantity, created, isSold }
+         * Data should be: { name, description, price, quantity }
          *
          * Returns: { id, name, description, price, quantity, created,
          *                      isSold }
          *
          * Throws BadRequestError if incomplete or no data
          */
+        if (!data) throw new BadRequestError("No data.");
+        if (!data.name || !data.description || !data.price || !data.quantity)
+            throw new BadRequestError("Missing data.");
+
+        const result = await db.query(
+            `INSERT INTO items(name,
+                            description,
+                            price,
+                            quantity)
+                VALUES($1,
+                        $2,
+                        $3,
+                        $4)
+                RETURNING id,
+                        name,
+                        description,
+                        price,
+                        quantity,
+                        created,
+                        is_sold AS "isSold"`,
+            [data.name, data.description, data.price, data.quantity]
+        );
+
+        const item = result.rows[0];
+
+        return item;
     }
 
     static async get(id) {

@@ -316,27 +316,27 @@ describe("markSold", () => {
 
 /************************************** delete */
 
-// describe("delete", () => {
-//     it("deletes an item by id", async () => {
-//         const removed = await Item.delete(testItemIds[0]);
-//         expect(removed).toEqual({ msg: "Deleted." });
-//     });
+describe("delete", () => {
+    it("deletes an item by id", async () => {
+        const removed = await Item.delete(testItemIds[0]);
+        expect(removed).toEqual({ msg: "Deleted." });
+    });
 
-//     it("throws BadRequestError if no id", async () => {
-//         try {
-//             await Item.delete();
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof BadRequestError).toBeTruthy();
-//         }
-//     });
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Item.delete();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
-//     it("throws NotFoundError if order not found", async () => {
-//         try {
-//             await Item.delete(-1);
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof NotFoundError).toBeTruthy();
-//         }
-//     });
-// });
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Item.delete(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});

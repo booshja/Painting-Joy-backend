@@ -211,6 +211,19 @@ class Item {
          * Throws BadRequestError if no id
          * Throws NotFoundError if not found
          */
+        if (!id) throw new BadRequestError("No id provided.");
+
+        const result = await db.query(
+            `DELETE FROM items
+            WHERE id = $1
+            RETURNING id`,
+            [id]
+        );
+        const removed = result.rows[0];
+
+        if (!removed) throw new NotFoundError(`No item: ${id}`);
+
+        return { msg: "Deleted." };
     }
 }
 

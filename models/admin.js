@@ -52,8 +52,9 @@ class Admin {
     static async register(data) {
         /** Register admin with data
          *
-         * Accepts { username, password, firstName, email, secretQuestion,
-         *              secretAnswer }
+         * Accepts data
+         *      data should be: { username, password, firstName, email, secretQuestion,
+         *                          secretAnswer }
          *
          * Returns { username, firstName, email }
          *

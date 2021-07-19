@@ -277,9 +277,18 @@ describe("delete", () => {
         expect(res.rows.length).toEqual(0);
     });
 
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Message.delete();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
     it("throws NotFoundError if no such message", async () => {
         try {
-            await Message.delete(0);
+            await Message.delete(-1);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();

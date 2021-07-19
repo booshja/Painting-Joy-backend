@@ -37,8 +37,7 @@ CREATE TABLE messages (
     name VARCHAR(40) NOT NULL,
     message VARCHAR(200) NOT NULL,
     received TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_archived BOOLEAN NOT NULL DEFAULT false,
-    is_deleted BOOLEAN NOT NULL DEFAULT false
+    is_archived BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE igposts (

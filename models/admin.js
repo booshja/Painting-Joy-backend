@@ -120,12 +120,14 @@ class Admin {
          * Returns { username, firstName, email }
          *
          * Throws NotFoundError if not found.
+         * Throws BadRequestError if no data/missing data
          *
          * WARNING: This function sets a new Admin password.
          * Be certain the admin has validated inputs to this
          * or serious security risks are exposed.
          */
-
+        if (!username && !pwd) throw new BadRequestError("No inputs.");
+        if (!username || !pwd) throw new BadRequestError("Missing input.");
         // get hashed password
         const hashedPwd = await bcrypt.hash(pwd, BCRYPT_WORK_FACTOR);
 

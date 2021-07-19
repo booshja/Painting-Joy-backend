@@ -190,6 +190,15 @@ describe("getSecretQuestion", () => {
         });
     });
 
+    it("throws BadRequestError with no input", async () => {
+        try {
+            await Admin.getSecretQuestion();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
     it("throws NotFoundError if no such admin", async () => {
         try {
             await Admin.getSecretQuestion("nobody-here");
@@ -227,6 +236,24 @@ describe("authenticateSecretAnswer", () => {
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError with no input", async () => {
+        try {
+            await Admin.authenticateSecretAnswer();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError with missing input", async () => {
+        try {
+            await Admin.authenticateSecretAnswer("hello");
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
         }
     });
 });

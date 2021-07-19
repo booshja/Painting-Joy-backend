@@ -20,9 +20,11 @@ class Admin {
          * Throws UnauthorizedError if user not found or incorrect password
          * Throws BadRequestError if no input or missing input
          */
+        // check for no input/missing input
         if (!username && !password) throw new BadRequestError("No input");
         if (!username || !password) throw new BadRequestError("Missing inputs");
 
+        // query db for admin's data
         const result = await db.query(
             `SELECT username,
                     password,
@@ -58,6 +60,7 @@ class Admin {
          * Throws BadRequestError on duplicates.
          * Throws BadRequestError if no or missing data
          */
+        // check for no data/missing data
         if (!data) throw new BadRequestError("No input.");
         if (
             !data.username ||
@@ -69,17 +72,18 @@ class Admin {
         )
             throw new BadRequestError("Missing input.");
 
+        // check that there's not already an admin with that username
         const duplicateCheck = await db.query(
             `SELECT username
             FROM admins
             WHERE username = $1`,
             [data.username]
         );
-
         if (duplicateCheck.rows[0]) {
             throw new BadRequestError(`Duplicate username: ${data.username}`);
         }
 
+        // hash password and secret answer for new admin
         const hashedPassword = await bcrypt.hash(
             data.password,
             BCRYPT_WORK_FACTOR
@@ -89,6 +93,7 @@ class Admin {
             BCRYPT_WORK_FACTOR
         );
 
+        // db query to create new admin
         const result = await db.query(
             `INSERT INTO admins
             (username,
@@ -108,7 +113,6 @@ class Admin {
                 hashedAnswer,
             ]
         );
-
         const admin = result.rows[0];
 
         return admin;
@@ -127,11 +131,14 @@ class Admin {
          * Be certain the admin has validated inputs to this
          * or serious security risks are exposed.
          */
+        // check for no input/missing input
         if (!username && !pwd) throw new BadRequestError("No inputs.");
         if (!username || !pwd) throw new BadRequestError("Missing input.");
-        // get hashed password
+
+        // hash password
         const hashedPwd = await bcrypt.hash(pwd, BCRYPT_WORK_FACTOR);
 
+        // query db to update admin password
         const result = await db.query(
             `UPDATE admins
             SET password = $1
@@ -143,8 +150,10 @@ class Admin {
         );
         const admin = result.rows[0];
 
+        // if no record returned, throw NotFoundError
         if (!admin) throw new NotFoundError("No such admin.");
 
+        // remove password from admin object and return
         delete admin.password;
         return admin;
     }
@@ -156,7 +165,12 @@ class Admin {
          * Returns { username, secretQuestion }
          *
          * Throws NotFoundError if admin not found.
+         * Throws BadRequestError if no input
          */
+        // check for missing input
+        if (!username) throw new BadRequestError("No input.");
+
+        // query db for secret question attached to username
         const result = await db.query(
             `SELECT username,
                     secret_question AS "secretQuestion"
@@ -166,6 +180,7 @@ class Admin {
         );
         const questionRes = result.rows[0];
 
+        // if no record returned, throw NotFoundError for no admin found
         if (!questionRes) throw new NotFoundError("No such admin.");
 
         return questionRes;
@@ -180,6 +195,12 @@ class Admin {
          * Throws UnauthorizedError if answer is not authenticated.
          * Throws NotFoundError if admin not found.
          */
+        // Check for missing / incomplete data
+        if (!username && !secretAnswer) throw new BadRequestError("No input.");
+        if (!username || !secretAnswer)
+            throw new BadRequestError("Missing input.");
+
+        // query db for secret answer
         const result = await db.query(
             `SELECT username,
                     secret_answer AS "secretAnswer"

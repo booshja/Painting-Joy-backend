@@ -178,6 +178,27 @@ class Item {
          * Throws BadRequestError if no id
          * Throws NotFoundError if not found
          */
+        if (!id) throw new BadRequestError("No id provided.");
+
+        const result = await db.query(
+            `UPDATE items
+                SET is_sold = true
+                WHERE id=$1
+                RETURNING id,
+                        name,
+                        description,
+                        price,
+                        quantity,
+                        created,
+                        is_sold AS "isSold"`,
+            [id]
+        );
+
+        const item = result.rows[0];
+
+        if (!item) throw new NotFoundError(`No item: ${id}`);
+
+        return item;
     }
 
     static async delete(id) {

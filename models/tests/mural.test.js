@@ -194,7 +194,7 @@ describe("remove", () => {
 
     it("throws NotFoundError if no such mural", async () => {
         try {
-            await Mural.remove(0);
+            await Mural.remove(-1);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();

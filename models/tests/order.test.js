@@ -300,29 +300,29 @@ describe("markCompleted", () => {
     });
 });
 
-// /************************************** remove */
+/************************************** remove */
 
-// describe("remove", () => {
-//     it("removes order by id", async () => {
-//         const removed = await Order.remove(testOrderIds[0]);
-//         expect(removed).toEqual({ msg: "Removed." });
-//     });
+describe("remove", () => {
+    it("removes order by id", async () => {
+        const removed = await Order.remove(testOrderIds[0]);
+        expect(removed).toEqual({ msg: "Removed." });
+    });
 
-//     it("throws BadRequestError if no id", async () => {
-//         try {
-//             await Order.remove();
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof BadRequestError).toBeTruthy();
-//         }
-//     });
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.remove();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
-//     it("throws NotFoundError if order not found", async () => {
-//         try {
-//             await Order.remove(-1);
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof NotFoundError).toBeTruthy();
-//         }
-//     });
-// });
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.remove(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});

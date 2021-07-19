@@ -2,17 +2,17 @@ const db = require("../../db");
 const { BadRequestError, NotFoundError } = require("../../expressError");
 const IGPost = require("../igpost");
 
-testIgpostIds = [];
+const testIgpostIds = [];
 
 beforeAll(async function () {
     await db.query("DELETE FROM igposts");
 
     const results = await db.query(
         `INSERT INTO igposts( ig_id, caption, perm_url, image_url)
-        VALUES ('vaea23ceaaf9asfe87g6', 'Such a great post!', 'just-a-test.com', 'imageurl.com/image.jpg'),
-            ('vaeaasdf97865g6', 'Such a great post again!', 'just-another-test.com', 'imageurl.com/image.png'),
-            ('vae2345c546g6', 'Such a wonderful post!', 'just-a-third-test.com', 'imageurl.org/image.txt')
-        RETURNING ig_id`
+            VALUES ('vaea23ceaaf9asfe87g6', 'Such a great post!', 'just-a-test.com', 'imageurl.com/image.jpg'),
+                ('vaeaasdf97865g6', 'Such a great post again!', 'just-another-test.com', 'imageurl.com/image.png'),
+                ('vae2345c546g6', 'Such a wonderful post!', 'just-a-third-test.com', 'imageurl.org/image.txt')
+            RETURNING ig_id`
     );
     testIgpostIds.splice(0, 0, ...results.rows.map((row) => row.ig_id));
 });

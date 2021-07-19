@@ -57,10 +57,8 @@ CREATE TABLE items (
     -- photo_name TEXT NOT NULL,
     -- photo_data BYTEA NOT NULL,
     quantity INTEGER NOT NULL,
-    is_archived BOOLEAN NOT NULL DEFAULT false,
     is_sold BOOLEAN NOT NULL DEFAULT false,
-    created TIMESTAMPTZ NOT NULL,
-    is_deleted BOOLEAN NOT NULL DEFAULT false
+    created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE orders (

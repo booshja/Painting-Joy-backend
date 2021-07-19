@@ -20,6 +20,7 @@ class Admin {
          * Throws UnauthorizedError if user not found or incorrect password
          * Throws BadRequestError if no input or missing input
          */
+        if (!username && !password) throw new BadRequestError("No input");
         if (!username || !password) throw new BadRequestError("Missing inputs");
 
         const result = await db.query(

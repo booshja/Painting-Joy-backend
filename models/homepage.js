@@ -8,7 +8,7 @@ class Homepage {
         /** Create new record for homepage CRM data
          *
          * Accepts data
-         *      Data can be: { greeting, message }
+         *      Data should be: { greeting, message }
          *
          * Returns { id, greeting, message }
          *
@@ -56,7 +56,7 @@ class Homepage {
         /** Delete previous record from db, add updated info
          *
          * Accepts data
-         *      Data can be: { greeting, message }
+         *      Data should be: { greeting, message }
          *
          * Returns { id, greeting, message }
          *

@@ -19,6 +19,7 @@ CREATE TABLE murals (
     title VARCHAR(50) NOT NULL,
     description VARCHAR(200) NOT NULL,
     price NUMERIC NOT NULL,
+    is_archived BOOLEAN NOT NULL DEFAULT false
     -- photo_1_type TEXT,
     -- photo_1_name TEXT,
     -- photo_1_data BYTEA,
@@ -28,7 +29,6 @@ CREATE TABLE murals (
     -- photo_3_type TEXT,
     -- photo_3_name TEXT,
     -- photo_3_data BYTEA,
-    is_archived BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE messages (
@@ -37,8 +37,7 @@ CREATE TABLE messages (
     name VARCHAR(40) NOT NULL,
     message VARCHAR(200) NOT NULL,
     received TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_archived BOOLEAN NOT NULL DEFAULT false,
-    is_deleted BOOLEAN NOT NULL DEFAULT false
+    is_archived BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE igposts (
@@ -53,18 +52,18 @@ CREATE TABLE items (
     name VARCHAR(50) NOT NULL,
     description VARCHAR(100) NOT NULL,
     price NUMERIC NOT NULL,
-    -- photo_type TEXT NOT NULL,
-    -- photo_name TEXT NOT NULL,
-    -- photo_data BYTEA NOT NULL,
     quantity INTEGER NOT NULL,
     is_sold BOOLEAN NOT NULL DEFAULT false,
     created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    -- photo_type TEXT NOT NULL,
+    -- photo_name TEXT NOT NULL,
+    -- photo_data BYTEA NOT NULL,
 );
 
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
-    email VARCHAR(40) NOT NULL,
     name VARCHAR(40) NOT NULL,
+    email VARCHAR(40) NOT NULL,
     street VARCHAR(50) NOT NULL,
     unit VARCHAR(50),
     city VARCHAR(50) NOT NULL,
@@ -72,8 +71,8 @@ CREATE TABLE orders (
     zipcode INTEGER CHECK (zipcode < 100000) NOT NULL,
     phone NUMERIC NOT NULL,
     transaction_id TEXT NOT NULL,
-    status VARCHAR(10) NOT NULL DEFAULT 'Confirmed',
     amount NUMERIC NOT NULL,
+    status VARCHAR(10) NOT NULL DEFAULT 'Confirmed',
     is_deleted BOOLEAN NOT NULL DEFAULT false
 );
 

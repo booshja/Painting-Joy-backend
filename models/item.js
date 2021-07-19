@@ -15,10 +15,12 @@ class Item {
          *
          * Throws BadRequestError if incomplete or no data
          */
+        // check for missing / incomplete data
         if (!data) throw new BadRequestError("No data.");
         if (!data.name || !data.description || !data.price || !data.quantity)
             throw new BadRequestError("Missing data.");
 
+        // query db to create new item
         const result = await db.query(
             `INSERT INTO items(name,
                             description,
@@ -37,7 +39,6 @@ class Item {
                         is_sold AS "isSold"`,
             [data.name, data.description, data.price, data.quantity]
         );
-
         const item = result.rows[0];
 
         return item;
@@ -53,8 +54,10 @@ class Item {
          * Throws BadRequestError if no id
          * Throws NotFoundError if no item found by id
          */
+        // check for missing input
         if (!id) throw new BadRequestError("No id provided.");
 
+        // query db to get item
         const result = await db.query(
             `SELECT id,
                     name,
@@ -69,6 +72,7 @@ class Item {
         );
         const item = result.rows[0];
 
+        // if no record returned, no item found, throw NotFoundError
         if (!item) throw new NotFoundError(`No order: ${id}`);
 
         return item;
@@ -81,6 +85,7 @@ class Item {
          *              { id, name, description, price, quantity, created, isSold },
          *              ...]
          */
+        // query db for list of all items
         const result = await db.query(
             `SELECT id,
                     name,
@@ -101,6 +106,7 @@ class Item {
          * Returns [{ id, name, description, price, quantity, created },
          *              { id, name, description, price, quantity, created }, ...]
          */
+        // query db for list of all non-sold items
         const result = await db.query(
             `SELECT id,
                     name,
@@ -121,6 +127,7 @@ class Item {
          * Returns [{ id, name, description, price, quantity, created },
          *              { id, name, description, price, quantity, created }, ...]
          */
+        // query db for list of all sold items
         const result = await db.query(
             `SELECT id,
                     name,
@@ -147,9 +154,11 @@ class Item {
          * Throws BadRequestError if no data
          * Throws NotFoundError if no item found
          */
+        // prepare data for partial update
         const { setCols, values } = sqlForPartialUpdate(data, {});
         const idVarIdx = "$" + (values.length + 1);
 
+        // prepare sql query statement for partial update
         const querySql = `UPDATE items
                             SET ${setCols}
                             WHERE id = ${idVarIdx}
@@ -160,9 +169,12 @@ class Item {
                                     quantity,
                                     created,
                                     is_sold AS "isSold"`;
+
+        // query db to update item
         const result = await db.query(querySql, [...values, id]);
         const item = result.rows[0];
 
+        // if no record returned, no item found, throw NotFoundError
         if (!item) throw new NotFoundError(`No item: ${id}`);
 
         return item;
@@ -178,8 +190,10 @@ class Item {
          * Throws BadRequestError if no id
          * Throws NotFoundError if not found
          */
+        // check for missing input
         if (!id) throw new BadRequestError("No id provided.");
 
+        // query db to update is_sold status to true
         const result = await db.query(
             `UPDATE items
                 SET is_sold = true
@@ -193,9 +207,9 @@ class Item {
                         is_sold AS "isSold"`,
             [id]
         );
-
         const item = result.rows[0];
 
+        // if no record returned, no item found, throw NotFoundError
         if (!item) throw new NotFoundError(`No item: ${id}`);
 
         return item;
@@ -211,8 +225,10 @@ class Item {
          * Throws BadRequestError if no id
          * Throws NotFoundError if not found
          */
+        // check for missing input
         if (!id) throw new BadRequestError("No id provided.");
 
+        // query db to delete item
         const result = await db.query(
             `DELETE FROM items
             WHERE id = $1
@@ -221,6 +237,7 @@ class Item {
         );
         const removed = result.rows[0];
 
+        // if no record returned, no item found, throw NotFoundError
         if (!removed) throw new NotFoundError(`No item: ${id}`);
 
         return { msg: "Deleted." };

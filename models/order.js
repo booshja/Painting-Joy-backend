@@ -15,6 +15,7 @@ class Order {
          *
          * Throws BadRequestError if incomplete or no data
          */
+        // check for missing / incomplete data
         if (!data) throw new BadRequestError("No data.");
         if (
             !data.email ||
@@ -31,6 +32,7 @@ class Order {
         )
             throw new BadRequestError("Missing data.");
 
+        // query db to create new order
         const result = await db.query(
             `INSERT INTO orders (email,
                                 name,
@@ -121,6 +123,7 @@ class Order {
          *                  zipcode, phone, transaction_id, status, amount },
          *              ...]
          */
+        // query db to get list of orders
         const result = await db.query(
             `SELECT id,
                     email,
@@ -150,17 +153,19 @@ class Order {
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
          */
+        // check for missing input
         if (!id) throw new BadRequestError("No id provided.");
 
+        // query db to get email
         const result = await db.query(
             `SELECT email
                 FROM orders
                 WHERE id=$1`,
             [id]
         );
-
         const email = result.rows[0];
 
+        // if no record returned, no order found, throw NotFoundError
         if (!email) throw new NotFoundError(`No order found: ${id}`);
 
         return email;
@@ -177,8 +182,10 @@ class Order {
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
          */
+        // check for missing input
         if (!id) throw new BadRequestError("No id provided.");
 
+        // query db to update status to "Shipped"
         const result = await db.query(
             `UPDATE orders
                 SET status = $1
@@ -197,9 +204,9 @@ class Order {
                         amount`,
             ["Shipped", id]
         );
-
         const order = result.rows[0];
 
+        // if no record returned, no order found, throw NotFoundError
         if (!order) throw new NotFoundError(`No order: ${id}`);
 
         return order;
@@ -216,8 +223,10 @@ class Order {
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
          */
+        // check for missing input
         if (!id) throw new BadRequestError("No id provided.");
 
+        // query db to update status to "Completed"
         const result = await db.query(
             `UPDATE orders
                 SET status = $1
@@ -236,9 +245,9 @@ class Order {
                         amount`,
             ["Completed", id]
         );
-
         const order = result.rows[0];
 
+        // if no record returned, no order found, throw NotFoundError
         if (!order) throw new NotFoundError(`No order: ${id}`);
 
         return order;
@@ -255,8 +264,10 @@ class Order {
          * Throws BadRequestError if no id
          * Throws NotFoundError if not found
          */
+        // check for missing input
         if (!id) throw new BadRequestError("No id provided.");
 
+        // query db to update is_deleted to true
         const result = await db.query(
             `UPDATE orders
                 SET is_deleted = $1
@@ -266,6 +277,7 @@ class Order {
         );
         const removed = result.rows[0];
 
+        // if no record returned, no order found, throw NotFoundError
         if (!removed) throw new NotFoundError(`No order found: ${id}`);
 
         return { msg: "Removed." };

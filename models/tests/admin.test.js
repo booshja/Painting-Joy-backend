@@ -56,6 +56,24 @@ describe("authenticate", () => {
             expect(err instanceof UnauthorizedError).toBeTruthy();
         }
     });
+
+    it("throws BadRequestError with no input", async () => {
+        try {
+            await Admin.authenticate();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError with missing input", async () => {
+        try {
+            await Admin.authenticate("hello");
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 });
 
 /************************************ register */
@@ -101,6 +119,24 @@ describe("register", () => {
             expect(err instanceof BadRequestError).toBeTruthy();
         }
     });
+
+    it("throws BadRequestError with no input", async () => {
+        try {
+            await Admin.register();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError with missing input", async () => {
+        try {
+            await Admin.register("hello");
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 });
 
 /*********************************** updatePwd */
@@ -123,6 +159,24 @@ describe("updatePwd", () => {
             expect(err instanceof NotFoundError).toBeTruthy();
         }
     });
+
+    it("throws BadRequestError with no input", async () => {
+        try {
+            await Admin.updatePwd();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError with missing input", async () => {
+        try {
+            await Admin.updatePwd("hello");
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 });
 
 /*************************** getSecretQuestion */
@@ -134,6 +188,15 @@ describe("getSecretQuestion", () => {
             username: "testadmin1",
             secretQuestion: "Secret question?",
         });
+    });
+
+    it("throws BadRequestError with no input", async () => {
+        try {
+            await Admin.getSecretQuestion();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
     });
 
     it("throws NotFoundError if no such admin", async () => {
@@ -173,6 +236,24 @@ describe("authenticateSecretAnswer", () => {
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError with no input", async () => {
+        try {
+            await Admin.authenticateSecretAnswer();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError with missing input", async () => {
+        try {
+            await Admin.authenticateSecretAnswer("hello");
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
         }
     });
 });

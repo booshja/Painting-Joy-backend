@@ -57,7 +57,7 @@ describe("create", () => {
 
     it("throws BadRequestError if no data", async () => {
         try {
-            await Item.create({});
+            await Item.create();
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();

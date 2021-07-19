@@ -85,4 +85,24 @@ describe("update", () => {
             message: "This is a test message!",
         });
     });
+
+    it("throws BadRequestError if no data", async () => {
+        try {
+            await Homepage.update();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError if missing data", async () => {
+        try {
+            await Homepage.update({
+                greeting: "BadTest",
+            });
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 });

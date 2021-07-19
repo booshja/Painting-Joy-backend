@@ -1,5 +1,6 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
+const { sqlForPartialUpdate } = require("../helpers/sql");
 
 class Item {
     /** Item Model */
@@ -136,7 +137,6 @@ class Item {
 
     static async update(id, data) {
         /** Update item data with data
-         *
          * This is a partial update, it will only change given fields
          *
          * Data can include: { name, description, price, quantity }
@@ -147,6 +147,25 @@ class Item {
          * Throws BadRequestError if no data
          * Throws NotFoundError if no item found
          */
+        const { setCols, values } = sqlForPartialUpdate(data, {});
+        const idVarIdx = "$" + (values.length + 1);
+
+        const querySql = `UPDATE items
+                            SET ${setCols}
+                            WHERE id = ${idVarIdx}
+                            RETURNING id,
+                                    name,
+                                    description,
+                                    price,
+                                    quantity,
+                                    created,
+                                    is_sold AS "isSold"`;
+        const result = await db.query(querySql, [...values, id]);
+        const item = result.rows[0];
+
+        if (!item) throw new NotFoundError(`No item: ${id}`);
+
+        return item;
     }
 
     static async markSold(id) {

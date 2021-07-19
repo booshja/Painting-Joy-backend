@@ -56,6 +56,24 @@ describe("authenticate", () => {
             expect(err instanceof UnauthorizedError).toBeTruthy();
         }
     });
+
+    it("throws BadRequestError with no input", async () => {
+        try {
+            await Admin.authenticate();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError with missing input", async () => {
+        try {
+            await Admin.authenticate("hello");
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 });
 
 /************************************ register */

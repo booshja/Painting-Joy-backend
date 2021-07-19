@@ -17,9 +17,10 @@ class Admin {
          * Accepts username, password
          * Returns { username, firstName, email }
          *
-         * Throws UnauthorizedError if user not found
-         * or incorrect password
+         * Throws UnauthorizedError if user not found or incorrect password
+         * Throws BadRequestError if no input or missing input
          */
+        if (!username || !password) throw new BadRequestError("Missing inputs");
 
         const result = await db.query(
             `SELECT username,

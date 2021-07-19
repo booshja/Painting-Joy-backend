@@ -48,6 +48,26 @@ describe("create", () => {
             isArchived: false,
         });
     });
+
+    it("throws BadRequestError if no data", async () => {
+        try {
+            await Mural.create({});
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError if missing data", async () => {
+        try {
+            await Mural.create({
+                name: "Testerino",
+            });
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 });
 
 /************************************ addImage */
@@ -93,9 +113,18 @@ describe("get", () => {
         });
     });
 
+    it("throws BadRequestError if no input", async () => {
+        try {
+            await Mural.get();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
     it("throws NotFoundError if no such mural", async () => {
         try {
-            await Mural.get(0);
+            await Mural.get(-1);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();

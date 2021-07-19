@@ -1,5 +1,5 @@
 const db = require("../db");
-const { NotFoundError } = require("../expressError");
+const { NotFoundError, BadRequestError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
 class Mural {
@@ -11,15 +11,26 @@ class Mural {
          * Data should be { title, description, price }
          *
          * Returns { id, title, description, price, photo1, photo2, photo3, isArchived }
+         *
+         * Throws BadRequestError for missing / incomplete data
          */
+        // check for missing / incomplete data
+        if (!data) throw new BadRequestError("No input.");
+        if (!data.title || !data.description || !data.price)
+            throw new BadRequestError("Missing data.");
+
+        // query db to create new mural
         const result = await db.query(
             `INSERT INTO murals (title,
                                 description,
-                                price,
-                                is_archived)
-            VALUES ($1, $2, $3, $4)
-            RETURNING id, title, description, price, is_archived AS "isArchived"`,
-            [data.title, data.description, data.price, false]
+                                price)
+                VALUES ($1, $2, $3)
+                RETURNING id,
+                        title,
+                        description,
+                        price,
+                        is_archived AS "isArchived"`,
+            [data.title, data.description, data.price]
         );
         const mural = result.rows[0];
 
@@ -35,6 +46,7 @@ class Mural {
          *
          * Returns [{ id, title, description, price }, { id, title, description, price }, ...]
          */
+        // query db for list of all murals
         const result = await db.query(
             `SELECT id,
                     title,
@@ -55,6 +67,10 @@ class Mural {
          *
          * Throws NotFoundError if not found.
          */
+        // check for missing input
+        if (!id) throw new BadRequestError("No input");
+
+        // query db to get mural by id
         const result = await db.query(
             `SELECT id,
                     title,
@@ -66,6 +82,7 @@ class Mural {
         );
         const mural = result.rows[0];
 
+        // if no record returned, no mural found, throw NotFoundError
         if (!mural) throw new NotFoundError(`No mural: ${id}`);
 
         return mural;

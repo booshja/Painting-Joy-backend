@@ -279,7 +279,42 @@ describe("update", () => {
     });
 });
 
-// /************************************** delete */
+/************************************ markSold */
+
+describe("markSold", () => {
+    it("marks item as sold by id", async () => {
+        const item = await Item.markSold(testItemIds[2]);
+        expect(item).toEqual({
+            id: expect.any(Number),
+            name: "Item3",
+            description: "This is a fantastic item!",
+            price: "299.99",
+            quantity: 3,
+            created: expect.any(Date),
+            isSold: true,
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Item.markSold();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Item.markSold(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
+/************************************** delete */
 
 // describe("delete", () => {
 //     it("deletes an item by id", async () => {

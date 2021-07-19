@@ -175,6 +175,8 @@ class Item {
          *
          * Returns: { id, name, description, price, quantity, created, ,
          *              isSold }
+         * Throws BadRequestError if no id
+         * Throws NotFoundError if not found
          */
     }
 

@@ -52,6 +52,25 @@ class Item {
          * Throws BadRequestError if no id
          * Throws NotFoundError if no item found by id
          */
+        if (!id) throw new BadRequestError("No id provided.");
+
+        const result = await db.query(
+            `SELECT id,
+                    name,
+                    description,
+                    price,
+                    quantity,
+                    created,
+                    is_sold AS "isSold"
+                FROM items
+                WHERE id=$1`,
+            [id]
+        );
+        const item = result.rows[0];
+
+        if (!item) throw new NotFoundError(`No order: ${id}`);
+
+        return item;
     }
 
     static async getAll() {

@@ -78,38 +78,38 @@ describe("create", () => {
 
 /***************************************** get */
 
-// describe("get", () => {
-//     it("gets an item by id", async () => {
-//         const item = await Item.get(testItemIds[0]);
-//         expect(item).toEqual({
-//             id: expect.any(Number),
-//             name: "Item1",
-//             description: "This is a great item!",
-//             price: "99.99",
-//             quantity: 1,
-//             created: expect.any(Date),
-//             isSold: false,
-//         });
-//     });
+describe("get", () => {
+    it("gets an item by id", async () => {
+        const item = await Item.get(testItemIds[0]);
+        expect(item).toEqual({
+            id: expect.any(Number),
+            name: "Item1",
+            description: "This is a great item!",
+            price: "99.99",
+            quantity: 1,
+            created: expect.any(Date),
+            isSold: false,
+        });
+    });
 
-//     it("throws BadRequestError if no id", async () => {
-//         try {
-//             await Item.get();
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof BadRequestError).toBeTruthy();
-//         }
-//     });
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Item.get();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
-//     it("throws NotFoundError if order not found", async () => {
-//         try {
-//             await Item.get(-1);
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof NotFoundError).toBeTruthy();
-//         }
-//     });
-// });
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Item.get(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
 
 // /************************************** getAll */
 

@@ -115,12 +115,10 @@ class Order {
 
         const itemsRes = await db.query(
             `SELECT i.name, i.description, i.price, i.quantity
-                FROM orders o
-                JOIN orders_items oi
-                ON oi.order_id=o.id
+                FROM orders_items oi
                 JOIN items i
                 ON oi.item_id=i.id
-                WHERE o.id=$1`,
+                WHERE oi.order_id=$1`,
             [id]
         );
 

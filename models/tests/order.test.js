@@ -411,6 +411,53 @@ describe("markCompleted", () => {
     });
 });
 
+/************************************** removeItem */
+
+describe("removeItem", () => {
+    it("removes item from order by order_id and item_id", async () => {
+        const removed = await Order.removeItem(testOrderIds[0], testItemIds[0]);
+        expect(removed).toEqual({
+            msg: "Item removed.",
+        });
+    });
+
+    it("throws BadRequestError if no ids", async () => {
+        try {
+            await Order.removeItem();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError if missing id", async () => {
+        try {
+            await Order.removeItem(12);
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.removeItem(-1, 12);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if item not found", async () => {
+        try {
+            await Order.removeItem(testOrderIds[1], -1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
 /************************************** remove */
 
 describe("remove", () => {

@@ -355,6 +355,84 @@ class Order {
         return order;
     }
 
+    static async removeItem(orderId, itemId) {
+        /** Remove an item from an order
+         *
+         * Accepts orderId, itemId
+         *
+         * Returns { msg: "Item removed." }
+         *
+         * Throws BadRequestError if missing id(s)
+         * Throws NotFoundError if order, item, or relationship not found
+         */
+        //check for missing / incomplete ids
+        if (!orderId && !itemId) throw new BadRequestError("No input");
+        if (!orderId || !itemId) throw new BadRequestError("Missing input");
+
+        // query db to get order
+        const orderRes = await db.query(
+            `SELECT id,
+                    email,
+                    name,
+                    street,
+                    unit,
+                    city,
+                    state_code,
+                    zipcode,
+                    phone,
+                    transaction_id,
+                    status,
+                    amount
+                FROM orders
+                WHERE id=$1`,
+            [orderId]
+        );
+        const order = orderRes.rows[0];
+
+        // if no record returned, no such order, throw NotFoundError
+        if (!order) throw new NotFoundError(`No order: ${orderId}`);
+
+        // query db to get item
+        const itemRes = await db.query(
+            `SELECT id,
+                    name,
+                    description,
+                    price,
+                    created
+                FROM items
+                WHERE id=$1`,
+            [itemId]
+        );
+        const item = itemRes.rows[0];
+
+        // if no record returned, no such item, throw NotFoundError
+        if (!item) throw new NotFoundError(`No item: ${itemId}`);
+
+        // query db for association
+        const asscRes = await db.query(
+            `SELECT id
+                FROM orders_items
+                WHERE order_id=$1 AND item_id=$2`,
+            [orderId, itemId]
+        );
+        const asscId = asscRes.rows[0].id;
+
+        // if no record returned, no such association, throw NotFoundError
+        if (!asscId)
+            throw new NotFoundError(
+                `Item ${itemId} not associated with order ${orderId}`
+            );
+
+        // query db to delete association
+        const deleted = await db.query(
+            `DELETE FROM orders_items
+                WHERE id=$1`,
+            [asscId]
+        );
+
+        return { msg: "Item removed." };
+    }
+
     static async remove(id) {
         /** Remove an order by id
          * NOTE: This is a logical delete. The record will still remain in the db.

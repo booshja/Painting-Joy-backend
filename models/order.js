@@ -1,5 +1,9 @@
 const db = require("../db");
-const { BadRequestError, NotFoundError } = require("../expressError");
+const {
+    BadRequestError,
+    NotFoundError,
+    ExpressError,
+} = require("../expressError");
 
 class Order {
     /** Order Model */
@@ -73,6 +77,91 @@ class Order {
             ]
         );
         const order = result.rows[0];
+
+        return order;
+    }
+
+    static async addItem(orderId, itemId) {
+        /** Adds an item to an order
+         *
+         * Accepts orderId, itemId
+         *
+         * Returns { id, email, name, street, unit, city, state_code, zipcode, phone,
+         *               transaction_id, status, amount, list_items: [ { id, name,
+         *                  description, price, created }, { id, name, description,
+         *                  price, created }, ...] }
+         *
+         * Throws BadRequestError if no missing orderId or itemId
+         * Throws NotFoundError if no such item
+         */
+        // check for missing / incomplete ids
+        if (!orderId && !itemId) throw new BadRequestError("No input.");
+        if (!orderId || !itemId) throw new BadRequestError("Missing input.");
+
+        // query db to get order
+        const orderRes = await db.query(
+            `SELECT id,
+                    email,
+                    name,
+                    street,
+                    unit,
+                    city,
+                    state_code,
+                    zipcode,
+                    phone,
+                    transaction_id,
+                    status,
+                    amount
+                FROM orders
+                WHERE id=$1`,
+            [orderId]
+        );
+        const order = orderRes.rows[0];
+
+        // if no record returned, no such order, throw NotFoundError
+        if (!order) throw new NotFoundError(`No order: ${orderId}`);
+
+        // query db to get item
+        const itemRes = await db.query(
+            `SELECT id,
+                    name,
+                    description,
+                    price,
+                    created
+                FROM items
+                WHERE id=$1`,
+            [itemId]
+        );
+        const item = itemRes.rows[0];
+
+        // if no record returned, no such item, throw NotFoundError
+        if (!item) throw new NotFoundError(`No item: ${itemId}`);
+
+        // query db to associate item with order
+        const res = await db.query(
+            `INSERT INTO orders_items(order_id, item_id)
+                VALUES($1, $2)
+                RETURNING id`,
+            [orderId, itemId]
+        );
+        const association = res.rows[0];
+
+        // if no association, something went wrong, throw 500 error
+        if (!association) throw new ExpressError("Internal Error", 500);
+
+        // query db for list of all items associated with order
+        const listRes = await db.query(
+            `SELECT i.name, i.description, i.price
+                FROM orders_items oi
+                JOIN items i
+                ON oi.item_id=i.id
+                WHERE oi.order_id=$1`,
+            [orderId]
+        );
+        const list_items = listRes.rows;
+
+        // insert list_items into order object and return
+        order.list_items = list_items;
 
         return order;
     }

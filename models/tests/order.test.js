@@ -27,6 +27,8 @@ beforeAll(async function () {
     );
     testOrderIds.splice(0, 0, ...results.rows.map((row) => row.id));
 
+    await db.query("DELETE FROM items");
+
     const itemsRes = await db.query(
         `INSERT INTO items(name,
                             description,
@@ -40,26 +42,19 @@ beforeAll(async function () {
     );
     testItemIds.splice(0, 0, ...itemsRes.rows.map((row) => row.id));
 
+    await db.query("DELETE FROM orders_items");
+
     await db.query(
         `INSERT INTO orders_items(order_id, item_id)
-            VALUES ($1,$4),
-                    ($1, $7),
-                    ($2, $4),
-                    ($2, $5),
-                    ($2, $7),
-                    ($3, $4),
-                    ($3, $5),
-                    ($3, $6),
-                    ($3, $7)`,
-        [
-            testOrderIds[0],
-            testOrderIds[1],
-            testOrderIds[2],
-            testItemIds[0],
-            testItemIds[1],
-            testItemIds[2],
-            testItemIds[3],
-        ]
+            VALUES (${testOrderIds[0]},${testItemIds[0]}),
+                    (${testOrderIds[0]}, ${testItemIds[3]}),
+                    (${testOrderIds[1]}, ${testItemIds[0]}),
+                    (${testOrderIds[1]}, ${testItemIds[1]}),
+                    (${testOrderIds[1]}, ${testItemIds[3]}),
+                    (${testOrderIds[2]}, ${testItemIds[0]}),
+                    (${testOrderIds[2]}, ${testItemIds[1]}),
+                    (${testOrderIds[2]}, ${testItemIds[2]}),
+                    (${testOrderIds[2]}, ${testItemIds[3]})`
     );
 });
 
@@ -133,6 +128,72 @@ describe("create", () => {
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+});
+
+/***************************************** addItem */
+
+describe("addItem", () => {
+    it("add the item to the order", async () => {
+        const added = await Order.addItem(testOrderIds[0], testItemIds[0]);
+        expect(added).toEqual({
+            id: testOrderIds[0],
+            email: "1@email.com",
+            name: "Tester1",
+            street: "123 Main St",
+            unit: "Apt 1",
+            city: "Seattle",
+            state_code: "WA",
+            zipcode: 99999,
+            phone: "5555555555",
+            transaction_id: "abcd1234",
+            status: "Confirmed",
+            amount: "1299.99",
+            list_items: [
+                {
+                    name: "Item1",
+                    description: "This is item 1.",
+                    price: "10.99",
+                },
+                {
+                    name: "Item4",
+                    description: "This is item 4.",
+                    price: "40.99",
+                },
+                {
+                    name: "Item1",
+                    description: "This is item 1.",
+                    price: "10.99",
+                },
+            ],
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.addItem();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError if missing id", async () => {
+        try {
+            await Order.addItem(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.addItem(-1, -1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
         }
     });
 });

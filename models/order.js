@@ -82,8 +82,10 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { id, email, name, street, unit, city, state_code,
-         *              zipcode, phone, transaction_id, status, amount }
+         * Returns { id, email, name, street, unit, city, state_code,zipcode, phone,
+         *               transaction_id, status, amount, list_items: [ { id, name,
+         *                  description, price, created }, { id, name, description,
+         *                  price, created }, ...] }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
@@ -110,6 +112,19 @@ class Order {
         const order = result.rows[0];
 
         if (!order) throw new NotFoundError(`No order: ${id}`);
+
+        const itemsRes = await db.query(
+            `SELECT i.name, i.description, i.price, i.quantity
+                FROM orders o
+                JOIN orders_items oi
+                ON oi.order_id=o.id
+                JOIN items i
+                ON oi.item_id=i.id
+                WHERE o.id=$1`,
+            [id]
+        );
+
+        order.list_items = itemsRes.rows;
 
         return order;
     }

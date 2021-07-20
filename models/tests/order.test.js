@@ -3,6 +3,7 @@ const db = require("../../db");
 const Order = require("../order");
 
 const testOrderIds = [];
+const testItemIds = [];
 
 beforeAll(async function () {
     await db.query("DELETE FROM orders");
@@ -25,6 +26,41 @@ beforeAll(async function () {
             RETURNING id`
     );
     testOrderIds.splice(0, 0, ...results.rows.map((row) => row.id));
+
+    const itemsRes = await db.query(
+        `INSERT INTO items(name,
+                            description,
+                            price,
+                            quantity)
+            VALUES ('Item1', 'This is item 1.', 10.99, 1),
+                    ('Item2', 'This is item 2.', 20.99, 2),
+                    ('Item3', 'This is item 3.', 30.99, 3),
+                    ('Item4', 'This is item 4.', 40.99, 4)
+            RETURNING id`
+    );
+    testItemIds.splice(0, 0, ...itemsRes.rows.map((row) => row.id));
+
+    await db.query(
+        `INSERT INTO orders_items(order_id, item_id)
+            VALUES ($1,$4),
+                    ($1, $7),
+                    ($2, $4),
+                    ($2, $5),
+                    ($2, $7),
+                    ($3, $4),
+                    ($3, $5),
+                    ($3, $6),
+                    ($3, $7)`,
+        [
+            testOrderIds[0],
+            testOrderIds[1],
+            testOrderIds[2],
+            testItemIds[0],
+            testItemIds[1],
+            testItemIds[2],
+            testItemIds[3],
+        ]
+    );
 });
 
 beforeEach(async function () {
@@ -119,6 +155,20 @@ describe("get", () => {
             transaction_id: "abcd1234",
             status: "Confirmed",
             amount: "1299.99",
+            list_items: [
+                {
+                    name: "Item1",
+                    description: "This is item 1.",
+                    price: "10.99",
+                    quantity: 1,
+                },
+                {
+                    name: "Item4",
+                    description: "This is item 4.",
+                    price: "40.99",
+                    quantity: 4,
+                },
+            ],
         });
     });
 

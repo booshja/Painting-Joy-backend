@@ -415,10 +415,18 @@ describe("markCompleted", () => {
 
 describe("removeItem", () => {
     it("removes item from order by order_id and item_id", async () => {
-        const removed = await Order.removeItem(testOrderIds[0], testItemIds[0]);
+        const removed = await Order.removeItem(testOrderIds[1], testItemIds[0]);
         expect(removed).toEqual({
             msg: "Item removed.",
         });
+
+        const res = await db.query(
+            `SELECT id
+                FROM orders_items
+                WHERE order_id=$1`,
+            [testOrderIds[1]]
+        );
+        expect(res.rows.length).toEqual(2);
     });
 
     it("throws BadRequestError if no ids", async () => {

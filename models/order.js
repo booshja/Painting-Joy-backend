@@ -4,14 +4,17 @@ const { BadRequestError, NotFoundError } = require("../expressError");
 class Order {
     /** Order Model */
 
-    static async create(data) {
-        /** Create an order (from data), update db, return new order data
+    static async create(data, ids = []) {
+        /** Create an order (from data and (optionally), an array of item ids),
+         *      update db, return new order data
          *
-         * Data should be: { email, name, street, unit, city, state_code,
+         * Accepts data, ids (optional)
+         * data should be: { email, name, street, unit, city, state_code,
          *                  zipcode, phone, transaction_id, status, amount }
+         * ids should be: an array of (existing) item ids to add to order
          *
          * Returns { id, email, name, street, unit, city, state_code,
-         *              zipcode, phone, transaction_id, status, amount }
+         *              zipcode, phone, transaction_id, status, amount, list_items }
          *
          * Throws BadRequestError if incomplete or no data
          */
@@ -74,6 +77,135 @@ class Order {
         );
         const order = result.rows[0];
 
+        // if there are ids in the ids array, add each relation in the db
+        if (ids.length > 0) {
+            const errors = [];
+
+            // loop through array and try to add items to order
+            for (let i = 0; i < ids.length; i++) {
+                try {
+                    // query db to create relation
+                    await db.query(
+                        `INSERT INTO orders_items(order_id, item_id)
+                            VALUES($1, $2)`,
+                        [order.id, ids[i]]
+                    );
+                } catch (err) {
+                    // push id into errors array
+                    errors.push(ids[i]);
+                }
+            }
+
+            // if there are errors accumulated, throw BadRequestError
+            if (errors.length > 0) {
+                throw new BadRequestError(
+                    `Invalid item id(s): ${errors.join(
+                        ", "
+                    )}. Item(s) not added.`
+                );
+            }
+        }
+
+        // query db for all items associated with order
+        const listRes = await db.query(
+            `SELECT i.id,
+                    i.name,
+                    i.description,
+                    i.price,
+                    i.quantity,
+                    i.created,
+                    i.is_sold AS "isSold"
+                FROM orders_items oi
+                JOIN items i
+                ON oi.item_id=i.id
+                WHERE oi.order_id=$1`,
+            [order.id]
+        );
+        const list_items = listRes.rows;
+
+        // add list of items associated to order object
+        order.list_items = list_items;
+
+        return order;
+    }
+
+    static async addItem(orderId, itemId) {
+        /** Adds an item to an order
+         *
+         * Accepts orderId, itemId
+         *
+         * Returns { id, email, name, street, unit, city, state_code, zipcode, phone,
+         *               transaction_id, status, amount, list_items: [ { id, name,
+         *                  description, price, created }, { id, name, description,
+         *                  price, created }, ...] }
+         *
+         * Throws BadRequestError if no missing orderId or itemId
+         * Throws NotFoundError if no such item
+         */
+        // check for missing / incomplete ids
+        if (!orderId && !itemId) throw new BadRequestError("No input.");
+        if (!orderId || !itemId) throw new BadRequestError("Missing input.");
+
+        // query db to get order
+        const orderRes = await db.query(
+            `SELECT id,
+                    email,
+                    name,
+                    street,
+                    unit,
+                    city,
+                    state_code,
+                    zipcode,
+                    phone,
+                    transaction_id,
+                    status,
+                    amount
+                FROM orders
+                WHERE id=$1`,
+            [orderId]
+        );
+        const order = orderRes.rows[0];
+
+        // if no record returned, no such order, throw NotFoundError
+        if (!order) throw new NotFoundError(`No order: ${orderId}`);
+
+        // query db to get item
+        const itemRes = await db.query(
+            `SELECT id,
+                    name,
+                    description,
+                    price,
+                    created
+                FROM items
+                WHERE id=$1`,
+            [itemId]
+        );
+        const item = itemRes.rows[0];
+
+        // if no record returned, no such item, throw NotFoundError
+        if (!item) throw new NotFoundError(`No item: ${itemId}`);
+
+        // query db to associate item with order
+        await db.query(
+            `INSERT INTO orders_items(order_id, item_id)
+                VALUES($1, $2)`,
+            [orderId, itemId]
+        );
+
+        // query db for list of all items associated with order
+        const listRes = await db.query(
+            `SELECT i.name, i.description, i.price
+                FROM orders_items oi
+                JOIN items i
+                ON oi.item_id=i.id
+                WHERE oi.order_id=$1`,
+            [orderId]
+        );
+        const list_items = listRes.rows;
+
+        // insert list_items into order object and return
+        order.list_items = list_items;
+
         return order;
     }
 
@@ -82,8 +214,10 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { id, email, name, street, unit, city, state_code,
-         *              zipcode, phone, transaction_id, status, amount }
+         * Returns { id, email, name, street, unit, city, state_code,zipcode, phone,
+         *               transaction_id, status, amount, list_items: [ { id, name,
+         *                  description, price, created }, { id, name, description,
+         *                  price, created }, ...] }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
@@ -110,6 +244,17 @@ class Order {
         const order = result.rows[0];
 
         if (!order) throw new NotFoundError(`No order: ${id}`);
+
+        const itemsRes = await db.query(
+            `SELECT i.name, i.description, i.price, i.quantity
+                FROM orders_items oi
+                JOIN items i
+                ON oi.item_id=i.id
+                WHERE oi.order_id=$1`,
+            [id]
+        );
+
+        order.list_items = itemsRes.rows;
 
         return order;
     }
@@ -251,6 +396,84 @@ class Order {
         if (!order) throw new NotFoundError(`No order: ${id}`);
 
         return order;
+    }
+
+    static async removeItem(orderId, itemId) {
+        /** Remove an item from an order
+         *
+         * Accepts orderId, itemId
+         *
+         * Returns { msg: "Item removed." }
+         *
+         * Throws BadRequestError if missing id(s)
+         * Throws NotFoundError if order, item, or relationship not found
+         */
+        //check for missing / incomplete ids
+        if (!orderId && !itemId) throw new BadRequestError("No input");
+        if (!orderId || !itemId) throw new BadRequestError("Missing input");
+
+        // query db to get order
+        const orderRes = await db.query(
+            `SELECT id,
+                    email,
+                    name,
+                    street,
+                    unit,
+                    city,
+                    state_code,
+                    zipcode,
+                    phone,
+                    transaction_id,
+                    status,
+                    amount
+                FROM orders
+                WHERE id=$1`,
+            [orderId]
+        );
+        const order = orderRes.rows[0];
+
+        // if no record returned, no such order, throw NotFoundError
+        if (!order) throw new NotFoundError(`No order: ${orderId}`);
+
+        // query db to get item
+        const itemRes = await db.query(
+            `SELECT id,
+                    name,
+                    description,
+                    price,
+                    created
+                FROM items
+                WHERE id=$1`,
+            [itemId]
+        );
+        const item = itemRes.rows[0];
+
+        // if no record returned, no such item, throw NotFoundError
+        if (!item) throw new NotFoundError(`No item: ${itemId}`);
+
+        // query db for association
+        const asscRes = await db.query(
+            `SELECT id
+                FROM orders_items
+                WHERE order_id=$1 AND item_id=$2`,
+            [orderId, itemId]
+        );
+        const asscId = asscRes.rows[0];
+
+        // if no record returned, no such association, throw NotFoundError
+        if (!asscId)
+            throw new NotFoundError(
+                `Item ${itemId} not associated with order ${orderId}`
+            );
+
+        // query db to delete association
+        const deleted = await db.query(
+            `DELETE FROM orders_items
+                WHERE id=$1`,
+            [asscId.id]
+        );
+
+        return { msg: "Item removed." };
     }
 
     static async remove(id) {

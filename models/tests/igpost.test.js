@@ -85,7 +85,6 @@ describe("get", () => {
             await IGPost.get("no");
             fail();
         } catch (err) {
-            console.log(err);
             expect(err instanceof NotFoundError).toBeTruthy();
         }
     });
@@ -95,7 +94,6 @@ describe("get", () => {
             await IGPost.get();
             fail();
         } catch (err) {
-            console.log(err);
             expect(err instanceof BadRequestError).toBeTruthy();
         }
     });

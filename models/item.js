@@ -180,6 +180,81 @@ class Item {
         return item;
     }
 
+    static async sell(id) {
+        /** Decrease quantity of an item by id
+         * Updates is_sold to true if item quantity is decreased to 0
+         *
+         * Accepts id
+         *
+         * Returns { id, name, price, quantity, created, isSold }
+         *
+         * Throws BadRequestError if no id
+         * Throws NotFoundError if item not found
+         * Throws BadRequestError if item already sold out
+         */
+        // check for missing input
+        if (!id) throw new BadRequestError("No input.");
+
+        // query db for item
+        const result = await db.query(
+            `SELECT id,
+                    name,
+                    price,
+                    quantity,
+                    created,
+                    is_sold AS "isSold"
+                FROM items
+                WHERE id=$1`,
+            [id]
+        );
+        const item = result.rows[0];
+
+        // if no record returned, no such item, throw NotFoundError
+        if (!item) throw new NotFoundError(`No item: ${id}`);
+
+        // if item sold out, throw BadRequestError
+        if (item.isSold) throw new BadRequestError(`Item ${id} sold out.`);
+
+        // decrease amount of quantity
+        item.quantity = item.quantity - 1;
+
+        // if quantity now 0, update isSold to true
+        let updateRes;
+        if (item.quantity === 0) {
+            item.isSold = true;
+
+            // query db to update item
+            updateRes = await db.query(
+                `UPDATE items
+                    SET quantity=0, is_sold=true
+                    WHERE id=$1
+                    RETURNING id,
+                            name,
+                            price,
+                            quantity,
+                            created,
+                            is_sold AS "isSold"`,
+                [id]
+            );
+        } else {
+            // query db to update item
+            updateRes = await db.query(
+                `UPDATE items
+                    SET quantity=$1
+                    WHERE id=$2
+                    RETURNING id,
+                            name,
+                            price,
+                            quantity,
+                            created,
+                            is_sold AS "isSold"`,
+                [item.quantity, id]
+            );
+        }
+
+        return updateRes.rows[0];
+    }
+
     static async markSold(id) {
         /** Mark item as sold by id
          *

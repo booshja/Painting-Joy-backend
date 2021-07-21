@@ -279,6 +279,74 @@ describe("update", () => {
     });
 });
 
+/**************************************** sell */
+
+describe("sell", () => {
+    it("decreases the quantity of an item with 2+ quantity", async () => {
+        const decreased = await Item.sell(testItemIds[1]);
+        expect(decreased).toEqual({
+            id: testItemIds[1],
+            name: "Item2",
+            price: "199.99",
+            quantity: 1,
+            created: expect.any(Date),
+            isSold: false,
+        });
+    });
+
+    it("decreases quantity to 0 and changes isSold to true", async () => {
+        const sellingOut = await Item.sell(testItemIds[0]);
+        expect(sellingOut).toEqual({
+            id: testItemIds[0],
+            name: "Item1",
+            price: "99.99",
+            quantity: 0,
+            created: expect.any(Date),
+            isSold: true,
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Item.sell();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if item not found", async () => {
+        try {
+            await Item.sell(-1);
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError if item already sold out", async () => {
+        const soldRes = await db.query(
+            `INSERT INTO items (name,
+                                description,
+                                price,
+                                quantity,
+                                is_sold)
+                VALUES ('SoldOutItem',
+                        'This item has none!',
+                        1000.99, 0,
+                        true)
+                RETURNING id`
+        );
+        const soldOut = soldRes.rows[0];
+
+        try {
+            await Item.sell(soldOut.id);
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+});
+
 /************************************ markSold */
 
 describe("markSold", () => {

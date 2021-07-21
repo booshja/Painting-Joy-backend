@@ -103,8 +103,6 @@ class Message {
                 WHERE is_archived = false`
         );
 
-        console.log(JSON.stringify(result.rows));
-
         return result.rows;
     }
 

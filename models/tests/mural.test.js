@@ -51,7 +51,7 @@ describe("create", () => {
 
     it("throws BadRequestError if no data", async () => {
         try {
-            await Mural.create({});
+            await Mural.create();
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();

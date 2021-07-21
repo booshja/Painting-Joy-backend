@@ -146,9 +146,6 @@ class Order {
         );
         const association = res.rows[0];
 
-        // if no association, something went wrong, throw 500 error
-        if (!association) throw new ExpressError("Internal Error", 500);
-
         // query db for list of all items associated with order
         const listRes = await db.query(
             `SELECT i.name, i.description, i.price
@@ -415,7 +412,7 @@ class Order {
                 WHERE order_id=$1 AND item_id=$2`,
             [orderId, itemId]
         );
-        const asscId = asscRes.rows[0].id;
+        const asscId = asscRes.rows[0];
 
         // if no record returned, no such association, throw NotFoundError
         if (!asscId)
@@ -427,7 +424,7 @@ class Order {
         const deleted = await db.query(
             `DELETE FROM orders_items
                 WHERE id=$1`,
-            [asscId]
+            [asscId.id]
         );
 
         return { msg: "Item removed." };

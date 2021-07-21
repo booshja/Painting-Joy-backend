@@ -107,7 +107,7 @@ describe("create", () => {
 
     it("throws BadRequestError if no data", async () => {
         try {
-            await Order.create({});
+            await Order.create();
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();
@@ -191,6 +191,15 @@ describe("addItem", () => {
     it("throws NotFoundError if order not found", async () => {
         try {
             await Order.addItem(-1, -1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if item not found", async () => {
+        try {
+            await Order.addItem(testOrderIds[0], -1);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();
@@ -459,6 +468,15 @@ describe("removeItem", () => {
     it("throws NotFoundError if item not found", async () => {
         try {
             await Order.removeItem(testOrderIds[1], -1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if association not found", async () => {
+        try {
+            await Order.removeItem(testOrderIds[1], testItemIds[2]);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();

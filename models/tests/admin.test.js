@@ -225,7 +225,6 @@ describe("authenticateSecretAnswer", () => {
             await Admin.authenticateSecretAnswer("testadmin1", "Idk!");
             fail();
         } catch (err) {
-            console.log(err);
             expect(err instanceof UnauthorizedError).toBeTruthy();
         }
     });

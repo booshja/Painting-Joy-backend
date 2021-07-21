@@ -78,12 +78,26 @@ class Order {
 
         // if there are ids in the ids array, add each relation in the db
         if (ids.length > 0) {
+            const errors = [];
+
             for (let i = 0; i < ids.length; i++) {
-                // query db to create relation
-                const res = await db.query(
-                    `INSERT INTO orders_items(order_id, item_id)
-                        VALUES($1, $2)`,
-                    [order.id, ids[i]]
+                try {
+                    // query db to create relation
+                    await db.query(
+                        `INSERT INTO orders_items(order_id, item_id)
+                            VALUES($1, $2)`,
+                        [order.id, ids[i]]
+                    );
+                } catch (err) {
+                    errors.push(ids[i]);
+                }
+            }
+
+            if (errors.length > 0) {
+                throw new BadRequestError(
+                    `Invalid item id(s): ${errors.join(
+                        ", "
+                    )}. Item(s) not added.`
                 );
             }
         }

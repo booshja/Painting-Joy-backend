@@ -176,6 +176,29 @@ describe("create", () => {
         });
     });
 
+    it("throws BadRequestError with an invalid item id", async () => {
+        const newOrder = {
+            email: "99@email.com",
+            name: "Tester99",
+            street: "99 Main St",
+            unit: "Apt 99",
+            city: "Seattle",
+            state_code: "WA",
+            zipcode: 98789,
+            phone: 1111111111,
+            transaction_id: "1234abcd",
+            status: "Confirmed",
+            amount: 9999.99,
+        };
+
+        try {
+            await Order.create(newOrder, [-1]);
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
     it("throws BadRequestError if no data", async () => {
         try {
             await Order.create();

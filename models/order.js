@@ -5,15 +5,16 @@ class Order {
     /** Order Model */
 
     static async create(data, ids = []) {
-        /** Create an order (from data), update db, return new order data
+        /** Create an order (from data and (optionally), an array of item ids),
+         *      update db, return new order data
          *
          * Accepts data, ids (optional)
          * data should be: { email, name, street, unit, city, state_code,
          *                  zipcode, phone, transaction_id, status, amount }
-         * ids should be: an array of item ids to add to order
+         * ids should be: an array of (existing) item ids to add to order
          *
          * Returns { id, email, name, street, unit, city, state_code,
-         *              zipcode, phone, transaction_id, status, amount }
+         *              zipcode, phone, transaction_id, status, amount, list_items }
          *
          * Throws BadRequestError if incomplete or no data
          */
@@ -80,6 +81,7 @@ class Order {
         if (ids.length > 0) {
             const errors = [];
 
+            // loop through array and try to add items to order
             for (let i = 0; i < ids.length; i++) {
                 try {
                     // query db to create relation
@@ -89,10 +91,12 @@ class Order {
                         [order.id, ids[i]]
                     );
                 } catch (err) {
+                    // push id into errors array
                     errors.push(ids[i]);
                 }
             }
 
+            // if there are errors accumulated, throw BadRequestError
             if (errors.length > 0) {
                 throw new BadRequestError(
                     `Invalid item id(s): ${errors.join(

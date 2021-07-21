@@ -283,21 +283,11 @@ describe("update", () => {
 
 describe("sell", () => {
     it("decreases the quantity of an item with 2+ quantity", async () => {
-        const multipleRes = await db.query(
-            `INSERT INTO items (name,
-                                description,
-                                price,
-                                quantity)
-                VALUES ('MultipleItem', 'This item has multiple!', 100.99, 2)
-                RETURNING id`
-        );
-        const multipleQty = multipleRes.rows[0];
-
-        const decreased = await Item.sell(multipleQty.id);
+        const decreased = await Item.sell(testItemIds[1]);
         expect(decreased).toEqual({
-            id: multipleQty.id,
-            name: "MultipleItem",
-            price: "100.99",
+            id: testItemIds[1],
+            name: "Item2",
+            price: "199.99",
             quantity: 1,
             created: expect.any(Date),
             isSold: false,

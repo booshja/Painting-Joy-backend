@@ -1,18 +1,16 @@
 const db = require("../db");
-const {
-    BadRequestError,
-    NotFoundError,
-    ExpressError,
-} = require("../expressError");
+const { BadRequestError, NotFoundError } = require("../expressError");
 
 class Order {
     /** Order Model */
 
-    static async create(data) {
+    static async create(data, ids = []) {
         /** Create an order (from data), update db, return new order data
          *
-         * Data should be: { email, name, street, unit, city, state_code,
+         * Accepts data, ids (optional)
+         * data should be: { email, name, street, unit, city, state_code,
          *                  zipcode, phone, transaction_id, status, amount }
+         * ids should be: an array of item ids to add to order
          *
          * Returns { id, email, name, street, unit, city, state_code,
          *              zipcode, phone, transaction_id, status, amount }
@@ -78,6 +76,38 @@ class Order {
         );
         const order = result.rows[0];
 
+        // if there are ids in the ids array, add each relation in the db
+        if (ids.length > 0) {
+            for (let i = 0; i < ids.length; i++) {
+                // query db to create relation
+                const res = await db.query(
+                    `INSERT INTO orders_items(order_id, item_id)
+                        VALUES($1, $2)`,
+                    [order.id, ids[i]]
+                );
+            }
+        }
+
+        // query db for all items associated with order
+        const listRes = await db.query(
+            `SELECT i.id,
+                    i.name,
+                    i.description,
+                    i.price,
+                    i.quantity,
+                    i.created,
+                    i.is_sold AS "isSold"
+                FROM orders_items oi
+                JOIN items i
+                ON oi.item_id=i.id
+                WHERE oi.order_id=$1`,
+            [order.id]
+        );
+        const list_items = listRes.rows;
+
+        // add list of items associated to order object
+        order.list_items = list_items;
+
         return order;
     }
 
@@ -138,13 +168,11 @@ class Order {
         if (!item) throw new NotFoundError(`No item: ${itemId}`);
 
         // query db to associate item with order
-        const res = await db.query(
+        await db.query(
             `INSERT INTO orders_items(order_id, item_id)
-                VALUES($1, $2)
-                RETURNING id`,
+                VALUES($1, $2)`,
             [orderId, itemId]
         );
-        const association = res.rows[0];
 
         // query db for list of all items associated with order
         const listRes = await db.query(

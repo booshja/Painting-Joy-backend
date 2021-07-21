@@ -73,7 +73,7 @@ afterAll(async function () {
 /************************************** create */
 
 describe("create", () => {
-    it("creates a new order", async () => {
+    it("creates a new order with no item ids", async () => {
         const newOrder = {
             email: "99@email.com",
             name: "Tester99",
@@ -102,6 +102,77 @@ describe("create", () => {
             transaction_id: "1234abcd",
             status: "Confirmed",
             amount: "9999.99",
+            list_items: [],
+        });
+    });
+
+    it("creates a new order with item ids", async () => {
+        const newOrder = {
+            email: "99@email.com",
+            name: "Tester99",
+            street: "99 Main St",
+            unit: "Apt 99",
+            city: "Seattle",
+            state_code: "WA",
+            zipcode: 98789,
+            phone: 1111111111,
+            transaction_id: "1234abcd",
+            status: "Confirmed",
+            amount: 9999.99,
+        };
+
+        const order = await Order.create(newOrder, testItemIds);
+        expect(order).toEqual({
+            id: expect.any(Number),
+            email: "99@email.com",
+            name: "Tester99",
+            street: "99 Main St",
+            unit: "Apt 99",
+            city: "Seattle",
+            state_code: "WA",
+            zipcode: 98789,
+            phone: "1111111111",
+            transaction_id: "1234abcd",
+            status: "Confirmed",
+            amount: "9999.99",
+            list_items: [
+                {
+                    id: testItemIds[0],
+                    name: "Item1",
+                    description: "This is item 1.",
+                    price: "10.99",
+                    quantity: 1,
+                    created: expect.any(Date),
+                    isSold: false,
+                },
+                {
+                    id: testItemIds[1],
+                    name: "Item2",
+                    description: "This is item 2.",
+                    price: "20.99",
+                    quantity: 2,
+                    created: expect.any(Date),
+                    isSold: false,
+                },
+                {
+                    id: testItemIds[2],
+                    name: "Item3",
+                    description: "This is item 3.",
+                    price: "30.99",
+                    quantity: 3,
+                    created: expect.any(Date),
+                    isSold: false,
+                },
+                {
+                    id: testItemIds[3],
+                    name: "Item4",
+                    description: "This is item 4.",
+                    price: "40.99",
+                    quantity: 4,
+                    created: expect.any(Date),
+                    isSold: false,
+                },
+            ],
         });
     });
 

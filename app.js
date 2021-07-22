@@ -1,18 +1,23 @@
 const express = require("express");
 const cors = require("cors");
-const morgan = require("morgan");
+
 const { NotFoundError } = require("./expressError");
 
+// const { authenticateJWT } = require("./middleware/auth");
 const homepageRoutes = require("./routes/homepage");
-const adminRoutes = require("./routes/admin");
+// const adminRoutes = require("./routes/admin");
+
+const morgan = require("morgan");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(morgan("common"));
+// app.use(authenticateJWT);
 
-// app.use("/homepage", homepageRoutes);
+app.use("/homepage", homepageRoutes);
+// app.use("/auth", authRoutes)
 // app.use("/admin", adminRoutes);
 
 /** Handle 404 Errors */

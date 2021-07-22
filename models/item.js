@@ -271,7 +271,7 @@ class Item {
         // query db to update is_sold status to true
         const result = await db.query(
             `UPDATE items
-                SET is_sold = true
+                SET is_sold = true, quantity = 0
                 WHERE id=$1
                 RETURNING id,
                         name,

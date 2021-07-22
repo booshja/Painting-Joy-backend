@@ -13,22 +13,28 @@ The back end of a web app that is part Art Portfolio, part E-commerce, part cust
 
 ## **Environmental Variables**:
 
-This app uses the following environmental variables that you will need in order to run the app
-| ENV | Value |
-| --------------------- | --------------------------------------------------------- |
-| `DATABASE_URI` | Postgres URI |
-| `PORT` | Port the server listens on |
-| `ADMIN_KEY` | Value referencing the current user for session |
-| `SECRET_KEY` | Secret key |
-| `NODE_ENV` | Whether the app is in production, developement, or testing |
-| `BCRYPT_WORK_FACTOR` | # of rounds of encryption for Bcrypt to use |
+This app uses the following environmental variables that you will need in order to run the app:
+
+| ENV                  | Value                                                      |
+| -------------------- | ---------------------------------------------------------- |
+| `DATABASE_URI`       | Postgres URI                                               |
+| `PORT`               | Port the server listens on                                 |
+| `ADMIN_KEY`          | Value referencing the current user for session             |
+| `SECRET_KEY`         | Secret key                                                 |
+| `NODE_ENV`           | Whether the app is in production, developement, or testing |
+| `BCRYPT_WORK_FACTOR` | # of rounds of encryption for Bcrypt to use                |
 
 <hr>
 <br>
 
 ## **Testing**:
 
-This app uses React Testing Library for Smoke and Snapshot Tests, and Jest for unit testing. Tests can be run using `npm test`
+This app uses Jest and Supertest for testing. Tests can be run using:
+
+```js
+npm i
+npm test
+```
 
 <hr>
 <br>
@@ -53,7 +59,7 @@ _Custom CMS_: Custom CMS Routes for the artist to manage their posts, homepage, 
 
 <hr>
 
-## **APIs**:
+## **External APIs**:
 
 1. [Stripe API](https://api.setlist.fm/docs/1.0/index.html)
     - Process payments for the web store
@@ -66,7 +72,7 @@ _Custom CMS_: Custom CMS Routes for the artist to manage their posts, homepage, 
 -   JavaScript
 -   [Node.js](https://nodejs.org/)
 -   [Express](https://expressjs.com/)
-    -   [node-postgres](https://node-postgres.com/)
+    -   [node-pg](https://node-postgres.com/)
     -   [Jest](https://jestjs.io/)
     -   [SuperTest](https://github.com/visionmedia/supertest#readme)
 -   [PostgreSQL](https://www.postgresql.org/)

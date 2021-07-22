@@ -80,10 +80,10 @@ describe("create", () => {
             street: "99 Main St",
             unit: "Apt 99",
             city: "Seattle",
-            state_code: "WA",
+            stateCode: "WA",
             zipcode: 98789,
             phone: 1111111111,
-            transaction_id: "1234abcd",
+            transactionId: "1234abcd",
             status: "Confirmed",
             amount: 9999.99,
         };
@@ -96,13 +96,13 @@ describe("create", () => {
             street: "99 Main St",
             unit: "Apt 99",
             city: "Seattle",
-            state_code: "WA",
+            stateCode: "WA",
             zipcode: 98789,
             phone: "1111111111",
-            transaction_id: "1234abcd",
+            transactionId: "1234abcd",
             status: "Confirmed",
             amount: "9999.99",
-            list_items: [],
+            listItems: [],
         });
     });
 
@@ -113,10 +113,10 @@ describe("create", () => {
             street: "99 Main St",
             unit: "Apt 99",
             city: "Seattle",
-            state_code: "WA",
+            stateCode: "WA",
             zipcode: 98789,
             phone: 1111111111,
-            transaction_id: "1234abcd",
+            transactionId: "1234abcd",
             status: "Confirmed",
             amount: 9999.99,
         };
@@ -129,13 +129,13 @@ describe("create", () => {
             street: "99 Main St",
             unit: "Apt 99",
             city: "Seattle",
-            state_code: "WA",
+            stateCode: "WA",
             zipcode: 98789,
             phone: "1111111111",
-            transaction_id: "1234abcd",
+            transactionId: "1234abcd",
             status: "Confirmed",
             amount: "9999.99",
-            list_items: [
+            listItems: [
                 {
                     id: testItemIds[0],
                     name: "Item1",
@@ -183,10 +183,10 @@ describe("create", () => {
             street: "99 Main St",
             unit: "Apt 99",
             city: "Seattle",
-            state_code: "WA",
+            stateCode: "WA",
             zipcode: 98789,
             phone: 1111111111,
-            transaction_id: "1234abcd",
+            transactionId: "1234abcd",
             status: "Confirmed",
             amount: 9999.99,
         };
@@ -216,7 +216,7 @@ describe("create", () => {
                 street: "123 Main St",
                 unit: "Apt 1",
                 city: "Seattle",
-                state_code: "WA",
+                stateCode: "WA",
                 zipcode: "99999",
             });
             fail();
@@ -238,13 +238,13 @@ describe("addItem", () => {
             street: "123 Main St",
             unit: "Apt 1",
             city: "Seattle",
-            state_code: "WA",
+            stateCode: "WA",
             zipcode: 99999,
             phone: "5555555555",
-            transaction_id: "abcd1234",
+            transactionId: "abcd1234",
             status: "Confirmed",
             amount: "1299.99",
-            list_items: [
+            listItems: [
                 {
                     name: "Item1",
                     description: "This is item 1.",
@@ -313,13 +313,13 @@ describe("get", () => {
             street: "123 Main St",
             unit: "Apt 1",
             city: "Seattle",
-            state_code: "WA",
+            stateCode: "WA",
             zipcode: 99999,
             phone: "5555555555",
-            transaction_id: "abcd1234",
+            transactionId: "abcd1234",
             status: "Confirmed",
             amount: "1299.99",
-            list_items: [
+            listItems: [
                 {
                     name: "Item1",
                     description: "This is item 1.",
@@ -368,10 +368,10 @@ describe("getAll", () => {
                 street: "123 Main St",
                 unit: "Apt 1",
                 city: "Seattle",
-                state_code: "WA",
+                stateCode: "WA",
                 zipcode: 99999,
                 phone: "5555555555",
-                transaction_id: "abcd1234",
+                transactionId: "abcd1234",
                 status: "Confirmed",
                 amount: "1299.99",
             },
@@ -382,10 +382,10 @@ describe("getAll", () => {
                 street: "456 State St",
                 unit: null,
                 city: "Boston",
-                state_code: "MA",
+                stateCode: "MA",
                 zipcode: 88888,
                 phone: "6666666666",
-                transaction_id: "efgh5678",
+                transactionId: "efgh5678",
                 status: "Shipped",
                 amount: "2499.99",
             },
@@ -396,41 +396,14 @@ describe("getAll", () => {
                 street: "789 University St",
                 unit: "Unit 3420",
                 city: "Austin",
-                state_code: "TX",
+                stateCode: "TX",
                 zipcode: 77777,
                 phone: "7777777777",
-                transaction_id: "ijkl1234",
+                transactionId: "ijkl1234",
                 status: "Completed",
                 amount: "3699.99",
             },
         ]);
-    });
-});
-
-/************************************ getEmail */
-
-describe("getEmail", () => {
-    it("returns the email attached to the order by id", async () => {
-        const email = await Order.getEmail(testOrderIds[0]);
-        expect(email).toEqual({ email: "1@email.com" });
-    });
-
-    it("throws BadRequestError if no id", async () => {
-        try {
-            await Order.getEmail();
-            fail();
-        } catch (err) {
-            expect(err instanceof BadRequestError).toBeTruthy();
-        }
-    });
-
-    it("throws NotFoundError if order not found", async () => {
-        try {
-            await Order.getEmail(-1);
-            fail();
-        } catch (err) {
-            expect(err instanceof NotFoundError).toBeTruthy();
-        }
     });
 });
 
@@ -446,10 +419,10 @@ describe("markShipped", () => {
             street: "123 Main St",
             unit: "Apt 1",
             city: "Seattle",
-            state_code: "WA",
+            stateCode: "WA",
             zipcode: 99999,
             phone: "5555555555",
-            transaction_id: "abcd1234",
+            transactionId: "abcd1234",
             status: "Shipped",
             amount: "1299.99",
         });
@@ -486,10 +459,10 @@ describe("markCompleted", () => {
             street: "123 Main St",
             unit: "Apt 1",
             city: "Seattle",
-            state_code: "WA",
+            stateCode: "WA",
             zipcode: 99999,
             phone: "5555555555",
-            transaction_id: "abcd1234",
+            transactionId: "abcd1234",
             status: "Completed",
             amount: "1299.99",
         });

@@ -12,7 +12,7 @@ router.post("/", async (req, res, next) => {
      *
      * message should be { name, email, message }
      *
-     * Returns { id, name, email, message, received }
+     * Returns { id, name, email, message, received, isArchived }
      *
      * Authorization required: none
      */

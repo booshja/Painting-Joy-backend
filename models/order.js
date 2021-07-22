@@ -288,34 +288,6 @@ class Order {
         return result.rows;
     }
 
-    static async getEmail(id) {
-        /** Get customer's email from order by id
-         *
-         * Accepts id
-         *
-         * Returns { email: "example@email.com" }
-         *
-         * Throws BadRequestError if no id
-         * Throws NotFoundError if no such order
-         */
-        // check for missing input
-        if (!id) throw new BadRequestError("No id provided.");
-
-        // query db to get email
-        const result = await db.query(
-            `SELECT email
-                FROM orders
-                WHERE id=$1`,
-            [id]
-        );
-        const email = result.rows[0];
-
-        // if no record returned, no order found, throw NotFoundError
-        if (!email) throw new NotFoundError(`No order found: ${id}`);
-
-        return email;
-    }
-
     static async markShipped(id) {
         /** Update order status to shipped
          *

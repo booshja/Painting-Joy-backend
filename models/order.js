@@ -9,12 +9,12 @@ class Order {
          *      update db, return new order data
          *
          * Accepts data, ids (optional)
-         * data should be: { email, name, street, unit, city, state_code,
-         *                  zipcode, phone, transaction_id, status, amount }
+         * data should be: { email, name, street, unit, city, stateCode,
+         *                  zipcode, phone, transactionId, status, amount }
          * ids should be: an array of (existing) item ids to add to order
          *
-         * Returns { id, email, name, street, unit, city, state_code,
-         *              zipcode, phone, transaction_id, status, amount, list_items }
+         * Returns { id, email, name, street, unit, city, stateCode,
+         *              zipcode, phone, transactionId, status, amount, listItems }
          *
          * Throws BadRequestError if incomplete or no data
          */
@@ -26,10 +26,10 @@ class Order {
             !data.street ||
             !data.unit ||
             !data.city ||
-            !data.state_code ||
+            !data.stateCode ||
             !data.zipcode ||
             !data.phone ||
-            !data.transaction_id ||
+            !data.transactionId ||
             !data.status ||
             !data.amount
         )
@@ -55,10 +55,10 @@ class Order {
                         street,
                         unit,
                         city,
-                        state_code,
+                        state_code AS "stateCode",
                         zipcode,
                         phone,
-                        transaction_id,
+                        transaction_id AS "transactionId",
                         status,
                         amount`,
             [
@@ -67,10 +67,10 @@ class Order {
                 data.street,
                 data.unit,
                 data.city,
-                data.state_code,
+                data.stateCode,
                 data.zipcode,
                 data.phone,
-                data.transaction_id,
+                data.transactionId,
                 data.status,
                 data.amount,
             ]
@@ -121,10 +121,10 @@ class Order {
                 WHERE oi.order_id=$1`,
             [order.id]
         );
-        const list_items = listRes.rows;
+        const listItems = listRes.rows;
 
         // add list of items associated to order object
-        order.list_items = list_items;
+        order.listItems = listItems;
 
         return order;
     }
@@ -134,8 +134,8 @@ class Order {
          *
          * Accepts orderId, itemId
          *
-         * Returns { id, email, name, street, unit, city, state_code, zipcode, phone,
-         *               transaction_id, status, amount, list_items: [ { id, name,
+         * Returns { id, email, name, street, unit, city, stateCode, zipcode, phone,
+         *               transactionId, status, amount, listItems: [ { id, name,
          *                  description, price, created }, { id, name, description,
          *                  price, created }, ...] }
          *
@@ -154,10 +154,10 @@ class Order {
                     street,
                     unit,
                     city,
-                    state_code,
+                    state_code as "stateCode",
                     zipcode,
                     phone,
-                    transaction_id,
+                    transaction_id AS "transactionId",
                     status,
                     amount
                 FROM orders
@@ -201,10 +201,10 @@ class Order {
                 WHERE oi.order_id=$1`,
             [orderId]
         );
-        const list_items = listRes.rows;
+        const listItems = listRes.rows;
 
-        // insert list_items into order object and return
-        order.list_items = list_items;
+        // insert listItems into order object and return
+        order.listItems = listItems;
 
         return order;
     }
@@ -214,8 +214,8 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { id, email, name, street, unit, city, state_code,zipcode, phone,
-         *               transaction_id, status, amount, list_items: [ { id, name,
+         * Returns { id, email, name, street, unit, city, stateCode,zipcode, phone,
+         *               transactionId, status, amount, listItems: [ { id, name,
          *                  description, price, created }, { id, name, description,
          *                  price, created }, ...] }
          *
@@ -231,10 +231,10 @@ class Order {
                     street,
                     unit,
                     city,
-                    state_code,
+                    state_code AS "stateCode",
                     zipcode,
                     phone,
-                    transaction_id,
+                    transaction_id as "transactionId",
                     status,
                     amount
                 FROM orders
@@ -254,7 +254,7 @@ class Order {
             [id]
         );
 
-        order.list_items = itemsRes.rows;
+        order.listItems = itemsRes.rows;
 
         return order;
     }
@@ -262,10 +262,10 @@ class Order {
     static async getAll() {
         /** Get an array of all orders
          *
-         * Returns [{ id, email, name, street, unit, city, state_code,
-         *                  zipcode, phone, transaction_id, status, amount },
-         *              { id, email, name, street, unit, city, state_code,
-         *                  zipcode, phone, transaction_id, status, amount },
+         * Returns [{ id, email, name, street, unit, city, stateCode,
+         *                  zipcode, phone, transactionId, status, amount },
+         *              { id, email, name, street, unit, city, stateCode,
+         *                  zipcode, phone, transactionId, status, amount },
          *              ...]
          */
         // query db to get list of orders
@@ -276,10 +276,10 @@ class Order {
                     street,
                     unit,
                     city,
-                    state_code,
+                    state_code AS "stateCode",
                     zipcode,
                     phone,
-                    transaction_id,
+                    transaction_id AS "transactionId",
                     status,
                     amount
                 FROM orders`
@@ -321,8 +321,8 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { id, email, name, street, unit, city, state_code,
-         *              zipcode, phone, transaction_id, status, amount }
+         * Returns { id, email, name, street, unit, city, stateCode,
+         *              zipcode, phone, transactionId, status, amount }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
@@ -341,10 +341,10 @@ class Order {
                         street,
                         unit,
                         city,
-                        state_code,
+                        state_code AS "stateCode",
                         zipcode,
                         phone,
-                        transaction_id,
+                        transaction_id AS "transactionId",
                         status,
                         amount`,
             ["Shipped", id]
@@ -362,8 +362,8 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { id, email, name, street, unit, city, state_code,
-         *              zipcode, phone, transaction_id, status, amount }
+         * Returns { id, email, name, street, unit, city, stateCode,
+         *              zipcode, phone, transactionId, status, amount }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if no such order
@@ -382,10 +382,10 @@ class Order {
                         street,
                         unit,
                         city,
-                        state_code,
+                        state_code AS "stateCode",
                         zipcode,
                         phone,
-                        transaction_id,
+                        transaction_id AS "transactionId",
                         status,
                         amount`,
             ["Completed", id]
@@ -420,10 +420,10 @@ class Order {
                     street,
                     unit,
                     city,
-                    state_code,
+                    state_code AS "stateCode",
                     zipcode,
                     phone,
-                    transaction_id,
+                    transaction_id AS "transactionId",
                     status,
                     amount
                 FROM orders

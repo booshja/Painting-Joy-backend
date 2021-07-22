@@ -23,7 +23,7 @@ router.post("/", (req, res, next) => {
      */
 });
 
-router.post("/order/:orderId/add/:itemId", (req, res, next) => {
+router.post("/:orderId/add/:itemId", (req, res, next) => {
     /** POST "/add/{id}" => { order }
      * Adds an existing item to an existing order by orderId & itemId
      *
@@ -35,8 +35,8 @@ router.post("/order/:orderId/add/:itemId", (req, res, next) => {
      */
 });
 
-router.get("/order/:orderId", (req, res, next) => {
-    /** GET "/order/{orderId}" => { order }
+router.get("/:orderId", (req, res, next) => {
+    /** GET "/{orderId}" => { order }
      * Gets an order by id
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -61,8 +61,8 @@ router.get("/", (req, res, next) => {
      */
 });
 
-router.patch("/order/:orderId/ship", (req, res, next) => {
-    /** PATCH "/order/{orderId}/ship" => { order }
+router.patch("/:orderId/ship", (req, res, next) => {
+    /** PATCH "/{orderId}/ship" => { order }
      * Changes order's status to "Shipped"
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -72,8 +72,8 @@ router.patch("/order/:orderId/ship", (req, res, next) => {
      */
 });
 
-router.patch("/order/:orderId/complete", (req, res, next) => {
-    /** PATCH "/order/{orderId}/complete" => { order }
+router.patch("/:orderId/complete", (req, res, next) => {
+    /** PATCH "/{orderId}/complete" => { order }
      * Changes order's status to "Completed"
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -83,8 +83,8 @@ router.patch("/order/:orderId/complete", (req, res, next) => {
      */
 });
 
-router.patch("/order/:orderId/remove/:itemId", (req, res, next) => {
-    /** PATCH "/order/{orderId}/remove/{itemId}" => { msg }
+router.patch("/:orderId/remove/:itemId", (req, res, next) => {
+    /** PATCH "/{orderId}/remove/{itemId}" => { msg }
      * Removes an item from the order
      *
      * Returns { msg: "Item removed." }
@@ -93,8 +93,8 @@ router.patch("/order/:orderId/remove/:itemId", (req, res, next) => {
      */
 });
 
-router.delete("/order/:orderId", (req, res, next) => {
-    /** DELETE "/order/{orderId}" => { msg }
+router.delete("/:orderId", (req, res, next) => {
+    /** DELETE "/{orderId}" => { msg }
      * Deletes an order from the db by id
      *
      * Returns { msg: "Removed." }

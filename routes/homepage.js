@@ -9,6 +9,7 @@ const router = express.Router({ mergeParams: true });
 
 router.post("/", async (req, res, next) => {
     /** POST "/" { homepage } => { homepage }
+     * Creates a new mural
      *
      * hompage should be { greeting, message }
      *
@@ -32,6 +33,7 @@ router.post("/", async (req, res, next) => {
 
 router.get("/", async (req, res, next) => {
     /** GET "/" => { homepage }
+     * Returns the homepage data
      *
      * Returns { id, greeting, message }
      *
@@ -47,6 +49,7 @@ router.get("/", async (req, res, next) => {
 
 router.put("/", async (req, res, next) => {
     /** PUT "/" { homepage } => { homepage }
+     * Updates the homepage data
      *
      * homepage should be { greeting, message }
      *

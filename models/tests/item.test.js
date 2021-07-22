@@ -357,7 +357,7 @@ describe("markSold", () => {
             name: "Item3",
             description: "This is a fantastic item!",
             price: "299.99",
-            quantity: 3,
+            quantity: 0,
             created: expect.any(Date),
             isSold: true,
         });

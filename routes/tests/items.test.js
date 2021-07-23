@@ -190,66 +190,57 @@ describe("GET, /items/sold", () => {
 
 /********************* PATCH /items/update/:id */
 
-// describe("PATCH, /items/update/:id", () => {
-//     it("does a full update on an item", async () => {
-//         const resp = await request(app)
-//             .patch(`/items/update/${testItemIds[1]}`)
-//             .send({
-//                 name: "Updated",
-//                 description: "This has now been updated!",
-//                 price: 1.99,
-//                 quantity: 7,
-//             });
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             item: {
-//                 id: testItemIds[1],
-//                 name: "Updated",
-//                 description: "This has now been updated!",
-//                 price: "1.99",
-//                 quantity: 7,
-//                 created: expect.any(String),
-//                 isSold: false,
-//             },
-//         });
-//     });
+describe("PATCH, /items/update/:id", () => {
+    it("does a full update on an item", async () => {
+        const resp = await request(app)
+            .patch(`/items/update/${testItemIds[1]}`)
+            .send({
+                name: "Updated",
+                description: "This has now been updated!",
+                price: 1.99,
+                quantity: 7,
+            });
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            item: {
+                id: testItemIds[1],
+                name: "Updated",
+                description: "This has now been updated!",
+                price: "1.99",
+                quantity: 7,
+                created: expect.any(String),
+                isSold: false,
+            },
+        });
+    });
 
-//     it("does a partial update on an item", async () => {
-//         const resp = await request(app)
-//             .patch(`/items/update/${testItemIds[1]}`)
-//             .send({
-//                 name: "Updated Twice!",
-//             });
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             item: {
-//                 id: testItemIds[1],
-//                 name: "Updated Twice!",
-//                 description: "This has now been updated!",
-//                 price: "1.99",
-//                 quantity: 7,
-//                 created: expect.any(String),
-//                 isSold: false,
-//             },
-//         });
-//     });
+    it("does a partial update on an item", async () => {
+        const resp = await request(app)
+            .patch(`/items/update/${testItemIds[1]}`)
+            .send({
+                name: "Updated Twice!",
+            });
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            item: {
+                id: testItemIds[1],
+                name: "Updated Twice!",
+                description: "This is test item 2!",
+                price: "200.99",
+                quantity: 2,
+                created: expect.any(String),
+                isSold: false,
+            },
+        });
+    });
 
-//     it("gives bad request for no data", async () => {
-//         const resp = await request(app)
-//             .patch(`/items/update/${testItemIds[1]}`)
-//             .send();
-//         expect(resp.statusCode).toBe(400);
-//     });
-
-//     it("gives bad request for incomplete data", async () => {
-//         const resp = await request(app)
-//             .patch(`/items/update/${testItemIds[1]}`)
-//             .send({
-//                 name: "nuh-uh",
-//             });
-//         expect(resp.statusCode).toBe(400);
-//     });
-// });
+    it("gives bad request for no data", async () => {
+        const resp = await request(app)
+            .patch(`/items/update/${testItemIds[1]}`)
+            .send();
+        expect(resp.statusCode).toBe(400);
+    });
+});
 
 /*********************** PATCH /items/sell/:id */
 

@@ -110,6 +110,12 @@ router.patch("/update/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const item = await Item.update(+req.params.id, req.body);
+        return res.status(200).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.patch("/sell/:id", async (req, res, next) => {

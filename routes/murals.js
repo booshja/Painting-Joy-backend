@@ -2,8 +2,8 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 const Mural = require("../models/mural");
-const muralNewSchema = require("../schemas/muralNew.json");
-const muralUpdateSchema = require("../schemas/muralUpdate.json");
+// const muralNewSchema = require("../schemas/muralNew.json");
+// const muralUpdateSchema = require("../schemas/muralUpdate.json");
 
 const router = express.Router({ mergeParams: true });
 
@@ -11,9 +11,9 @@ router.post("/", async (req, res, next) => {
     /** POST "/" { mural } => { mural }
      * Creates a new mural
      *
-     * mural should be { title, description, price }
+     * mural should be { title, description }
      *
-     * Returns { id, title, description, price, isArchived }
+     * Returns { id, title, description, isArchived }
      *
      * Authorization required: admin
      */
@@ -23,7 +23,7 @@ router.get("/", async (req, res, next) => {
     /** GET "/" => { [ murals ] }
      * Returns a list of all murals
      *
-     * Returns { id, title, description, price }
+     * Returns { id, title, description }
      *
      * Authorization required: none
      */
@@ -35,7 +35,7 @@ router.get("/:id", async (req, res, next) => {
      *
      * id should be mural id
      *
-     * Returns { id, title, description, price }
+     * Returns { id, title, description }
      *
      * Authorization required: none
      */
@@ -45,10 +45,10 @@ router.patch("/:id", async (req, res, next) => {
     /** PATCH "/{id}" { mural } => { mural }
      * Partial update of a mural by id
      *
-     * mural can be { title, description, price }
+     * mural can be { title, description }
      * Note: this can be a partial update
      *
-     * Returns { id, title, description, price }
+     * Returns { id, title, description }
      *
      * Authorization required: admin
      */

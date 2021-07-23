@@ -185,32 +185,29 @@ describe("GET, /messages/archived", () => {
 
 /***************** PATCH /messages/archive/:id */
 
-// describe("PATCH, /messages/archive/:id", () => {
-//     it("archives a message by id", async () => {
-//         const resp = await request(app).patch(
-//             `/messages/archive/${testMessageIds[0]}`
-//         );
-//         expect(resp.statusCode).toEqual(200);
-//         expect(resp.body).toEqual({
-//             id: testMessageIds[0],
-//             name: "Tester1",
-//             email: "1@email.com",
-//             message: "This is a message for the test 1!",
-//             received: expect.any(Date),
-//             isArchived: false,
-//         });
-//     });
+describe("PATCH, /messages/archive/:id", () => {
+    it("archives a message by id", async () => {
+        const resp = await request(app).patch(
+            `/messages/archive/${testMessageIds[0]}`
+        );
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({
+            message: {
+                id: testMessageIds[0],
+                name: "Tester1",
+                email: "1@email.com",
+                message: "This is a message for the test 1!",
+                received: expect.any(String),
+                isArchived: true,
+            },
+        });
+    });
 
-//     it("gives bad request for no id", async () => {
-//         const resp = await request(app).patch("/messages/archive/");
-//         expect(resp.statusCode).toEqual(400);
-//     });
-
-//     it("gives not found for non-matching id", async () => {
-//         const resp = await request(app).patch("/messages/archive/-1");
-//         expect(resp.statusCode).toEqual(404);
-//     });
-// });
+    it("gives not found for non-matching id", async () => {
+        const resp = await request(app).patch("/messages/archive/-1");
+        expect(resp.statusCode).toEqual(404);
+    });
+});
 
 /*************** PATCH /messages/unarchive/:id */
 

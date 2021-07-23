@@ -125,34 +125,32 @@ describe("GET, /items/item/:id", () => {
 
 /************************ GET /items/available */
 
-// describe("GET, /items/available", () => {
-//     it("gets list of all available items", async () => {
-//         const resp = await request(app).get("/items/available");
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             items: [
-//                 {
-//                     id: testItemIds[0],
-//                     name: "TestItem1",
-//                     description: "This is test item 1!",
-//                     price: 100.99,
-//                     quantity: 1,
-//                     created: expect.any(String),
-//                     isSold: false,
-//                 },
-//                 {
-//                     id: testItemIds[1],
-//                     name: "TestItem2",
-//                     description: "This is test item 2!",
-//                     price: 200.99,
-//                     quantity: 2,
-//                     created: expect.any(String),
-//                     isSold: false,
-//                 },
-//             ],
-//         });
-//     });
-// });
+describe("GET, /items/available", () => {
+    it("gets list of all available items", async () => {
+        const resp = await request(app).get("/items/available");
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            items: [
+                {
+                    id: testItemIds[0],
+                    name: "TestItem1",
+                    description: "This is test item 1!",
+                    price: "100.99",
+                    quantity: 1,
+                    created: expect.any(String),
+                },
+                {
+                    id: testItemIds[1],
+                    name: "TestItem2",
+                    description: "This is test item 2!",
+                    price: "200.99",
+                    quantity: 2,
+                    created: expect.any(String),
+                },
+            ],
+        });
+    });
+});
 
 /***************************** GET /items/sold */
 

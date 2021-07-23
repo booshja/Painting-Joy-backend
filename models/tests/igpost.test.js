@@ -12,9 +12,9 @@ beforeAll(async function () {
             VALUES ('vaea23ceaaf9asfe87g6', 'Such a great post!', 'just-a-test.com', 'imageurl.com/image.jpg'),
                 ('vaeaasdf97865g6', 'Such a great post again!', 'just-another-test.com', 'imageurl.com/image.png'),
                 ('vae2345c546g6', 'Such a wonderful post!', 'just-a-third-test.com', 'imageurl.org/image.txt')
-            RETURNING ig_id`
+            RETURNING ig_id AS "igId"`
     );
-    testIgpostIds.splice(0, 0, ...results.rows.map((row) => row.ig_id));
+    testIgpostIds.splice(0, 0, ...results.rows.map((row) => row.igId));
 });
 
 beforeEach(async function () {
@@ -33,10 +33,10 @@ afterAll(async function () {
 
 describe("add", () => {
     let newPost = {
-        ig_id: "testtesttest",
+        igId: "testtesttest",
         caption: "this is a test",
-        perm_url: "www.test.com",
-        image_url: "www.test.com/image.jpg",
+        permUrl: "www.test.com",
+        imageUrl: "www.test.com/image.jpg",
     };
 
     it("adds post", async () => {
@@ -57,8 +57,8 @@ describe("add", () => {
         try {
             await IGPost.add({
                 caption: "this is a test",
-                perm_url: "www.test.com",
-                image_url: "www.test.com/image.jpg",
+                permUrl: "www.test.com",
+                imageUrl: "www.test.com/image.jpg",
             });
             fail();
         } catch (err) {
@@ -70,13 +70,13 @@ describe("add", () => {
 /***************************************** get */
 
 describe("get", () => {
-    it("gets post by ig_id", async () => {
+    it("gets post by igId", async () => {
         let post = await IGPost.get(testIgpostIds[0]);
         expect(post).toEqual({
-            ig_id: testIgpostIds[0],
+            igId: testIgpostIds[0],
             caption: "Such a great post!",
-            perm_url: "just-a-test.com",
-            image_url: "imageurl.com/image.jpg",
+            permUrl: "just-a-test.com",
+            imageUrl: "imageurl.com/image.jpg",
         });
     });
 
@@ -89,7 +89,7 @@ describe("get", () => {
         }
     });
 
-    it("throws BadRequestError if no ig_id", async () => {
+    it("throws BadRequestError if no igId", async () => {
         try {
             await IGPost.get();
             fail();
@@ -106,22 +106,22 @@ describe("getAll", () => {
         let post = await IGPost.getAll();
         expect(post).toEqual([
             {
-                ig_id: testIgpostIds[0],
+                igId: testIgpostIds[0],
                 caption: "Such a great post!",
-                perm_url: "just-a-test.com",
-                image_url: "imageurl.com/image.jpg",
+                permUrl: "just-a-test.com",
+                imageUrl: "imageurl.com/image.jpg",
             },
             {
-                ig_id: testIgpostIds[1],
+                igId: testIgpostIds[1],
                 caption: "Such a great post again!",
-                perm_url: "just-another-test.com",
-                image_url: "imageurl.com/image.png",
+                permUrl: "just-another-test.com",
+                imageUrl: "imageurl.com/image.png",
             },
             {
-                ig_id: testIgpostIds[2],
+                igId: testIgpostIds[2],
                 caption: "Such a wonderful post!",
-                perm_url: "just-a-third-test.com",
-                image_url: "imageurl.org/image.txt",
+                permUrl: "just-a-third-test.com",
+                imageUrl: "imageurl.org/image.txt",
             },
         ]);
     });
@@ -134,9 +134,10 @@ describe("delete", () => {
         const result = await IGPost.delete(testIgpostIds[0]);
         expect(result).toEqual({ msg: "Deleted." });
 
-        const res = await db.query(`SELECT ig_id FROM igposts WHERE ig_id=$1`, [
-            testIgpostIds[0],
-        ]);
+        const res = await db.query(
+            `SELECT ig_id AS "igId" FROM igposts WHERE ig_id=$1`,
+            [testIgpostIds[0]]
+        );
         expect(res.rows.length).toEqual(0);
     });
 

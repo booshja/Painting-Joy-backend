@@ -2,10 +2,11 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 const IGPost = require("../models/igpost");
+const igPostsNewSchema = require("../schemas/igPostsNew.json");
 
 const router = express.Router({ mergeParams: true });
 
-router.post("/", (req, res, next) => {
+router.post("/", async (req, res, next) => {
     /** POST "/" { igpost } => { igpost }
      * Creates a new igpost
      *
@@ -13,9 +14,21 @@ router.post("/", (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const validator = jsonschema.validate(req.body, igPostsNewSchema);
+        if (!validator.valid) {
+            const errors = validator.errors.map((e) => e.stack);
+            throw new BadRequestError(errors);
+        }
+
+        const igPost = await IGPost.add(req.body);
+        return res.status(201).json({ igPost });
+    } catch (err) {
+        next(err);
+    }
 });
 
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
     /** GET "/" => [ igposts ]
      * Returns a list of igposts
      *
@@ -24,9 +37,15 @@ router.get("/", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const igPosts = await IGPost.getAll();
+        return res.status(200).json({ igPosts });
+    } catch (err) {
+        next(err);
+    }
 });
 
-router.get("/post/:id", (req, res, next) => {
+router.get("/post/:id", async (req, res, next) => {
     /** GET "/post/{id}" => { igpost }
      * Returns an igpost by id
      *
@@ -34,9 +53,15 @@ router.get("/post/:id", (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const igPost = await IGPost.get(req.params.id);
+        return res.status(200).json({ igPost });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.delete("/delete/:id", (req, res, next) => {
+router.delete("/delete/:id", async (req, res, next) => {
     /** DELETE "/delete/:id" => { msg: "Deleted." }
      * Deletes an igpost by id
      *
@@ -44,6 +69,12 @@ router.delete("/delete/:id", (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await IGPost.delete(req.params.id);
+        return res.status(200).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 module.exports = router;

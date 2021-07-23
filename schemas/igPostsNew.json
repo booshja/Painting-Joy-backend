@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://paintingjoy.art/igPostsNew.schema.json",
+    "type": "object",
+    "properties": {
+        "igId": {
+            "type": "string",
+            "minLength": 1
+        },
+        "caption": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+        },
+        "permUrl": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+        },
+        "imageUrl": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+        }
+    },
+    "additionalProperties": false,
+    "required": ["igId", "caption", "permUrl", "imageUrl"]
+}

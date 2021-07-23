@@ -7,6 +7,7 @@ const { NotFoundError } = require("./expressError");
 const homepageRoutes = require("./routes/homepage");
 const messagesRoutes = require("./routes/messages");
 const muralsRoutes = require("./routes/murals");
+const igPosts = require("./routes/igposts");
 
 const morgan = require("morgan");
 
@@ -20,6 +21,7 @@ app.use(morgan("common"));
 app.use("/homepage", homepageRoutes);
 app.use("/messages", messagesRoutes);
 app.use("/murals", muralsRoutes);
+app.use("/igposts", igPosts);
 
 /** Handle 404 Errors */
 app.use((req, res, next) => {

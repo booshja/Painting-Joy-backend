@@ -8,6 +8,7 @@ const homepageRoutes = require("./routes/homepage");
 const messagesRoutes = require("./routes/messages");
 const muralsRoutes = require("./routes/murals");
 const igPosts = require("./routes/igposts");
+const items = require("./routes/items");
 
 const morgan = require("morgan");
 
@@ -22,6 +23,7 @@ app.use("/homepage", homepageRoutes);
 app.use("/messages", messagesRoutes);
 app.use("/murals", muralsRoutes);
 app.use("/igposts", igPosts);
+app.use("/items", items);
 
 /** Handle 404 Errors */
 app.use((req, res, next) => {

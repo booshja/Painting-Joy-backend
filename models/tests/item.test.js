@@ -262,7 +262,16 @@ describe("update", () => {
 
     it("throws BadRequestError if no data", async () => {
         try {
-            await Item.update(testItemIds[0], {});
+            await Item.update();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError if missing data", async () => {
+        try {
+            await Item.update(testItemIds[0]);
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();
@@ -288,6 +297,7 @@ describe("sell", () => {
             id: testItemIds[1],
             name: "Item2",
             price: "199.99",
+            description: "This is a wonderful item!",
             quantity: 1,
             created: expect.any(Date),
             isSold: false,
@@ -300,6 +310,7 @@ describe("sell", () => {
             id: testItemIds[0],
             name: "Item1",
             price: "99.99",
+            description: "This is a great item!",
             quantity: 0,
             created: expect.any(Date),
             isSold: true,

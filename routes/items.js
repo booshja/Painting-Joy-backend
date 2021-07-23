@@ -2,8 +2,8 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 const Item = require("../models/item");
-// const itemNewSchema = require("../schemas/itemNew.json");
-// const itemUpdateSchema = require("../schemas/itemUpdate.json");
+const itemNewSchema = require("../schemas/itemNew.json");
+const itemUpdateSchema = require("../schemas/itemUpdate.json");
 
 const router = express.Router({ mergeParams: true });
 
@@ -17,9 +17,21 @@ router.post("/", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const validator = jsonschema.validate(req.body, itemNewSchema);
+        if (!validator.valid) {
+            const errors = validator.errors.map((e) => e.stack);
+            throw new BadRequestError(errors);
+        }
+
+        const item = await Item.create(req.body);
+        return res.status(201).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
     /** GET "/" => [ items ]
      * Returns a list of all items
      *
@@ -28,9 +40,15 @@ router.get("/", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const items = await Item.getAll();
+        return res.status(200).json({ items });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.get("/item/:id", (req, res, next) => {
+router.get("/item/:id", async (req, res, next) => {
     /** GET "/item/{id}" => { item }
      * Returns an item by id
      *
@@ -40,9 +58,15 @@ router.get("/item/:id", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const item = await Item.get(+req.params.id);
+        return res.status(200).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.get("/available", (req, res, next) => {
+router.get("/available", async (req, res, next) => {
     /** GET "/available" => [ items ]
      * Returns a list of available items
      *
@@ -51,9 +75,15 @@ router.get("/available", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const items = await Item.getAllAvailable();
+        return res.status(200).json({ items });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.get("/sold", (req, res, next) => {
+router.get("/sold", async (req, res, next) => {
     /** GET "/sold" => [ items ]
      * Returns a list of sold items
      *
@@ -62,9 +92,15 @@ router.get("/sold", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const items = await Item.getAllSold();
+        return res.status(200).json({ items });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.patch("/update/:id", (req, res, next) => {
+router.patch("/update/:id", async (req, res, next) => {
     /** PATCH "/update/{id}" { data }=> { item }
      * Updates an item. NOTE: This is a partial update, not all fields are required.
      *
@@ -74,9 +110,15 @@ router.patch("/update/:id", (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const item = await Item.update(+req.params.id, req.body);
+        return res.status(200).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.patch("/sell/:id", (req, res, next) => {
+router.patch("/sell/:id", async (req, res, next) => {
     /** PATCH "/sell/{id}" => { item }
      * Decreases quantity of item by 1, marks it as sold out if decreases to 0
      *
@@ -84,19 +126,31 @@ router.patch("/sell/:id", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const item = await Item.sell(+req.params.id);
+        return res.status(200).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.patch("/sold/:id", (req, res, next) => {
-    /** PATCH "/sold:{id}" => { item }
+router.patch("/sold/:id", async (req, res, next) => {
+    /** PATCH "/sold/{id}" => { item }
      * Marks an item as sold, decreases quantity to 0
      *
      * Returns { id, name, description, price, quantity, created, isSold }
      *
      * Authorization required: admin
      */
+    try {
+        const item = await Item.markSold(+req.params.id);
+        return res.status(200).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.delete("/delete/:id", (req, res, next) => {
+router.delete("/delete/:id", async (req, res, next) => {
     /** DELETE "/delete/{id}" => { item }
      * Deletes an item
      *
@@ -104,6 +158,12 @@ router.delete("/delete/:id", (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Item.delete(+req.params.id);
+        return res.status(200).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 module.exports = router;

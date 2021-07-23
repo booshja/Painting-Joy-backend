@@ -283,11 +283,11 @@ describe("unArchive", () => {
     });
 });
 
-/************************************** remove */
+/************************************** delete */
 
-describe("remove", () => {
-    it("removes mural", async () => {
-        const result = await Mural.remove(testMuralIds[0]);
+describe("delete", () => {
+    it("deletes mural", async () => {
+        const result = await Mural.delete(testMuralIds[0]);
         expect(result).toEqual({ msg: "Deleted." });
 
         const res = await db.query(`SELECT id FROM murals WHERE id=$1`, [
@@ -298,7 +298,7 @@ describe("remove", () => {
 
     it("throws BadRequestError if no input", async () => {
         try {
-            await Mural.remove();
+            await Mural.delete();
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();
@@ -307,7 +307,7 @@ describe("remove", () => {
 
     it("throws NotFoundError if no such mural", async () => {
         try {
-            await Mural.remove(-1);
+            await Mural.delete(-1);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();

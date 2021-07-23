@@ -39,6 +39,12 @@ router.get("/", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const murals = await Mural.getAll();
+        return res.status(200).json({ murals });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/active", async (req, res, next) => {
@@ -49,6 +55,12 @@ router.get("/active", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const murals = await Mural.getActive();
+        return res.status(200).json({ murals });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/archived", async (req, res, next) => {
@@ -59,6 +71,12 @@ router.get("/archived", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const murals = await Mural.getArchived();
+        return res.status(200).json({ murals });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/mural/:id", async (req, res, next) => {
@@ -71,6 +89,12 @@ router.get("/mural/:id", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const mural = await Mural.get(+req.params.id);
+        return res.status(200).json({ mural });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.patch("/mural/:id", async (req, res, next) => {
@@ -84,6 +108,12 @@ router.patch("/mural/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const mural = await Mural.update(+req.params.id, req.body);
+        return res.status(200).json({ mural });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.patch("/mural/:id/archive", async (req, res, next) => {
@@ -94,6 +124,12 @@ router.patch("/mural/:id/archive", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const mural = await Mural.archive(+req.params.id);
+        return res.status(200).json({ mural });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.patch("/mural/:id/unarchive", async (req, res, next) => {
@@ -104,6 +140,12 @@ router.patch("/mural/:id/unarchive", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const mural = await Mural.unArchive(+req.params.id);
+        return res.status(200).json({ mural });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.delete("/mural/:id", async (req, res, next) => {
@@ -116,6 +158,12 @@ router.delete("/mural/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Mural.delete(+req.params.id);
+        return res.status(200).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 module.exports = router;

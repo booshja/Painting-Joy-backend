@@ -211,7 +211,7 @@ class Mural {
         return mural;
     }
 
-    static async remove(id) {
+    static async delete(id) {
         /** Delete mural data
          *
          * Throws NotFoundError if mural not found.

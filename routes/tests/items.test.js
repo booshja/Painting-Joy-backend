@@ -105,23 +105,23 @@ describe("GET, /items/", () => {
 
 /************************* GET /items/item/:id */
 
-// describe("GET, /items/item/:id", () => {
-//     it("get an item by id", async () => {
-//         const resp = await request(app).get(`/items/item/${testItemIds[0]}`);
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             item: {
-//                 id: testItemIds[0],
-//                 name: "TestItem1",
-//                 description: "This is test item 1!",
-//                 price: "100.99",
-//                 quantity: 1,
-//                 created: expect.any(String),
-//                 isSold: false,
-//             },
-//         });
-//     });
-// });
+describe("GET, /items/item/:id", () => {
+    it("get an item by id", async () => {
+        const resp = await request(app).get(`/items/item/${testItemIds[0]}`);
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            item: {
+                id: testItemIds[0],
+                name: "TestItem1",
+                description: "This is test item 1!",
+                price: "100.99",
+                quantity: 1,
+                created: expect.any(String),
+                isSold: false,
+            },
+        });
+    });
+});
 
 /************************ GET /items/available */
 

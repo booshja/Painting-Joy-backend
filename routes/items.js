@@ -58,6 +58,12 @@ router.get("/item/:id", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const item = await Item.get(+req.params.id);
+        return res.status(200).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/available", async (req, res, next) => {

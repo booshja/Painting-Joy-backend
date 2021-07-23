@@ -53,6 +53,12 @@ router.get("/post/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const igPost = await IGPost.get(req.params.id);
+        return res.status(200).json({ igPost });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.delete("/delete/:id", async (req, res, next) => {

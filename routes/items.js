@@ -2,8 +2,8 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 const Item = require("../models/item");
-// const itemNewSchema = require("../schemas/itemNew.json");
-// const itemUpdateSchema = require("../schemas/itemUpdate.json");
+const itemNewSchema = require("../schemas/itemNew.json");
+const itemUpdateSchema = require("../schemas/itemUpdate.json");
 
 const router = express.Router({ mergeParams: true });
 

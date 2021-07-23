@@ -154,34 +154,34 @@ describe("GET, /messages/active", () => {
 
 /********************** GET /messages/archived */
 
-// describe("GET, /messages/archived", () => {
-//     it("returns a list of all archived messages", async () => {
-//         const res = await db.query(`INSERT INTO messages(name,
-//                                                         email,
-//                                                         message,
-//                                                         is_archived)
-//                                         VALUES('archived',
-//                                                 'archived@email.com',
-//                                                 'This is archived.',
-//                                                 true)
-//                                         RETURNING id`);
-//         const newMsgId = res.rows[0].id;
+describe("GET, /messages/archived", () => {
+    it("returns a list of all archived messages", async () => {
+        const res = await db.query(`INSERT INTO messages(name,
+                                                        email,
+                                                        message,
+                                                        is_archived)
+                                        VALUES('archived',
+                                                'archived@email.com',
+                                                'This is archived.',
+                                                true)
+                                        RETURNING id`);
+        const newMsgId = res.rows[0].id;
 
-//         const resp = await request(app).get("/messages/archived");
-//         expect(resp.statusCode).toEqual(200);
-//         expect(resp.body).toEqual({
-//             messages: [
-//                 {
-//                     id: newMsgId,
-//                     name: "archived",
-//                     email: "archived@email.com",
-//                     message: "This is archived.",
-//                     received: expect.any(Date),
-//                 },
-//             ],
-//         });
-//     });
-// });
+        const resp = await request(app).get("/messages/archived");
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({
+            messages: [
+                {
+                    id: newMsgId,
+                    name: "archived",
+                    email: "archived@email.com",
+                    message: "This is archived.",
+                    received: expect.any(String),
+                },
+            ],
+        });
+    });
+});
 
 /***************** PATCH /messages/archive/:id */
 

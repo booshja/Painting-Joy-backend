@@ -89,6 +89,12 @@ router.get("/archived", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const messages = await Message.getArchived();
+        return res.status(200).json({ messages });
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.patch("/archive/:id", async (req, res, next) => {

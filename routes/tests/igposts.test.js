@@ -3,12 +3,26 @@ const app = require("../../app");
 const db = require("../../db");
 const IGPost = require("../../models/igpost");
 
+testIgPostIds = [];
+
 beforeAll(async () => {
     await db.query("DELETE FROM igposts");
 
-    // await IGPost.add({
-    //     // TODO
-    // });
+    const igpost1 = await IGPost.add({
+        igId: "abcd12341",
+        caption: "This is a test caption 1!",
+        permUrl: "example.com/1",
+        imageUrl: "example.com/image1.jpg",
+    });
+    testIgPostIds.push(igpost1.igId);
+
+    const igpost2 = await IGPost.add({
+        igId: "abcd12342",
+        caption: "This is a test caption 2!",
+        permUrl: "example.com/2",
+        imageUrl: "example.com/image2.jpg",
+    });
+    testIgPostIds.push(igpost2.igId);
 });
 
 beforeEach(async () => {
@@ -27,7 +41,33 @@ afterAll(async () => {
 
 describe("POST, /igposts/", () => {
     it("creates a new igpost", async () => {
-        expect(1).toEqual(1);
+        const resp = await request(app).post("/igposts/").send({
+            igId: "new123",
+            caption: "This is newly added!",
+            permUrl: "www.example.com/new1",
+            imageUrl: "www.example.com/new1.jpg",
+        });
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            igPost: {
+                igId: "new123",
+                caption: "This is newly added!",
+                permUrl: "www.example.com/new1",
+                imageUrl: "www.example.com/new1.jpg",
+            },
+        });
+    });
+
+    it("gives bad request if no data", async () => {
+        const resp = await request(app).post("/igposts/").send();
+        expect(resp.statusCode).toBe(400);
+    });
+
+    it("gives bad request if nmissing data", async () => {
+        const resp = await request(app).post("/igposts/").send({
+            igId: "nahhh",
+        });
+        expect(resp.statusCode).toBe(400);
     });
 });
 
@@ -35,22 +75,64 @@ describe("POST, /igposts/", () => {
 
 describe("GET, /igposts/", () => {
     it("gets a list of all the igposts", async () => {
-        expect(1).toEqual(1);
+        const resp = await request(app).get("/igposts/");
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            igPosts: [
+                {
+                    igId: "abcd12341",
+                    caption: "This is a test caption 1!",
+                    permUrl: "example.com/1",
+                    imageUrl: "example.com/image1.jpg",
+                },
+                {
+                    igId: "abcd12342",
+                    caption: "Ths is a test caption 2!",
+                    permUrl: "example.com/2",
+                    imageUrl: "example.com/image2.jpg",
+                },
+            ],
+        });
     });
 });
 
-/*********************** GET /igposts/post/:id */
+/*********************** GET /igposts/:id */
 
-describe("GET, /igposts/post/:id", () => {
+describe("GET, /igposts/:id", () => {
     it("gets an igpost by id", async () => {
-        expect(1).toEqual(1);
+        const resp = await request(app).get(`/igposts/${testIgPostIds[0]}`);
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            igPost: {
+                igId: "abcd12341",
+                caption: "This is a test caption 1!",
+                permUrl: "example.com/1",
+                imageUrl: "example.com/image1.jpg",
+            },
+        });
+    });
+
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).get("/igposts/-1");
+        expect(resp.statusCode).toBe(400);
     });
 });
 
-/****************** DELETE /igposts/delete/:id */
+/****************** DELETE /igposts/:id */
 
-describe("DELETE, /igposts/delete/:id", () => {
+describe("DELETE, /igposts/:id", () => {
     it("deletes an igpost by id", async () => {
-        expect(1).toEqual(1);
+        const resp = await request(app).delete(`/igposts/${testIgPostIds[0]}`);
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            message: {
+                msg: "Deleted.",
+            },
+        });
+    });
+
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).delete("/igposts/-1");
+        expect(resp.statusCode).toBe(400);
     });
 });

@@ -248,24 +248,19 @@ describe("PATCH, /messages/unarchive/:id", () => {
 
 /***************** DELETE /messages/delete/:id */
 
-// describe("DELETE, /messages/delete/:id", () => {
-//     it("deletes a message by id", async () => {
-//         const resp = await request(app).delete(
-//             `/messages/delete/${testMessageIds[1]}`
-//         );
-//         expect(resp.statusCode).toEqual(200);
-//         expect(resp.body).toEqual({
-//             message: { msg: "Deleted." },
-//         });
-//     });
+describe("DELETE, /messages/delete/:id", () => {
+    it("deletes a message by id", async () => {
+        const resp = await request(app).delete(
+            `/messages/delete/${testMessageIds[1]}`
+        );
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({
+            message: { msg: "Deleted." },
+        });
+    });
 
-//     it("gives bad request for no id", async () => {
-//         const resp = await request(app).delete("/messages/delete/");
-//         expect(resp.statusCode).toEqual(400);
-//     });
-
-//     it("gives not found for non-matching id", async () => {
-//         const resp = await request(app).delete("/messages/delete/-1");
-//         expect(resp.statusCode).toEqual(404);
-//     });
-// });
+    it("gives not found for non-matching id", async () => {
+        const resp = await request(app).delete(`/messages/delete/-1`);
+        expect(resp.statusCode).toEqual(404);
+    });
+});

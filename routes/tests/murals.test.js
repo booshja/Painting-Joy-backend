@@ -6,9 +6,15 @@ const Mural = require("../../models/mural");
 beforeAll(async () => {
     await db.query("DELETE FROM murals");
 
-    // await Mural.create({
-    //     // TODO
-    // });
+    await Mural.create({
+        title: "Test1",
+        description: "This is test mural 1!",
+    });
+
+    await Mural.create({
+        title: "Test2",
+        description: "This is test mural 2!",
+    });
 });
 
 beforeEach(async () => {
@@ -27,7 +33,31 @@ afterAll(async () => {
 
 describe("POST, /murals", () => {
     it("creates new mural", async () => {
-        expect(1).toEqual(1);
+        const resp = await request(app).post("/murals/").send({
+            title: "Posting Test",
+            description: "This is a description for a test!",
+        });
+        expect(resp.statusCode).toEqual(201);
+        expect(resp.body).toEqual({
+            mural: {
+                id: expect.any(Number),
+                title: "Posting Test",
+                description: "This is a description for a test!",
+                isArchived: false,
+            },
+        });
+    });
+
+    it("gives bad request for no data", async () => {
+        const resp = await request(app).post("/murals/").send();
+        expect(resp.statusCode).toBe(400);
+    });
+
+    it("gives bad request for missing data", async () => {
+        const resp = await request(app)
+            .post("/murals/")
+            .send({ title: "oooops" });
+        expect(resp.statusCode).toBe(400);
     });
 });
 
@@ -35,7 +65,13 @@ describe("POST, /murals", () => {
 
 describe("GET, /murals/", () => {
     it("returns a list of all murals", async () => {
-        expect(1).toEqual(1);
+        const resp = await request(app).get("/murals/");
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            murals: [
+                //
+            ],
+        });
     });
 });
 

@@ -17,6 +17,18 @@ router.post("/", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const validator = jsonschema.validate(req.body, itemNewSchema);
+        if (!validator.valid) {
+            const errors = validator.errors.map((e) => e.stack);
+            throw new BadRequestError(errors);
+        }
+
+        const item = await Item.create(req.body);
+        return res.status(201).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/", (req, res, next) => {

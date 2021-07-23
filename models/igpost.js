@@ -30,7 +30,7 @@ class IGPost {
                 RETURNING ig_id AS "igId",
                         caption,
                         perm_url AS "permUrl",
-                        image_url AS imageUrl`,
+                        image_url AS "imageUrl"`,
             [data.igId, data.caption, data.permUrl, data.imageUrl]
         );
         const post = result.rows[0];
@@ -79,8 +79,8 @@ class IGPost {
         const result = await db.query(
             `SELECT ig_id AS "igId",
                     caption,
-                    perm_url AS permUrl,
-                    image_url AS imageUrl
+                    perm_url AS "permUrl",
+                    image_url AS "imageUrl"
             FROM igposts`
         );
 

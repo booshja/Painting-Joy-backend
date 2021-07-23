@@ -18,7 +18,6 @@ CREATE TABLE murals (
     id SERIAL PRIMARY KEY,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(200) NOT NULL,
-    price NUMERIC NOT NULL,
     is_archived BOOLEAN NOT NULL DEFAULT false
     -- photo_1_type TEXT,
     -- photo_1_name TEXT,

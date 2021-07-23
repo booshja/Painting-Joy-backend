@@ -8,10 +8,10 @@ beforeAll(async function () {
     await db.query("DELETE FROM murals");
 
     const results = await db.query(
-        `INSERT INTO murals(title, description, price)
-        VALUES ('Test Mural 1', 'This is test mural #1!', 12.99),
-                ('Test Mural 2', 'This is test mural #2!', 24.99),
-                ('Test Mural 3', 'This is test mural #3!', 36.99)
+        `INSERT INTO murals(title, description)
+        VALUES ('Test Mural 1', 'This is test mural #1!'),
+                ('Test Mural 2', 'This is test mural #2!'),
+                ('Test Mural 3', 'This is test mural #3!')
         RETURNING id`
     );
     testMuralIds.splice(0, 0, ...results.rows.map((row) => row.id));
@@ -35,7 +35,6 @@ describe("create", () => {
     let newMural = {
         title: "Test Create Mural",
         description: "This is a test mural from the create method!",
-        price: 99.99,
     };
 
     it("creates a new mural", async () => {
@@ -44,7 +43,6 @@ describe("create", () => {
             id: expect.any(Number),
             title: "Test Create Mural",
             description: "This is a test mural from the create method!",
-            price: "99.99",
             isArchived: false,
         });
     });
@@ -82,19 +80,16 @@ describe("getAll", () => {
                 id: testMuralIds[0],
                 title: "Test Mural 1",
                 description: "This is test mural #1!",
-                price: "12.99",
             },
             {
                 id: testMuralIds[1],
                 title: "Test Mural 2",
                 description: "This is test mural #2!",
-                price: "24.99",
             },
             {
                 id: testMuralIds[2],
                 title: "Test Mural 3",
                 description: "This is test mural #3!",
-                price: "36.99",
             },
         ]);
     });
@@ -109,7 +104,6 @@ describe("get", () => {
             id: testMuralIds[0],
             title: "Test Mural 1",
             description: "This is test mural #1!",
-            price: "12.99",
         });
     });
 
@@ -138,7 +132,6 @@ describe("update", () => {
     let updateData = {
         title: "Updated",
         description: "This mural was updated!",
-        price: 1000.99,
     };
 
     it("updates mural", async () => {
@@ -147,7 +140,6 @@ describe("update", () => {
             id: testMuralIds[0],
             title: "Updated",
             description: "This mural was updated!",
-            price: "1000.99",
         });
     });
 

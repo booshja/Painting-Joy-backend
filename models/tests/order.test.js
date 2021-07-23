@@ -251,14 +251,14 @@ describe("addItem", () => {
                     price: "10.99",
                 },
                 {
-                    name: "Item4",
-                    description: "This is item 4.",
-                    price: "40.99",
-                },
-                {
                     name: "Item1",
                     description: "This is item 1.",
                     price: "10.99",
+                },
+                {
+                    name: "Item4",
+                    description: "This is item 4.",
+                    price: "40.99",
                 },
             ],
         });

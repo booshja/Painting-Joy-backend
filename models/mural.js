@@ -35,22 +35,53 @@ class Mural {
         return mural;
     }
 
-    // static async addImage(data) {
-    //     /** Add an image to a mural (from data), update db, return new mural data */
-    // }
-
     static async getAll() {
         /** Get an array of all the murals
          *
-         * Returns [{ id, title, description }, { id, title, description }, ...]
+         * Returns [{ id, title, description, isArchived },
+         *              { id, title, description, isArchived }, ...]
          */
         // query db for list of all murals
         const result = await db.query(
             `SELECT id,
                     title,
+                    description,
+                    is_archived AS "isArchived"
+                FROM murals`
+        );
+
+        return result.rows;
+    }
+
+    static async getArchived() {
+        /** Get an array of all archived murals
+         *
+         * Returns [{ id, title, description }, { id, title, description }, ...]
+         */
+        // query db for list of murals
+        const result = await db.query(
+            `SELECT id,
+                    title,
                     description
-            FROM murals
-            WHERE is_archived = false`
+                FROM murals
+                WHERE is_archived = true`
+        );
+
+        return result.rows;
+    }
+
+    static async getActive() {
+        /** Get an array of all non-archived murals
+         *
+         * Returns [{ id, title, description }, { id, title, description }, ...]
+         */
+        // query db for list of murals
+        const result = await db.query(
+            `SELECT id,
+                    title,
+                    description
+                FROM murals
+                WHERE is_archived = false`
         );
 
         return result.rows;
@@ -105,10 +136,72 @@ class Mural {
                             RETURNING id,
                                     title,
                                     description`;
+
+        // query db to update item
         const result = await db.query(querySql, [...values, id]);
         const mural = result.rows[0];
 
-        // query db to update item
+        // if no record returned, no mural found, throw NotFoundError
+        if (!mural) throw new NotFoundError(`No mural: ${id}`);
+
+        return mural;
+    }
+
+    static async archive(id) {
+        /** Archive mural by id
+         *
+         * Returns { id, title, description, isArchived }
+         *
+         * Throws NotFoundError if mural not found
+         * Throws BadRequestError if no input
+         */
+        // check for missing input
+        if (!id) throw new BadRequestError("No input");
+
+        // query db to update mural
+        const result = await db.query(
+            `UPDATE murals
+                SET is_archived = true
+                WHERE id = $1
+                RETURNING id,
+                        title,
+                        description,
+                        is_archived AS "isArchived"`,
+            [id]
+        );
+        const mural = result.rows[0];
+
+        // if no record returned, no mural found, throw NotFoundError
+        if (!mural) throw new NotFoundError(`No mural: ${id}`);
+
+        return mural;
+    }
+
+    static async unArchive(id) {
+        /** UN-Archive mural by id
+         *
+         * Returns { id, title, description, isArchived }
+         *
+         * Throws NotFoundError if mural not found
+         * Throws BadRequestError if no input
+         */
+        // check for missing input
+        if (!id) throw new BadRequestError("No input");
+
+        // query db to update mural
+        const result = await db.query(
+            `UPDATE murals
+                SET is_archived = false
+                WHERE id = $1
+                RETURNING id,
+                        title,
+                        description,
+                        is_archived AS "isArchived"`,
+            [id]
+        );
+        const mural = result.rows[0];
+
+        // if no record returned, no mural found, throw NotFoundError
         if (!mural) throw new NotFoundError(`No mural: ${id}`);
 
         return mural;

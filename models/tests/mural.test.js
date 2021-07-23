@@ -8,10 +8,11 @@ beforeAll(async function () {
     await db.query("DELETE FROM murals");
 
     const results = await db.query(
-        `INSERT INTO murals(title, description)
-        VALUES ('Test Mural 1', 'This is test mural #1!'),
-                ('Test Mural 2', 'This is test mural #2!'),
-                ('Test Mural 3', 'This is test mural #3!')
+        `INSERT INTO murals(title, description, is_archived)
+        VALUES ('Test Mural 1', 'This is test mural #1!', false),
+                ('Test Mural 2', 'This is test mural #2!', false),
+                ('Test Mural 3', 'This is test mural #3!', false),
+                ('Test Mural 4', 'This is test mural #4!', true)
         RETURNING id`
     );
     testMuralIds.splice(0, 0, ...results.rows.map((row) => row.id));
@@ -68,13 +69,60 @@ describe("create", () => {
     });
 });
 
-/************************************ addImage */
-
 /************************************** getAll */
 
 describe("getAll", () => {
     it("gets all the murals", async () => {
         let murals = await Mural.getAll();
+        expect(murals).toEqual([
+            {
+                id: testMuralIds[0],
+                title: "Test Mural 1",
+                description: "This is test mural #1!",
+                isArchived: false,
+            },
+            {
+                id: testMuralIds[1],
+                title: "Test Mural 2",
+                description: "This is test mural #2!",
+                isArchived: false,
+            },
+            {
+                id: testMuralIds[2],
+                title: "Test Mural 3",
+                description: "This is test mural #3!",
+                isArchived: false,
+            },
+            {
+                id: testMuralIds[3],
+                title: "Test Mural 4",
+                description: "This is test mural #4!",
+                isArchived: true,
+            },
+        ]);
+    });
+});
+
+/********************************* getArchived */
+
+describe("getAll", () => {
+    it("gets all the archived murals", async () => {
+        let murals = await Mural.getArchived();
+        expect(murals).toEqual([
+            {
+                id: testMuralIds[3],
+                title: "Test Mural 4",
+                description: "This is test mural #4!",
+            },
+        ]);
+    });
+});
+
+/*********************************** getActive */
+
+describe("getAll", () => {
+    it("gets all the archived murals", async () => {
+        let murals = await Mural.getActive();
         expect(murals).toEqual([
             {
                 id: testMuralIds[0],
@@ -158,6 +206,70 @@ describe("update", () => {
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+});
+
+/************************************* archive */
+
+describe("archive", () => {
+    it("sets mural as archived by id", async () => {
+        let mural = await Mural.archive(testMuralIds[2]);
+        expect(mural).toEqual({
+            id: testMuralIds[2],
+            title: "Test Mural 3",
+            description: "This is test mural #3!",
+            isArchived: true,
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Mural.archive();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if invalid id", async () => {
+        try {
+            await Mural.archive(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
+/*********************************** unArchive */
+
+describe("unArchive", () => {
+    it("sets mural to active (not archived)", async () => {
+        let mural = await Mural.unArchive(testMuralIds[2]);
+        expect(mural).toEqual({
+            id: testMuralIds[2],
+            title: "Test Mural 3",
+            description: "This is test mural #3!",
+            isArchived: false,
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Mural.unArchive();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if invalid id", async () => {
+        try {
+            await Mural.unArchive(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
         }
     });
 });

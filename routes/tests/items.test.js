@@ -285,28 +285,28 @@ describe("PATCH, /items/sell/:id", () => {
 
 /*********************** PATCH /items/sold/:id */
 
-// describe("PATCH, /items/sold/:id", () => {
-//     it("decreases quantity and marks sold", async () => {
-//         const resp = await request(app).patch(`/items/sold/${testItemIds[1]}`);
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             item: {
-//                 id: testItemIds[1],
-//                 name: "TestItem2",
-//                 description: "This is test item 2!",
-//                 price: "200.99",
-//                 quantity: 0,
-//                 created: expect.any(String),
-//                 isSold: true,
-//             },
-//         });
-//     });
+describe("PATCH, /items/sold/:id", () => {
+    it("decreases quantity and marks sold", async () => {
+        const resp = await request(app).patch(`/items/sold/${testItemIds[1]}`);
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            item: {
+                id: testItemIds[1],
+                name: "TestItem2",
+                description: "This is test item 2!",
+                price: "200.99",
+                quantity: 0,
+                created: expect.any(String),
+                isSold: true,
+            },
+        });
+    });
 
-//     it("gives bad request for invalid id", async () => {
-//         const resp = await request(app).patch(`/items/sold/-1`);
-//         expect(resp.statusCode).toBe(400);
-//     });
-// });
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).patch(`/items/sold/-1`);
+        expect(resp.statusCode).toBe(404);
+    });
+});
 
 /******************** DELETE /items/delete/:id */
 

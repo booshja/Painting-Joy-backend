@@ -135,13 +135,19 @@ router.patch("/sell/:id", async (req, res, next) => {
 });
 
 router.patch("/sold/:id", async (req, res, next) => {
-    /** PATCH "/sold:{id}" => { item }
+    /** PATCH "/sold/{id}" => { item }
      * Marks an item as sold, decreases quantity to 0
      *
      * Returns { id, name, description, price, quantity, created, isSold }
      *
      * Authorization required: admin
      */
+    try {
+        const item = await Item.markSold(+req.params.id);
+        return res.status(200).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.delete("/delete/:id", async (req, res, next) => {

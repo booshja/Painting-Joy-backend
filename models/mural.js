@@ -8,52 +8,80 @@ class Mural {
     static async create(data) {
         /** Create a mural (from data), update db, return new mural data
          *
-         * Data should be { title, description, price }
+         * Data should be { title, description }
          *
-         * Returns { id, title, description, price, photo1, photo2, photo3, isArchived }
+         * Returns { id, title, description, photo1, photo2, photo3, isArchived }
          *
          * Throws BadRequestError for missing / incomplete data
          */
         // check for missing / incomplete data
         if (!data) throw new BadRequestError("No input.");
-        if (!data.title || !data.description || !data.price)
+        if (!data.title || !data.description)
             throw new BadRequestError("Missing data.");
 
         // query db to create new mural
         const result = await db.query(
             `INSERT INTO murals (title,
-                                description,
-                                price)
-                VALUES ($1, $2, $3)
+                                description)
+                VALUES ($1, $2)
                 RETURNING id,
                         title,
                         description,
-                        price,
                         is_archived AS "isArchived"`,
-            [data.title, data.description, data.price]
+            [data.title, data.description]
         );
         const mural = result.rows[0];
 
         return mural;
     }
 
-    // static async addImage(data) {
-    //     /** Add an image to a mural (from data), update db, return new mural data */
-    // }
-
     static async getAll() {
         /** Get an array of all the murals
          *
-         * Returns [{ id, title, description, price }, { id, title, description, price }, ...]
+         * Returns [{ id, title, description, isArchived },
+         *              { id, title, description, isArchived }, ...]
          */
         // query db for list of all murals
         const result = await db.query(
             `SELECT id,
                     title,
                     description,
-                    price
-            FROM murals
-            WHERE is_archived = false`
+                    is_archived AS "isArchived"
+                FROM murals`
+        );
+
+        return result.rows;
+    }
+
+    static async getArchived() {
+        /** Get an array of all archived murals
+         *
+         * Returns [{ id, title, description }, { id, title, description }, ...]
+         */
+        // query db for list of murals
+        const result = await db.query(
+            `SELECT id,
+                    title,
+                    description
+                FROM murals
+                WHERE is_archived = true`
+        );
+
+        return result.rows;
+    }
+
+    static async getActive() {
+        /** Get an array of all non-archived murals
+         *
+         * Returns [{ id, title, description }, { id, title, description }, ...]
+         */
+        // query db for list of murals
+        const result = await db.query(
+            `SELECT id,
+                    title,
+                    description
+                FROM murals
+                WHERE is_archived = false`
         );
 
         return result.rows;
@@ -63,7 +91,7 @@ class Mural {
         /** Get a single mural
          *
          * Accepts id
-         * Returns { id, title, description, price }
+         * Returns { id, title, description }
          *
          * Throws NotFoundError if not found.
          */
@@ -74,8 +102,7 @@ class Mural {
         const result = await db.query(
             `SELECT id,
                     title,
-                    description,
-                    price
+                    description
             FROM murals
             WHERE id = $1`,
             [id]
@@ -92,12 +119,16 @@ class Mural {
         /** Update mural data with 'data'
          * This is a partial update, only the fields provided are changed.
          *
-         * Data can include: { title, description, price }
+         * Data can include: { title, description }
          *
-         * Returns { id, title, description, price }
+         * Returns { id, title, description }
          *
          * Throws NotFoundError if not found.
          */
+        // check for missing/incomplete params
+        if (!id && !data) throw new BadRequestError("No input");
+        if (!id || !data) throw new BadRequestError("Missing input");
+
         // prepare data for partial update
         const { setCols, values } = sqlForPartialUpdate(data, {});
         const idVarIdx = "$" + (values.length + 1);
@@ -108,18 +139,79 @@ class Mural {
                             WHERE id = ${idVarIdx}
                             RETURNING id,
                                     title,
-                                    description,
-                                    price`;
+                                    description`;
+
+        // query db to update item
         const result = await db.query(querySql, [...values, id]);
         const mural = result.rows[0];
 
-        // query db to update item
+        // if no record returned, no mural found, throw NotFoundError
         if (!mural) throw new NotFoundError(`No mural: ${id}`);
 
         return mural;
     }
 
-    static async remove(id) {
+    static async archive(id) {
+        /** Archive mural by id
+         *
+         * Returns { id, title, description, isArchived }
+         *
+         * Throws NotFoundError if mural not found
+         * Throws BadRequestError if no input
+         */
+        // check for missing input
+        if (!id) throw new BadRequestError("No input");
+
+        // query db to update mural
+        const result = await db.query(
+            `UPDATE murals
+                SET is_archived = true
+                WHERE id = $1
+                RETURNING id,
+                        title,
+                        description,
+                        is_archived AS "isArchived"`,
+            [id]
+        );
+        const mural = result.rows[0];
+
+        // if no record returned, no mural found, throw NotFoundError
+        if (!mural) throw new NotFoundError(`No mural: ${id}`);
+
+        return mural;
+    }
+
+    static async unArchive(id) {
+        /** UN-Archive mural by id
+         *
+         * Returns { id, title, description, isArchived }
+         *
+         * Throws NotFoundError if mural not found
+         * Throws BadRequestError if no input
+         */
+        // check for missing input
+        if (!id) throw new BadRequestError("No input");
+
+        // query db to update mural
+        const result = await db.query(
+            `UPDATE murals
+                SET is_archived = false
+                WHERE id = $1
+                RETURNING id,
+                        title,
+                        description,
+                        is_archived AS "isArchived"`,
+            [id]
+        );
+        const mural = result.rows[0];
+
+        // if no record returned, no mural found, throw NotFoundError
+        if (!mural) throw new NotFoundError(`No mural: ${id}`);
+
+        return mural;
+    }
+
+    static async delete(id) {
         /** Delete mural data
          *
          * Throws NotFoundError if mural not found.

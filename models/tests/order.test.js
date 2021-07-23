@@ -231,37 +231,7 @@ describe("create", () => {
 describe("addItem", () => {
     it("add the item to the order", async () => {
         const added = await Order.addItem(testOrderIds[0], testItemIds[0]);
-        expect(added).toEqual({
-            id: testOrderIds[0],
-            email: "1@email.com",
-            name: "Tester1",
-            street: "123 Main St",
-            unit: "Apt 1",
-            city: "Seattle",
-            stateCode: "WA",
-            zipcode: 99999,
-            phone: "5555555555",
-            transactionId: "abcd1234",
-            status: "Confirmed",
-            amount: "1299.99",
-            listItems: [
-                {
-                    name: "Item1",
-                    description: "This is item 1.",
-                    price: "10.99",
-                },
-                {
-                    name: "Item4",
-                    description: "This is item 4.",
-                    price: "40.99",
-                },
-                {
-                    name: "Item1",
-                    description: "This is item 1.",
-                    price: "10.99",
-                },
-            ],
-        });
+        expect(added.listItems.length).toEqual(3);
     });
 
     it("throws BadRequestError if no id", async () => {

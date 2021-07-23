@@ -190,7 +190,7 @@ class Item {
          *
          * Accepts id
          *
-         * Returns { id, name, price, quantity, created, isSold }
+         * Returns { id, name, price, description, quantity, created, isSold }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if item not found
@@ -204,6 +204,7 @@ class Item {
             `SELECT id,
                     name,
                     price,
+                    description,
                     quantity,
                     created,
                     is_sold AS "isSold"
@@ -235,6 +236,7 @@ class Item {
                     RETURNING id,
                             name,
                             price,
+                            description,
                             quantity,
                             created,
                             is_sold AS "isSold"`,
@@ -249,6 +251,7 @@ class Item {
                     RETURNING id,
                             name,
                             price,
+                            description,
                             quantity,
                             created,
                             is_sold AS "isSold"`,

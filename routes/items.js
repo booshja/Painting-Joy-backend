@@ -126,6 +126,12 @@ router.patch("/sell/:id", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const item = await Item.sell(+req.params.id);
+        return res.status(200).json({ item });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.patch("/sold/:id", async (req, res, next) => {

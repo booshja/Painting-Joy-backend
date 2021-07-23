@@ -244,44 +244,44 @@ describe("PATCH, /items/update/:id", () => {
 
 /*********************** PATCH /items/sell/:id */
 
-// describe("PATCH, /items/sell/:id", () => {
-//     it("decreases quantity: 2+ quantity", async () => {
-//         const resp = await request(app).patch(`/items/sell/${testItemIds[1]}`);
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             item: {
-//                 id: testItemIds[1],
-//                 name: "TestItem2",
-//                 description: "This is test item 2!",
-//                 price: "200.99",
-//                 quantity: 1,
-//                 created: expect.any(String),
-//                 isSold: false,
-//             },
-//         });
-//     });
+describe("PATCH, /items/sell/:id", () => {
+    it("decreases quantity: 2+ quantity", async () => {
+        const resp = await request(app).patch(`/items/sell/${testItemIds[1]}`);
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            item: {
+                id: testItemIds[1],
+                name: "TestItem2",
+                description: "This is test item 2!",
+                price: "200.99",
+                quantity: 1,
+                created: expect.any(String),
+                isSold: false,
+            },
+        });
+    });
 
-//     it("decreases quantity and marks sold: 1 quantity", async () => {
-//         const resp = await request(app).patch(`/items/sell/${testItemIds[0]}`);
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             item: {
-//                 id: testItemIds[0],
-//                 name: "TestItem1",
-//                 description: "This is test item 1!",
-//                 price: "100.99",
-//                 quantity: 0,
-//                 created: expect.any(String),
-//                 isSold: true,
-//             },
-//         });
-//     });
+    it("decreases quantity and marks sold: 1 quantity", async () => {
+        const resp = await request(app).patch(`/items/sell/${testItemIds[0]}`);
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            item: {
+                id: testItemIds[0],
+                name: "TestItem1",
+                description: "This is test item 1!",
+                price: "100.99",
+                quantity: 0,
+                created: expect.any(String),
+                isSold: true,
+            },
+        });
+    });
 
-//     it("gives bad request for invalid id", async () => {
-//         const resp = await request(app).patch(`/items/sell/-1`);
-//         expect(resp.statusCode).toBe(400);
-//     });
-// });
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).patch(`/items/sell/-1`);
+        expect(resp.statusCode).toBe(404);
+    });
+});
 
 /*********************** PATCH /items/sold/:id */
 

@@ -154,38 +154,39 @@ describe("GET, /items/available", () => {
 
 /***************************** GET /items/sold */
 
-// describe("GET, /items/sold", () => {
-//     it("gets list of all sold items", async () => {
-//         const res = await db.query(
-//             `INSERT INTO items(name,
-//                                 description,
-//                                 price,
-//                                 quantity,
-//                                 is_sold)
-//                 VALUES('Sold Item',
-//                         'This item is sold!',
-//                         120.99,
-//                         0,
-//                         true)
-//                 RETURNING id`
-//         );
-//         const itemId = res.rows[0];
+describe("GET, /items/sold", () => {
+    it("gets list of all sold items", async () => {
+        const res = await db.query(
+            `INSERT INTO items(name,
+                                description,
+                                price,
+                                quantity,
+                                is_sold)
+                VALUES('Sold Item',
+                        'This item is sold!',
+                        120.99,
+                        0,
+                        true)
+                RETURNING id`
+        );
+        const itemId = res.rows[0].id;
 
-//         const resp = await request(app).get("/items/sold");
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             items: {
-//                 id: itemId,
-//                 name: "Sold Item",
-//                 description: "This item is sold!",
-//                 price: "120.99",
-//                 quantity: 0,
-//                 created: expect.any(String),
-//                 isSold: true,
-//             },
-//         });
-//     });
-// });
+        const resp = await request(app).get("/items/sold");
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            items: [
+                {
+                    id: itemId,
+                    name: "Sold Item",
+                    description: "This item is sold!",
+                    price: "120.99",
+                    quantity: 0,
+                    created: expect.any(String),
+                },
+            ],
+        });
+    });
+});
 
 /********************* PATCH /items/update/:id */
 

@@ -92,6 +92,12 @@ router.get("/sold", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const items = await Item.getAllSold();
+        return res.status(200).json({ items });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.patch("/update/:id", async (req, res, next) => {

@@ -39,6 +39,12 @@ router.get("/", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const messages = await Message.getAll();
+        return res.status(200).json({ messages });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/message/:id", async (req, res, next) => {

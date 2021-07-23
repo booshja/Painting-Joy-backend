@@ -72,34 +72,34 @@ describe("POST, /messages/", () => {
 
 /******************************* GET /messages */
 
-// describe("GET, /messages/", () => {
-//     it("returns a list of all messages", async () => {
-//         const resp = await request(app).get("/messages");
-//         expect(resp.statusCode).toEqual(200);
-//         expect(resp.body).toEqual({
-//             messages: [
-//                 {
-//                     id: expect.any(Number),
-//                     name: "Tester1",
-//                     email: "1@email.com",
-//                     message: "This is a message for the test 1!",
-//                     created: expect.any(Date),
-//                     isArchived: false,
-//                 },
-//                 {
-//                     id: expect.any(Number),
-//                     name: "Tester2",
-//                     email: "2@email.com",
-//                     message: "This is a message for the test 2!",
-//                     created: expect.any(Date),
-//                     isArchived: false,
-//                 },
-//             ],
-//         });
-//     });
-// });
+describe("GET, /messages/", () => {
+    it("returns a list of all messages", async () => {
+        const resp = await request(app).get("/messages");
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({
+            messages: [
+                {
+                    id: expect.any(Number),
+                    name: "Tester1",
+                    email: "1@email.com",
+                    message: "This is a message for the test 1!",
+                    received: expect.any(String),
+                    isArchived: false,
+                },
+                {
+                    id: expect.any(Number),
+                    name: "Tester2",
+                    email: "2@email.com",
+                    message: "This is a message for the test 2!",
+                    received: expect.any(String),
+                    isArchived: false,
+                },
+            ],
+        });
+    });
+});
 
-// /******************* GET /messages/message/:id */
+/******************* GET /messages/message/:id */
 
 // describe("GET, /messages/message/:id", () => {
 //     it("returns a message by id", async () => {
@@ -130,7 +130,7 @@ describe("POST, /messages/", () => {
 //     });
 // });
 
-// /************************ GET /messages/active */
+/************************ GET /messages/active */
 
 // describe("GET, /messages/active", () => {
 //     it("returns a list of all active messages", async () => {
@@ -157,7 +157,7 @@ describe("POST, /messages/", () => {
 //     });
 // });
 
-// /********************** GET /messages/archived */
+/********************** GET /messages/archived */
 
 // describe("GET, /messages/archived", () => {
 //     it("returns a list of all archived messages", async () => {
@@ -188,7 +188,7 @@ describe("POST, /messages/", () => {
 //     });
 // });
 
-// /***************** PATCH /messages/archive/:id */
+/***************** PATCH /messages/archive/:id */
 
 // describe("PATCH, /messages/archive/:id", () => {
 //     it("archives a message by id", async () => {
@@ -217,7 +217,7 @@ describe("POST, /messages/", () => {
 //     });
 // });
 
-// /*************** PATCH /messages/unarchive/:id */
+/*************** PATCH /messages/unarchive/:id */
 
 // describe("PATCH, /messages/unarchive/:id", () => {
 //     it("un-archives a message by id", async () => {
@@ -257,7 +257,7 @@ describe("POST, /messages/", () => {
 //     });
 // });
 
-// /***************** DELETE /messages/delete/:id */
+/***************** DELETE /messages/delete/:id */
 
 // describe("DELETE, /messages/delete/:id", () => {
 //     it("deletes a message by id", async () => {

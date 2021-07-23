@@ -158,6 +158,12 @@ router.delete("/delete/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Item.delete(+req.params.id);
+        return res.status(200).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 module.exports = router;

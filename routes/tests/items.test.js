@@ -310,21 +310,21 @@ describe("PATCH, /items/sold/:id", () => {
 
 /******************** DELETE /items/delete/:id */
 
-// describe("DELETE, /items/delete/:id", () => {
-//     it("deletes an item by id", async () => {
-//         const resp = await request(app).delete(
-//             `/items/delete/${testItemIds[0]}`
-//         );
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             message: {
-//                 msg: "Deleted.",
-//             },
-//         });
-//     });
+describe("DELETE, /items/delete/:id", () => {
+    it("deletes an item by id", async () => {
+        const resp = await request(app).delete(
+            `/items/delete/${testItemIds[0]}`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            message: {
+                msg: "Deleted.",
+            },
+        });
+    });
 
-//     it("gives bad request for invalid id", async () => {
-//         const resp = await request(app).delete(`/items/delete/-1`);
-//         expect(resp.statusCode).toBe(400);
-//     });
-// });
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).delete(`/items/delete/-1`);
+        expect(resp.statusCode).toBe(404);
+    });
+});

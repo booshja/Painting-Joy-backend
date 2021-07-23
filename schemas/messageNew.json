@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://paintingjoy.art/homepageNew.schema.json",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+        },
+        "email": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+        },
+        "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+        }
+    },
+    "additionalProperties": false,
+    "required": ["name", "email", "message"]
+}

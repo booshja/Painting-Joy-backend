@@ -12,10 +12,22 @@ router.post("/", async (req, res, next) => {
      *
      * message should be { name, email, message }
      *
-     * Returns { id, name, email, message, received, isArchived }
+     * Returns { id, name, email, message, received }
      *
      * Authorization required: none
      */
+    try {
+        const validator = jsonschema.validate(req.body, messageNewSchema);
+        if (!validator.valid) {
+            const errors = validator.errors.map((e) => e.stack);
+            throw new BadRequestError(errors);
+        }
+
+        const message = await Message.create(req.body);
+        return res.status(201).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/", async (req, res, next) => {

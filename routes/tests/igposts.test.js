@@ -73,28 +73,28 @@ describe("POST, /igposts/", () => {
 
 /******************************* GET /igposts/ */
 
-// describe("GET, /igposts/", () => {
-//     it("gets a list of all the igposts", async () => {
-//         const resp = await request(app).get("/igposts/");
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             igPosts: [
-//                 {
-//                     igId: "abcd12341",
-//                     caption: "This is a test caption 1!",
-//                     permUrl: "example.com/1",
-//                     imageUrl: "example.com/image1.jpg",
-//                 },
-//                 {
-//                     igId: "abcd12342",
-//                     caption: "Ths is a test caption 2!",
-//                     permUrl: "example.com/2",
-//                     imageUrl: "example.com/image2.jpg",
-//                 },
-//             ],
-//         });
-//     });
-// });
+describe("GET, /igposts/", () => {
+    it("gets a list of all the igposts", async () => {
+        const resp = await request(app).get("/igposts/");
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            igPosts: [
+                {
+                    igId: "abcd12341",
+                    caption: "This is a test caption 1!",
+                    permUrl: "example.com/1",
+                    imageUrl: "example.com/image1.jpg",
+                },
+                {
+                    igId: "abcd12342",
+                    caption: "This is a test caption 2!",
+                    permUrl: "example.com/2",
+                    imageUrl: "example.com/image2.jpg",
+                },
+            ],
+        });
+    });
+});
 
 /*********************** GET /igposts/:id */
 

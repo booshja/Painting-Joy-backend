@@ -37,6 +37,12 @@ router.get("/", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const igPosts = await IGPost.getAll();
+        return res.status(200).json({ igPosts });
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get("/post/:id", async (req, res, next) => {

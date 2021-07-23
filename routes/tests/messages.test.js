@@ -127,30 +127,30 @@ describe("GET, /messages/message/:id", () => {
 
 /************************ GET /messages/active */
 
-// describe("GET, /messages/active", () => {
-//     it("returns a list of all active messages", async () => {
-//         const resp = await request(app).get("/messages/active");
-//         expect(resp.statusCode).toEqual(200);
-//         expect(resp.body).toEqual({
-//             messages: [
-//                 {
-//                     id: testMessageIds[0],
-//                     name: "Tester1",
-//                     email: "1@email.com",
-//                     message: "This is a message for the test 1!",
-//                     received: expect.any(Date),
-//                 },
-//                 {
-//                     id: testMessageIds[1],
-//                     name: "Tester2",
-//                     email: "2@email.com",
-//                     message: "This is a message for the test 2!",
-//                     received: expect.any(Date),
-//                 },
-//             ],
-//         });
-//     });
-// });
+describe("GET, /messages/active", () => {
+    it("returns a list of all active messages", async () => {
+        const resp = await request(app).get("/messages/active");
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({
+            messages: [
+                {
+                    id: testMessageIds[0],
+                    name: "Tester1",
+                    email: "1@email.com",
+                    message: "This is a message for the test 1!",
+                    received: expect.any(String),
+                },
+                {
+                    id: testMessageIds[1],
+                    name: "Tester2",
+                    email: "2@email.com",
+                    message: "This is a message for the test 2!",
+                    received: expect.any(String),
+                },
+            ],
+        });
+    });
+});
 
 /********************** GET /messages/archived */
 

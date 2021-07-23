@@ -59,7 +59,6 @@ router.get("/message/:id", async (req, res, next) => {
         const message = await Message.get(+req.params.id);
         return res.status(200).json({ message });
     } catch (err) {
-        console.log(err);
         next(err);
     }
 });
@@ -73,6 +72,12 @@ router.get("/active", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const messages = await Message.getActive();
+        return res.status(200).json({ messages });
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get("/archived", async (req, res, next) => {

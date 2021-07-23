@@ -262,7 +262,16 @@ describe("update", () => {
 
     it("throws BadRequestError if no data", async () => {
         try {
-            await Item.update(testItemIds[0], {});
+            await Item.update();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError if missing data", async () => {
+        try {
+            await Item.update(testItemIds[0]);
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();

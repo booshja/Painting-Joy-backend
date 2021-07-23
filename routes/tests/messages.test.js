@@ -211,43 +211,40 @@ describe("PATCH, /messages/archive/:id", () => {
 
 /*************** PATCH /messages/unarchive/:id */
 
-// describe("PATCH, /messages/unarchive/:id", () => {
-//     it("un-archives a message by id", async () => {
-//         const res = await db.query(`INSERT INTO messages(name,
-//                                                             email,
-//                                                             message,
-//                                                             is_archived)
-//                                             VALUES('archived',
-//                                                     'archived@email.com',
-//                                                     'This is archived.',
-//                                                     true)
-//                                             RETURNING id`);
-//         const newMsgId = res.rows[0].id;
+describe("PATCH, /messages/unarchive/:id", () => {
+    it("un-archives a message by id", async () => {
+        const res = await db.query(`INSERT INTO messages(name,
+                                                            email,
+                                                            message,
+                                                            is_archived)
+                                            VALUES('archived',
+                                                    'archived@email.com',
+                                                    'This is archived.',
+                                                    true)
+                                            RETURNING id`);
+        const newMsgId = res.rows[0].id;
 
-//         const resp = await request(app).patch(
-//             `/messages/unarchive/${newMsgId}`
-//         );
-//         expect(resp.statusCode).toEqual(200);
-//         expect(resp.body).toEqual({
-//             id: newMsgId,
-//             name: "archived",
-//             email: "archived@email.com",
-//             message: "This is archived.",
-//             received: expect.any(Date),
-//             isArchived: false,
-//         });
-//     });
+        const resp = await request(app).patch(
+            `/messages/unarchive/${newMsgId}`
+        );
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({
+            message: {
+                id: newMsgId,
+                name: "archived",
+                email: "archived@email.com",
+                message: "This is archived.",
+                received: expect.any(String),
+                isArchived: false,
+            },
+        });
+    });
 
-//     it("gives bad request for no id", async () => {
-//         const resp = await request(app).patch("/messages/unarchive/");
-//         expect(resp.statusCode).toEqual(400);
-//     });
-
-//     it("gives not found for non-matching id", async () => {
-//         const resp = await request(app).patch("/messages/unarchive/-1");
-//         expect(resp.statusCode).toEqual(404);
-//     });
-// });
+    it("gives not found for non-matching id", async () => {
+        const resp = await request(app).patch("/messages/unarchive/-1");
+        expect(resp.statusCode).toEqual(404);
+    });
+});
 
 /***************** DELETE /messages/delete/:id */
 

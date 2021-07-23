@@ -121,6 +121,12 @@ router.patch("/unarchive/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Message.unArchive(req.params.id);
+        return res.status(200).json({ message });
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.delete("/delete/:id", async (req, res, next) => {

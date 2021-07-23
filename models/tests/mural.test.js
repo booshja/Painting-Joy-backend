@@ -105,7 +105,7 @@ describe("getAll", () => {
 
 /********************************* getArchived */
 
-describe("getAll", () => {
+describe("getArchived", () => {
     it("gets all the archived murals", async () => {
         let murals = await Mural.getArchived();
         expect(murals).toEqual([
@@ -120,8 +120,8 @@ describe("getAll", () => {
 
 /*********************************** getActive */
 
-describe("getAll", () => {
-    it("gets all the archived murals", async () => {
+describe("getActive", () => {
+    it("gets all the non-archived murals", async () => {
         let murals = await Mural.getActive();
         expect(murals).toEqual([
             {
@@ -193,16 +193,25 @@ describe("update", () => {
 
     it("throws NotFoundError if no such mural", async () => {
         try {
-            await Mural.update(0, { title: "Not gonna happen!" });
+            await Mural.update(-1, { title: "Not gonna happen!" });
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();
         }
     });
 
-    it("throws BadRequestError if no data", async () => {
+    it("throws BadRequestError if no input", async () => {
         try {
-            await Mural.update(testMuralIds[0], {});
+            await Mural.update();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws BadRequestError if missing input", async () => {
+        try {
+            await Mural.update(12);
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();

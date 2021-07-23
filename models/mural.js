@@ -125,6 +125,10 @@ class Mural {
          *
          * Throws NotFoundError if not found.
          */
+        // check for missing/incomplete params
+        if (!id && !data) throw new BadRequestError("No input");
+        if (!id || !data) throw new BadRequestError("Missing input");
+
         // prepare data for partial update
         const { setCols, values } = sqlForPartialUpdate(data, {});
         const idVarIdx = "$" + (values.length + 1);

@@ -31,7 +31,7 @@ router.post("/", async (req, res, next) => {
     }
 });
 
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
     /** GET "/" => [ items ]
      * Returns a list of all items
      *
@@ -40,9 +40,15 @@ router.get("/", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const items = await Item.getAll();
+        return res.status(200).json({ items });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.get("/item/:id", (req, res, next) => {
+router.get("/item/:id", async (req, res, next) => {
     /** GET "/item/{id}" => { item }
      * Returns an item by id
      *
@@ -54,7 +60,7 @@ router.get("/item/:id", (req, res, next) => {
      */
 });
 
-router.get("/available", (req, res, next) => {
+router.get("/available", async (req, res, next) => {
     /** GET "/available" => [ items ]
      * Returns a list of available items
      *
@@ -65,7 +71,7 @@ router.get("/available", (req, res, next) => {
      */
 });
 
-router.get("/sold", (req, res, next) => {
+router.get("/sold", async (req, res, next) => {
     /** GET "/sold" => [ items ]
      * Returns a list of sold items
      *
@@ -76,7 +82,7 @@ router.get("/sold", (req, res, next) => {
      */
 });
 
-router.patch("/update/:id", (req, res, next) => {
+router.patch("/update/:id", async (req, res, next) => {
     /** PATCH "/update/{id}" { data }=> { item }
      * Updates an item. NOTE: This is a partial update, not all fields are required.
      *
@@ -88,7 +94,7 @@ router.patch("/update/:id", (req, res, next) => {
      */
 });
 
-router.patch("/sell/:id", (req, res, next) => {
+router.patch("/sell/:id", async (req, res, next) => {
     /** PATCH "/sell/{id}" => { item }
      * Decreases quantity of item by 1, marks it as sold out if decreases to 0
      *
@@ -98,7 +104,7 @@ router.patch("/sell/:id", (req, res, next) => {
      */
 });
 
-router.patch("/sold/:id", (req, res, next) => {
+router.patch("/sold/:id", async (req, res, next) => {
     /** PATCH "/sold:{id}" => { item }
      * Marks an item as sold, decreases quantity to 0
      *
@@ -108,7 +114,7 @@ router.patch("/sold/:id", (req, res, next) => {
      */
 });
 
-router.delete("/delete/:id", (req, res, next) => {
+router.delete("/delete/:id", async (req, res, next) => {
     /** DELETE "/delete/{id}" => { item }
      * Deletes an item
      *

@@ -98,41 +98,46 @@ describe("GET, /igposts/", () => {
 
 /*********************** GET /igposts/:id */
 
-// describe("GET, /igposts/:id", () => {
-//     it("gets an igpost by id", async () => {
-//         const resp = await request(app).get(`/igposts/${testIgPostIds[0]}`);
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             igPost: {
-//                 igId: "abcd12341",
-//                 caption: "This is a test caption 1!",
-//                 permUrl: "example.com/1",
-//                 imageUrl: "example.com/image1.jpg",
-//             },
-//         });
-//     });
+describe("GET, /igposts/post/:id", () => {
+    it("gets an igpost by id", async () => {
+        const resp = await request(app).get(
+            `/igposts/post/${testIgPostIds[0]}`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            igPost: {
+                igId: "abcd12341",
+                caption: "This is a test caption 1!",
+                permUrl: "example.com/1",
+                imageUrl: "example.com/image1.jpg",
+            },
+        });
+    });
 
-//     it("gives not found for invalid id", async () => {
-//         const resp = await request(app).get("/igposts/-1");
-//         expect(resp.statusCode).toBe(400);
-//     });
-// });
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).get("/igposts/post/-1");
+        expect(resp.statusCode).toBe(404);
+    });
+});
 
 /****************** DELETE /igposts/:id */
 
-// describe("DELETE, /igposts/:id", () => {
-//     it("deletes an igpost by id", async () => {
-//         const resp = await request(app).delete(`/igposts/${testIgPostIds[0]}`);
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             message: {
-//                 msg: "Deleted.",
-//             },
-//         });
-//     });
+describe("DELETE, /igposts/:id", () => {
+    it("deletes an igpost by id", async () => {
+        const resp = await request(app).delete(
+            `/igposts/delete/${testIgPostIds[1]}`
+        );
+        console.log(resp.body);
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            message: {
+                msg: "Deleted.",
+            },
+        });
+    });
 
-//     it("gives not found for invalid id", async () => {
-//         const resp = await request(app).delete("/igposts/-1");
-//         expect(resp.statusCode).toBe(400);
-//     });
-// });
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).delete("/igposts/delete/-1");
+        expect(resp.statusCode).toBe(404);
+    });
+});

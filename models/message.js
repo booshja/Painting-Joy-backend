@@ -25,7 +25,11 @@ class Message {
                                     name,
                                     message)
                 VALUES ($1, $2, $3)
-                RETURNING id, email, name, message, received`,
+                RETURNING id,
+                            email,
+                            name,
+                            message,
+                            received`,
             [data.email, data.name, data.message]
         );
         const message = result.rows[0];

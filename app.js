@@ -5,6 +5,7 @@ const { NotFoundError } = require("./expressError");
 
 // const { authenticateJWT } = require("./middleware/auth");
 const homepageRoutes = require("./routes/homepage");
+const messagesRoutes = require("./routes/messages");
 // const adminRoutes = require("./routes/admin");
 
 const morgan = require("morgan");
@@ -17,6 +18,7 @@ app.use(morgan("common"));
 // app.use(authenticateJWT);
 
 app.use("/homepage", homepageRoutes);
+app.use("/messages", messagesRoutes);
 // app.use("/auth", authRoutes)
 // app.use("/admin", adminRoutes);
 

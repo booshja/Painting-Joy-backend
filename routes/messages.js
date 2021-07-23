@@ -16,6 +16,18 @@ router.post("/", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const validator = jsonschema.validate(req.body, messageNewSchema);
+        if (!validator.valid) {
+            const errors = validator.errors.map((e) => e.stack);
+            throw new BadRequestError(errors);
+        }
+
+        const message = await Message.create(req.body);
+        return res.status(201).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/", async (req, res, next) => {
@@ -27,6 +39,12 @@ router.get("/", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const messages = await Message.getAll();
+        return res.status(200).json({ messages });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/message/:id", async (req, res, next) => {
@@ -37,6 +55,12 @@ router.get("/message/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Message.get(+req.params.id);
+        return res.status(200).json({ message });
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get("/active", async (req, res, next) => {
@@ -48,6 +72,12 @@ router.get("/active", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const messages = await Message.getActive();
+        return res.status(200).json({ messages });
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get("/archived", async (req, res, next) => {
@@ -59,6 +89,12 @@ router.get("/archived", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const messages = await Message.getArchived();
+        return res.status(200).json({ messages });
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.patch("/archive/:id", async (req, res, next) => {
@@ -69,6 +105,12 @@ router.patch("/archive/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Message.archive(+req.params.id);
+        return res.status(200).json({ message });
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.patch("/unarchive/:id", async (req, res, next) => {
@@ -79,6 +121,12 @@ router.patch("/unarchive/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Message.unArchive(+req.params.id);
+        return res.status(200).json({ message });
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.delete("/delete/:id", async (req, res, next) => {
@@ -89,6 +137,12 @@ router.delete("/delete/:id", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Message.delete(+req.params.id);
+        return res.status(200).json({ message });
+    } catch (err) {
+        next(err);
+    }
 });
 
 module.exports = router;

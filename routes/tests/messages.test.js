@@ -101,34 +101,29 @@ describe("GET, /messages/", () => {
 
 /******************* GET /messages/message/:id */
 
-// describe("GET, /messages/message/:id", () => {
-//     it("returns a message by id", async () => {
-//         const resp = await request(app).get(
-//             `/messages/message/${testMessageIds[0]}`
-//         );
-//         expect(resp.statusCode).toEqual(200);
-//         expect(resp.body).toEqual({
-//             message: {
-//                 id: testMessageIds[0],
-//                 name: "Tester1",
-//                 email: "1@email.com",
-//                 message: "This is a message for the test 1!",
-//                 received: expect.any(Number),
-//                 isArchived: false,
-//             },
-//         });
-//     });
+describe("GET, /messages/message/:id", () => {
+    it("returns a message by id", async () => {
+        const resp = await request(app).get(
+            `/messages/message/${testMessageIds[0]}`
+        );
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({
+            message: {
+                id: testMessageIds[0],
+                name: "Tester1",
+                email: "1@email.com",
+                message: "This is a message for the test 1!",
+                received: expect.any(String),
+                isArchived: false,
+            },
+        });
+    });
 
-//     it("gives bad request with missing id", async () => {
-//         const resp = await request(app).get("/messages/message/");
-//         expect(resp.statusCode).toEqual(400);
-//     });
-
-//     it("gives not found with invalid id", async () => {
-//         const resp = await request(app).get("/messages/message/-1");
-//         expect(resp.statusCode).toEqual(404);
-//     });
-// });
+    it("gives not found with invalid id", async () => {
+        const resp = await request(app).get("/messages/message/-1");
+        expect(resp.statusCode).toEqual(404);
+    });
+});
 
 /************************ GET /messages/active */
 

@@ -119,7 +119,7 @@ router.get("/item/:itemId/image", async (req, res) => {
      **/
     try {
         // get item image by id
-        const itemImage = await Item.getImage(req.params.itemId);
+        const itemImage = await Item.getImage(+req.params.itemId);
         // if no item or no image in item, throw NotFoundError
         if (!itemImage) throw new NotFoundError("No image found.");
 

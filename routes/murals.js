@@ -61,7 +61,9 @@ router.post(
          * Authorization Required: admin
          **/
         try {
+            // prep imageName
             const imageName = "image" + req.params.imageNum;
+            // save image data to db
             const message = await Mural.uploadImage(
                 +req.params.muralId,
                 imageName,
@@ -146,7 +148,7 @@ router.get("/mural/:id", async (req, res, next) => {
 });
 
 router.get("/mural/:muralId/image/:imageNum", async (req, res) => {
-    /** GET "/mural/:muralId/image" => image
+    /** GET "/mural/:muralId/image/:imageNum" => image
      * Returns the image associated with the mural
      *
      * Returns image data
@@ -157,7 +159,7 @@ router.get("/mural/:muralId/image/:imageNum", async (req, res) => {
         const imageName = "image" + req.params.imageNum;
         // get mural image by id and image name
         const muralImage = await Mural.getImage(+req.params.muralId, imageName);
-        // if no mural or no image in mural, throw NotFoundError
+        // if no mural or image, throw NotFoundError
         if (!muralImage) throw new NotFoundError("No image found.");
 
         //response header, use set
@@ -180,6 +182,12 @@ router.patch("/mural/:id", async (req, res, next) => {
      * Authorization required: admin
      */
     try {
+        const validator = jsonschema.validate(req.body, muralUpdateSchema);
+        if (!validator.valid) {
+            const errors = validator.errors.map((e) => e.stack);
+            throw new BadRequestError(errors);
+        }
+
         const mural = await Mural.update(+req.params.id, req.body);
         return res.status(200).json({ mural });
     } catch (err) {

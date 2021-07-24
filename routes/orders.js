@@ -51,6 +51,15 @@ router.post("/:orderId/add/:itemId", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const order = await Order.addItem(
+            req.params.orderId,
+            req.params.itemId
+        );
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.get("/:orderId", async (req, res, next) => {

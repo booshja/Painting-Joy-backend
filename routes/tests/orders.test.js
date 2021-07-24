@@ -189,54 +189,61 @@ describe("/orders/", () => {
 
 /*********** POST /orders/:orderId/add/:itemId */
 
-// describe("/orders/:orderId/add/:itemId", () => {
-//     it("adds an item to an order by orderId & itemId", async () => {
-//         const resp = await request(app).post(
-//             `/orders/${testOrderIds[0]}/add/${testItemIds[0]}`
-//         );
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             order: {
-//                 id: testOrderIds[0],
-//                 email: "ralph@email.com",
-//                 name: "Ralph Schnauzer",
-//                 street: "123 Space Needle Dr.",
-//                 unit: null,
-//                 city: "Seattle",
-//                 stateCode: "WA",
-//                 zipcode: 99999,
-//                 phone: "5552065555",
-//                 transactionId: "abcd1234",
-//                 status: "Confirmed",
-//                 amount: "240.00",
-//                 listItems: [
-//                     {
-//                         id: testItemIds[0],
-//                         name: "Item1",
-//                         description: "This is item 1!",
-//                         price: "100.99",
-//                         quantity: 1,
-//                         created: expect.any(String),
-//                     },
-//                 ],
-//             },
-//         });
-//     });
+describe("/orders/:orderId/add/:itemId", () => {
+    it("adds an item to an order by orderId & itemId", async () => {
+        const resp = await request(app).post(
+            `/orders/${testOrderIds[0]}/add/${testItemIds[0]}`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            order: {
+                id: testOrderIds[0],
+                email: "ralph@email.com",
+                name: "Ralph Schnauzer",
+                street: "123 Space Needle Dr.",
+                unit: null,
+                city: "Seattle",
+                stateCode: "WA",
+                zipcode: 99999,
+                phone: "5552065555",
+                transactionId: "abcd1234",
+                status: "Confirmed",
+                amount: "240",
+                listItems: [
+                    {
+                        name: "Item1",
+                        description: "This is item 1!",
+                        price: "100.99",
+                    },
+                    {
+                        name: "Item2",
+                        description: "This is item 2!",
+                        price: "200.99",
+                    },
+                    {
+                        name: "Item1",
+                        description: "This is item 1!",
+                        price: "100.99",
+                    },
+                ],
+            },
+        });
+    });
 
-//     it("gives not found for invalid order id", async () => {
-//         const resp = await request(app).post(
-//             `/orders/${-1}/add/${testItemIds[1]}`
-//         );
-//         expect(resp.statusCode).toBe(404);
-//     });
+    it("gives not found for invalid order id", async () => {
+        const resp = await request(app).post(
+            `/orders/${-1}/add/${testItemIds[1]}`
+        );
+        expect(resp.statusCode).toBe(404);
+    });
 
-//     it("gives not found for invalid item id", async () => {
-//         const resp = await request(app).post(
-//             `/orders/${testOrderIds[0]}/add/${-1}`
-//         );
-//         expect(resp.statusCode).toBe(404);
-//     });
-// });
+    it("gives not found for invalid item id", async () => {
+        const resp = await request(app).post(
+            `/orders/${testOrderIds[0]}/add/${-1}`
+        );
+        expect(resp.statusCode).toBe(404);
+    });
+});
 
 /************************ GET /orders/:orderId */
 

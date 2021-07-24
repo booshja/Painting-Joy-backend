@@ -18,16 +18,10 @@ CREATE TABLE murals (
     id SERIAL PRIMARY KEY,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(200) NOT NULL,
+    image1 BYTEA DEFAULT NULL,
+    image2 BYTEA DEFAULT NULL,
+    image3 BYTEA DEFAULT NULL,
     is_archived BOOLEAN NOT NULL DEFAULT false
-    -- photo_1_type TEXT,
-    -- photo_1_name TEXT,
-    -- photo_1_data BYTEA,
-    -- photo_2_type TEXT,
-    -- photo_2_name TEXT,
-    -- photo_2_data BYTEA,
-    -- photo_3_type TEXT,
-    -- photo_3_name TEXT,
-    -- photo_3_data BYTEA,
 );
 
 CREATE TABLE messages (

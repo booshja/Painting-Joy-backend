@@ -29,7 +29,7 @@ app.use("/orders", ordersRoutes);
 
 /** Handle 404 Errors */
 app.use((req, res, next) => {
-    return next(new NotFoundError());
+    return next(new NotFoundError("Endpoint not found."));
 });
 
 /** Generic error handler */

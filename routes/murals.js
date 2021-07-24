@@ -1,11 +1,29 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
-const { BadRequestError } = require("../expressError");
+const multer = require("multer");
+const { BadRequestError, NotFoundError } = require("../expressError");
 const Mural = require("../models/mural");
 const muralNewSchema = require("../schemas/muralNew.json");
 const muralUpdateSchema = require("../schemas/muralUpdate.json");
 
 const router = express.Router({ mergeParams: true });
+
+// multer options
+const upload = multer({
+    limits: {
+        // limits filesize to 1 megabyte
+        fileSize: 1000000,
+    },
+    fileFilter(req, file, cb) {
+        // restricts file types to png, jpg, jpeg
+        if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+            // callback to throw error if filetype not image
+            cb(new BadRequestError("Please upload an image."));
+        }
+        // callback to continue
+        cb(undefined, true);
+    },
+});
 
 router.post("/", async (req, res, next) => {
     /** POST "/" { mural } => { mural }
@@ -30,6 +48,36 @@ router.post("/", async (req, res, next) => {
         return next(err);
     }
 });
+
+router.post(
+    "/upload/:muralId/image/:imageNum",
+    upload.single("upload"),
+    async (req, res) => {
+        /** POST "/" { file upload } => { message }
+         * Upload an image and save as binary to db
+         *
+         * Returns { msg: "Upload successful." }
+         *
+         * Authorization Required: admin
+         **/
+        try {
+            const imageName = "image" + req.params.imageNum;
+            const message = await Mural.uploadImage(
+                +req.params.muralId,
+                imageName,
+                {
+                    image: req.file.buffer,
+                }
+            );
+            res.status(200).send({ message });
+        } catch (err) {
+            res.status(400).send(err);
+        }
+    },
+    (error, req, res, next) => {
+        res.status(400).send({ error: error.message });
+    }
+);
 
 router.get("/", async (req, res, next) => {
     /** GET "/" => { [ murals ] }
@@ -97,6 +145,29 @@ router.get("/mural/:id", async (req, res, next) => {
     }
 });
 
+router.get("/mural/:muralId/image/:imageNum", async (req, res) => {
+    /** GET "/mural/:muralId/image" => image
+     * Returns the image associated with the mural
+     *
+     * Returns image data
+     *
+     * Authoriation required: none
+     **/
+    try {
+        const imageName = "image" + req.params.imageNum;
+        // get mural image by id and image name
+        const muralImage = await Mural.getImage(+req.params.muralId, imageName);
+        // if no mural or no image in mural, throw NotFoundError
+        if (!muralImage) throw new NotFoundError("No image found.");
+
+        //response header, use set
+        res.set("Content-Type", "image/png");
+        res.status(200).send(muralImage[Object.keys(muralImage)[0]]);
+    } catch (err) {
+        res.status(404).send(err);
+    }
+});
+
 router.patch("/mural/:id", async (req, res, next) => {
     /** PATCH "/{id}" { mural } => { mural }
      * Partial update of a mural by id
@@ -145,6 +216,24 @@ router.patch("/mural/:id/unarchive", async (req, res, next) => {
         return res.status(200).json({ mural });
     } catch (err) {
         return next(err);
+    }
+});
+
+router.delete("/mural/:muralId/image/:imageNum", async (req, res) => {
+    /** DELETE "/upload" => {message}
+     * Deletes image data from a mural
+     *
+     * Returns { msg: "Deleted." }
+     *
+     * Authorization required: admin
+     */
+    try {
+        const imageName = "image" + req.params.imageNum;
+        // delete mural image by muralId and imageName
+        const message = await Mural.deleteImage(+req.params.imageId, imageName);
+        res.status(200).send({ message });
+    } catch (err) {
+        res.status(400).send(err);
     }
 });
 

@@ -222,7 +222,7 @@ router.patch("/sold/:id", async (req, res, next) => {
 });
 
 router.delete("/item/:imageId/image", async (req, res) => {
-    /** DELETE "/upload" => undefined
+    /** DELETE "/upload" => {message}
      * Deletes image data from an item
      *
      * Returns { msg: "Deleted." }

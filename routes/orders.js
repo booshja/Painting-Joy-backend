@@ -144,7 +144,7 @@ router.patch("/:orderId/remove/:itemId", async (req, res, next) => {
     try {
         const message = await Order.removeItem(
             +req.params.orderId,
-            +req.params.itemId
+            req.params.itemId
         );
         return res.status(200).json({ message });
     } catch (err) {

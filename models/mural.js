@@ -1,4 +1,5 @@
 const db = require("../db");
+const format = require("pg-format");
 const { NotFoundError, BadRequestError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
@@ -115,6 +116,40 @@ class Mural {
         return mural;
     }
 
+    static async getImage(muralId, imageName) {
+        /** Get image data for a mural by id, imageId
+         *
+         * Accepts muralId, imageName
+         *      muralId should be db ID for mural
+         *      imageName should be the name for the image col in db
+         *          ie: "image1", "image2", "image3"
+         *
+         * Returns { image }
+         *
+         * Throws BadRequestError if missing/incomplete input
+         * Throws NotFoundError if no mural
+         */
+        // check for missing/incomplete input
+        if (!muralId && !imageName) throw new BadRequestError("No input.");
+        if (!muralId || !imageName) throw new BadRequestError("Missing input.");
+
+        // format query string to prevent sql injection
+        const query = format(
+            "SELECT %1$I FROM murals WHERE id = %2$s",
+            imageName,
+            muralId
+        );
+
+        // query db to get data
+        const result = await db.query(query);
+        const muralImg = result.rows[0];
+
+        // if no record returned, no mural found, throw NotFoundError
+        if (!muralImg) throw new NotFoundError(`No mural: ${muralId}`);
+
+        return muralImg;
+    }
+
     static async update(id, data) {
         /** Update mural data with 'data'
          * This is a partial update, only the fields provided are changed.
@@ -141,7 +176,7 @@ class Mural {
                                     title,
                                     description`;
 
-        // query db to update item
+        // query db to update mural
         const result = await db.query(querySql, [...values, id]);
         const mural = result.rows[0];
 
@@ -149,6 +184,44 @@ class Mural {
         if (!mural) throw new NotFoundError(`No mural: ${id}`);
 
         return mural;
+    }
+
+    static async uploadImage(muralId, imageName, data) {
+        /** Updates mural with image data
+         *
+         * Accepts muralId, imageName, data
+         *      muralId is db ID for mural
+         *      imageName is name of image col in db
+         *          ie- "image1", "image2", "image3"
+         *      data is image byte string
+         *
+         * Returns { msg: "Upload successful: image#" }
+         *
+         * Throws BadRequestError if missing/incomplete input
+         * Throws NotFoundError if mural not found
+         */
+        // check for missing/incomplete inputs
+        if (!muralId && !imageName && !data)
+            throw new BadRequestError("No input.");
+        if (!muralId || !imageName || !data)
+            throw new BadRequestError("Missing input.");
+
+        // format query string to prevent sql injection
+        const query = format(
+            "UPDATE murals SET %1$I = %2$L WHERE id = %3$L RETURNING id",
+            imageName,
+            data.image,
+            muralId
+        );
+
+        // query db to get data
+        const result = await db.query(query);
+        const muralImg = result.rows[0];
+
+        // if no record returned, no mural found, throw NotFoundError
+        if (!muralImg) throw new NotFoundError(`No mural: ${muralId}`);
+
+        return { msg: `Upload successful: ${imageName}` };
     }
 
     static async archive(id) {
@@ -209,6 +282,43 @@ class Mural {
         if (!mural) throw new NotFoundError(`No mural: ${id}`);
 
         return mural;
+    }
+
+    static async deleteImage(muralId, imageName) {
+        /** Delete a mural's image by muralId and imageName
+         *
+         * Accepts muralId, imageName
+         *      muralId is db id for mural
+         *      imageName is name of image col in db
+         *          ie- "image1", "image2", "image3"
+         *
+         * Returns { msg: "Deleted: image#" }
+         *
+         * Throws BadRequestError if no id
+         * Throws NotFoundError if not found
+         */
+        // check for missing/incomplete input
+        if (!muralId && !imageName) throw new BadRequestError("No input.");
+        if (!muralId || !imageName) throw new BadRequestError("Missing input.");
+
+        // format query string to prevent sql injection
+        const query = format(
+            "UPDATE murals SET %1$I = null WHERE id = %2$L RETURNING id",
+            imageName,
+            muralId
+        );
+
+        // query db to update image data to null
+        const result = await db.query(query);
+        const mural = result.rows[0];
+
+        // if no record returned, no mural found, throw NotFoundError
+        if (!mural)
+            throw new NotFoundError(
+                `No mural (${muralId}) or invalid image col name (${imageName})`
+            );
+
+        return { msg: `Deleted: ${imageName}` };
     }
 
     static async delete(id) {

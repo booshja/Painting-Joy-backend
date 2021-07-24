@@ -73,9 +73,37 @@ class Item {
         const item = result.rows[0];
 
         // if no record returned, no item found, throw NotFoundError
-        if (!item) throw new NotFoundError(`No order: ${id}`);
+        if (!item) throw new NotFoundError(`No item: ${id}`);
 
         return item;
+    }
+
+    static async getImage(id) {
+        /** Get image data for an item by id
+         *
+         * Accepts id
+         *
+         * Returns { image }
+         *
+         * Throws BadRequestError if no input
+         * Throws NotFoundError if no item
+         */
+        // check for missing input
+        if (!id) throw new BadRequestError("No id provided.");
+
+        // query db to get data
+        const result = await db.query(
+            `SELECT image
+                FROM items
+                WHERE id=$1`,
+            [id]
+        );
+        const itemImg = result.rows[0];
+
+        // if no record returned, no item found, throw NotFoundError
+        if (!itemImg) throw new NotFoundError(`No item: ${id}`);
+
+        return itemImg.image;
     }
 
     static async getAll() {
@@ -140,6 +168,36 @@ class Item {
         );
 
         return result.rows;
+    }
+
+    static async uploadImage(id, data) {
+        /** Updates item with image data
+         *
+         * data can include: { upload }
+         *
+         * Returns { msg: "Upload successful." }
+         *
+         * Throws BadRequestError if missing or incomplete input
+         * Throws NotFoundError if item not found
+         */
+        // check for missing/incomplete inputs
+        if (!id && !data) throw new BadRequestError("No input.");
+        if (!id || !data) throw new BadRequestError("Missing input.");
+
+        // query db to update item
+        const result = await db.query(
+            `UPDATE items
+                SET image = $1
+                WHERE id = $2
+                RETURNING id`,
+            [data.image, id]
+        );
+        const item = result.rows[0];
+
+        // if no record returned, no item found, throw NotFoundError
+        if (!item) throw new NotFoundError(`No item: ${id}`);
+
+        return { msg: "Upload successful." };
     }
 
     static async update(id, data) {
@@ -295,6 +353,35 @@ class Item {
         if (!item) throw new NotFoundError(`No item: ${id}`);
 
         return item;
+    }
+
+    static async deleteImage(id) {
+        /** Delete an items's image by id
+         *
+         * Accepts id
+         *
+         * Returns { msg: "Deleted." }
+         *
+         * Throws BadRequestError if no id
+         * Throws NotFoundError if not found
+         */
+        // check for missing input
+        if (!id) throw new BadRequestError("No id provided.");
+
+        // query db to change item's image to null
+        const result = await db.query(
+            `UPDATE items
+                SET image = null
+                WHERE id = $1
+                RETURNING id`,
+            [id]
+        );
+        const item = result.rows[0];
+
+        // if no record returned, no item found, throw NotFoundError
+        if (!item) throw new NotFoundError(`No item: ${id}`);
+
+        return { msg: "Deleted." };
     }
 
     static async delete(id) {

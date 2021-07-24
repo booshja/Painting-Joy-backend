@@ -1,6 +1,6 @@
 {
     "name": "pj-backend",
-    "version": "1.0.0",
+    "version": "0.5.0",
     "description": "Back End for PaintingJoy.art",
     "main": "server.js",
     "scripts": {

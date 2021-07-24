@@ -291,65 +291,42 @@ describe("/orders/:orderId", () => {
 
 /******************************** GET /orders/ */
 
-// describe("/orders/", () => {
-//     it("gets a list of all orders", async () => {
-//         const resp = await request(app).get("/orders/");
-//         expect(resp.statusCode).toBe(404);
-//         expect(resp.body).toEqual({
-//             orders: [
-//                 {
-//                     id: testOrderIds[0],
-//                     email: "ralph@email.com",
-//                     name: "Ralph Schnauzer",
-//                     street: "123 Space Needle Dr.",
-//                     unit: null,
-//                     city: "Seattle",
-//                     stateCode: "WA",
-//                     zipcode: 99999,
-//                     phone: "5552065555",
-//                     transactionId: "abcd1234",
-//                     status: "Confirmed",
-//                     amount: "240.00",
-//                     listItems: [
-//                         {
-//                             id: testItemIds[0],
-//                             name: "Item1",
-//                             description: "This is item 1!",
-//                             price: "100.99",
-//                             quantity: 1,
-//                             created: expect.any(String),
-//                             isSold: false,
-//                         },
-//                         {
-//                             id: testItemIds[1],
-//                             name: "Item2",
-//                             description: "This is item 2!",
-//                             price: "200.99",
-//                             quantity: 2,
-//                             created: expect.any(String),
-//                             isSold: false,
-//                         },
-//                     ],
-//                 },
-//                 {
-//                     id: testOrderIds[1],
-//                     email: "krew@email.com",
-//                     name: "Krew Corgi",
-//                     street: "123 Space Needle Ctr.",
-//                     unit: "Unit 1299",
-//                     city: "Seattle",
-//                     stateCode: "WA",
-//                     zipcode: 99599,
-//                     phone: "5558015555",
-//                     transactionId: "1234abcd",
-//                     status: "Confirmed",
-//                     amount: "42990.99",
-//                     listItems: [],
-//                 },
-//             ],
-//         });
-//     });
-// });
+describe("/orders/", () => {
+    it("gets a list of all orders", async () => {
+        const resp = await request(app).get("/orders/");
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body.orders).toEqual([
+            {
+                id: testOrderIds[0],
+                email: "ralph@email.com",
+                name: "Ralph Schnauzer",
+                street: "123 Space Needle Dr.",
+                unit: null,
+                city: "Seattle",
+                stateCode: "WA",
+                zipcode: 99999,
+                phone: "5552065555",
+                transactionId: "abcd1234",
+                status: "Confirmed",
+                amount: "240",
+            },
+            {
+                id: testOrderIds[1],
+                email: "krew@email.com",
+                name: "Krew Corgi",
+                street: "123 Space Needle Ctr.",
+                unit: "Unit 1299",
+                city: "Seattle",
+                stateCode: "WA",
+                zipcode: 99599,
+                phone: "5558015555",
+                transactionId: "1234abcd",
+                status: "Confirmed",
+                amount: "42990.99",
+            },
+        ]);
+    });
+});
 
 /***************** PATCH /orders/:orderId/ship */
 

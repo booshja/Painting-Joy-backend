@@ -92,6 +92,12 @@ router.get("/", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const orders = await Order.getAll();
+        return res.status(200).json({ orders });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.patch("/:orderId/ship", async (req, res, next) => {

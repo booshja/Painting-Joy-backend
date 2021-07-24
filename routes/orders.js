@@ -6,7 +6,7 @@ const orderNewSchema = require("../schemas/orderNew.json");
 
 const router = express.Router({ mergeParams: true });
 
-router.post("/", (req, res, next) => {
+router.post("/", async (req, res, next) => {
     /** POST "/" { order, [ids] } => { order }
      * Create a new order
      * Optionally accepts an array of item ids to add to the order w/ creation
@@ -21,9 +21,26 @@ router.post("/", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const validator = jsonschema.validate(req.body.order, orderNewSchema);
+        if (!validator.valid) {
+            const errors = validator.errors.map((e) => e.stack);
+            throw new BadRequestError(errors);
+        }
+
+        let order;
+        if (req.body.ids) {
+            order = await Order.create(req.body.order, req.body.ids);
+        } else {
+            order = await Order.create(req.body.order);
+        }
+        return res.status(201).json({ order });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.post("/:orderId/add/:itemId", (req, res, next) => {
+router.post("/:orderId/add/:itemId", async (req, res, next) => {
     /** POST "/add/{id}" => { order }
      * Adds an existing item to an existing order by orderId & itemId
      *
@@ -33,9 +50,18 @@ router.post("/:orderId/add/:itemId", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const order = await Order.addItem(
+            +req.params.orderId,
+            req.params.itemId
+        );
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.get("/:orderId", (req, res, next) => {
+router.get("/:orderId", async (req, res, next) => {
     /** GET "/{orderId}" => { order }
      * Gets an order by id
      *
@@ -45,9 +71,15 @@ router.get("/:orderId", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const order = await Order.get(+req.params.orderId);
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
     /** GET "/" => { [ orders ] }
      * Gets an array of all orders
      *
@@ -59,9 +91,15 @@ router.get("/", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const orders = await Order.getAll();
+        return res.status(200).json({ orders });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.patch("/:orderId/ship", (req, res, next) => {
+router.patch("/:orderId/ship", async (req, res, next) => {
     /** PATCH "/{orderId}/ship" => { order }
      * Changes order's status to "Shipped"
      *
@@ -70,9 +108,15 @@ router.patch("/:orderId/ship", (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const order = await Order.markShipped(+req.params.orderId);
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.patch("/:orderId/complete", (req, res, next) => {
+router.patch("/:orderId/complete", async (req, res, next) => {
     /** PATCH "/{orderId}/complete" => { order }
      * Changes order's status to "Completed"
      *
@@ -81,9 +125,15 @@ router.patch("/:orderId/complete", (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const order = await Order.markCompleted(+req.params.orderId);
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.patch("/:orderId/remove/:itemId", (req, res, next) => {
+router.patch("/:orderId/remove/:itemId", async (req, res, next) => {
     /** PATCH "/{orderId}/remove/{itemId}" => { msg }
      * Removes an item from the order
      *
@@ -91,14 +141,34 @@ router.patch("/:orderId/remove/:itemId", (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Order.removeItem(
+            +req.params.orderId,
+            +req.params.itemId
+        );
+        return res.status(200).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.delete("/:orderId", (req, res, next) => {
+router.delete("/:orderId", async (req, res, next) => {
     /** DELETE "/{orderId}" => { msg }
      * Deletes an order from the db by id
+     *
+     * Note: This is a logical delete.
+     *      Records will still be kept in the database.
      *
      * Returns { msg: "Removed." }
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Order.remove(+req.params.orderId);
+        return res.status(200).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
+
+module.exports = router;

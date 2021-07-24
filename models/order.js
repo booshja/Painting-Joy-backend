@@ -24,7 +24,6 @@ class Order {
             !data.email ||
             !data.name ||
             !data.street ||
-            !data.unit ||
             !data.city ||
             !data.stateCode ||
             !data.zipcode ||
@@ -238,7 +237,7 @@ class Order {
                     status,
                     amount
                 FROM orders
-                WHERE id=$1`,
+                WHERE id=$1 AND is_deleted=false`,
             [id]
         );
         const order = result.rows[0];

@@ -78,26 +78,30 @@ afterAll(async () => {
 
 describe("/orders/", () => {
     it("creates a new order without items", async () => {
-        const resp = await request(app).post("/orders/").send({
-            email: "new@email.com",
-            name: "Mr. New",
-            stree: "123 Space Needle Ct.",
-            unit: "Apt 122",
-            city: "Seattle",
-            stateCode: "WA",
-            zipcode: 98765,
-            phone: 5554255555,
-            transactionId: "dcba4321",
-            status: "Confirmed",
-            amount: 999.99,
-        });
+        const resp = await request(app)
+            .post("/orders/")
+            .send({
+                order: {
+                    email: "new@email.com",
+                    name: "Mr. New",
+                    street: "123 Space Needle Ct.",
+                    unit: "Apt 122",
+                    city: "Seattle",
+                    stateCode: "WA",
+                    zipcode: 98765,
+                    phone: 5554255555,
+                    transactionId: "dcba4321",
+                    status: "Confirmed",
+                    amount: 999.99,
+                },
+            });
         expect(resp.statusCode).toBe(201);
         expect(resp.body).toEqual({
             order: {
                 id: expect.any(Number),
                 email: "new@email.com",
                 name: "Mr. New",
-                stree: "123 Space Needle Ct.",
+                street: "123 Space Needle Ct.",
                 unit: "Apt 122",
                 city: "Seattle",
                 stateCode: "WA",
@@ -112,29 +116,31 @@ describe("/orders/", () => {
     });
 
     it("creates a new order with items", async () => {
-        const resp = await request(app).post("/orders/").send(
-            {
-                email: "new2@email.com",
-                name: "Mr. New New",
-                stree: "123 Space Needle Blvd.",
-                unit: "Apt 211",
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: 98789,
-                phone: 5554255555,
-                transactionId: "dcbaxxxx4321",
-                status: "Confirmed",
-                amount: 1999.99,
-            },
-            [testItemIds[0], testItemIds[1]]
-        );
+        const resp = await request(app)
+            .post("/orders/")
+            .send({
+                order: {
+                    email: "new2@email.com",
+                    name: "Mr. New New",
+                    street: "123 Space Needle Blvd.",
+                    unit: "Apt 211",
+                    city: "Seattle",
+                    stateCode: "WA",
+                    zipcode: 98789,
+                    phone: 5554255555,
+                    transactionId: "dcbaxxxx4321",
+                    status: "Confirmed",
+                    amount: 1999.99,
+                },
+                ids: [testItemIds[0], testItemIds[1]],
+            });
         expect(resp.statusCode).toBe(201);
         expect(resp.body).toEqual({
             order: {
                 id: expect.any(Number),
                 email: "new2@email.com",
                 name: "Mr. New New",
-                stree: "123 Space Needle Blvd.",
+                street: "123 Space Needle Blvd.",
                 unit: "Apt 211",
                 city: "Seattle",
                 stateCode: "WA",
@@ -202,15 +208,22 @@ describe("/orders/:orderId/add/:itemId", () => {
                 phone: "5552065555",
                 transactionId: "abcd1234",
                 status: "Confirmed",
-                amount: "240.00",
+                amount: "240",
                 listItems: [
                     {
-                        id: testItemIds[0],
                         name: "Item1",
                         description: "This is item 1!",
                         price: "100.99",
-                        quantity: 1,
-                        created: expect.any(String),
+                    },
+                    {
+                        name: "Item2",
+                        description: "This is item 2!",
+                        price: "200.99",
+                    },
+                    {
+                        name: "Item1",
+                        description: "This is item 1!",
+                        price: "100.99",
                     },
                 ],
             },
@@ -251,25 +264,19 @@ describe("/orders/:orderId", () => {
                 phone: "5552065555",
                 transactionId: "abcd1234",
                 status: "Confirmed",
-                amount: "240.00",
+                amount: "240",
                 listItems: [
                     {
-                        id: testItemIds[0],
                         name: "Item1",
                         description: "This is item 1!",
                         price: "100.99",
                         quantity: 1,
-                        created: expect.any(String),
-                        isSold: false,
                     },
                     {
-                        id: testItemIds[1],
                         name: "Item2",
                         description: "This is item 2!",
                         price: "200.99",
                         quantity: 2,
-                        created: expect.any(String),
-                        isSold: false,
                     },
                 ],
             },
@@ -287,60 +294,37 @@ describe("/orders/:orderId", () => {
 describe("/orders/", () => {
     it("gets a list of all orders", async () => {
         const resp = await request(app).get("/orders/");
-        expect(resp.statusCode).toBe(404);
-        expect(resp.body).toEqual({
-            orders: [
-                {
-                    id: testOrderIds[0],
-                    email: "ralph@email.com",
-                    name: "Ralph Schnauzer",
-                    street: "123 Space Needle Dr.",
-                    unit: null,
-                    city: "Seattle",
-                    stateCode: "WA",
-                    zipcode: 99999,
-                    phone: "5552065555",
-                    transactionId: "abcd1234",
-                    status: "Confirmed",
-                    amount: "240.00",
-                    listItems: [
-                        {
-                            id: testItemIds[0],
-                            name: "Item1",
-                            description: "This is item 1!",
-                            price: "100.99",
-                            quantity: 1,
-                            created: expect.any(String),
-                            isSold: false,
-                        },
-                        {
-                            id: testItemIds[1],
-                            name: "Item2",
-                            description: "This is item 2!",
-                            price: "200.99",
-                            quantity: 2,
-                            created: expect.any(String),
-                            isSold: false,
-                        },
-                    ],
-                },
-                {
-                    id: testOrderIds[1],
-                    email: "krew@email.com",
-                    name: "Krew Corgi",
-                    street: "123 Space Needle Ctr.",
-                    unit: "Unit 1299",
-                    city: "Seattle",
-                    stateCode: "WA",
-                    zipcode: 99599,
-                    phone: "5558015555",
-                    transactionId: "1234abcd",
-                    status: "Confirmed",
-                    amount: "42990.99",
-                    listItems: [],
-                },
-            ],
-        });
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body.orders).toEqual([
+            {
+                id: testOrderIds[0],
+                email: "ralph@email.com",
+                name: "Ralph Schnauzer",
+                street: "123 Space Needle Dr.",
+                unit: null,
+                city: "Seattle",
+                stateCode: "WA",
+                zipcode: 99999,
+                phone: "5552065555",
+                transactionId: "abcd1234",
+                status: "Confirmed",
+                amount: "240",
+            },
+            {
+                id: testOrderIds[1],
+                email: "krew@email.com",
+                name: "Krew Corgi",
+                street: "123 Space Needle Ctr.",
+                unit: "Unit 1299",
+                city: "Seattle",
+                stateCode: "WA",
+                zipcode: 99599,
+                phone: "5558015555",
+                transactionId: "1234abcd",
+                status: "Confirmed",
+                amount: "42990.99",
+            },
+        ]);
     });
 });
 
@@ -348,7 +332,9 @@ describe("/orders/", () => {
 
 describe("/orders/:orderId/ship", () => {
     it("updates an order's status to 'Shipped' by id", async () => {
-        const resp = request(app).patch(`/orders/${testOrderIds[1]}/ship`);
+        const resp = await request(app).patch(
+            `/orders/${testOrderIds[1]}/ship`
+        );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
@@ -364,7 +350,6 @@ describe("/orders/:orderId/ship", () => {
                 transactionId: "1234abcd",
                 status: "Shipped",
                 amount: "42990.99",
-                listItems: [],
             },
         });
     });
@@ -379,7 +364,9 @@ describe("/orders/:orderId/ship", () => {
 
 describe("/orders/:orderId/complete", () => {
     it("updates an order's status to 'Completed' by id", async () => {
-        const resp = request(app).patch(`/orders/${testOrderIds[1]}/complete`);
+        const resp = await request(app).patch(
+            `/orders/${testOrderIds[1]}/complete`
+        );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
@@ -395,7 +382,6 @@ describe("/orders/:orderId/complete", () => {
                 transactionId: "1234abcd",
                 status: "Completed",
                 amount: "42990.99",
-                listItems: [],
             },
         });
     });
@@ -415,30 +401,8 @@ describe("/orders/:orderId/remove/:itemId", () => {
         );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
-            order: {
-                id: testOrderIds[0],
-                email: "ralph@email.com",
-                name: "Ralph Schnauzer",
-                street: "123 Space Needle Dr.",
-                unit: null,
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: 99999,
-                phone: "5552065555",
-                transactionId: "abcd1234",
-                status: "Confirmed",
-                amount: "240.00",
-                listItems: [
-                    {
-                        id: testItemIds[0],
-                        name: "Item1",
-                        description: "This is item 1!",
-                        price: "100.99",
-                        quantity: 1,
-                        created: expect.any(String),
-                        isSold: false,
-                    },
-                ],
+            message: {
+                msg: "Item removed.",
             },
         });
     });
@@ -461,12 +425,12 @@ describe("/orders/:orderId/remove/:itemId", () => {
 /********************* DELETE /orders/:orderId */
 
 describe("/orders/:orderId", () => {
-    it("deltes an order by id", async () => {
+    it("deletes an order by id", async () => {
         const resp = await request(app).delete(`/orders/${testOrderIds[0]}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: {
-                msg: "Deleted.",
+                msg: "Removed.",
             },
         });
 

@@ -6,20 +6,67 @@
         "name": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 50
+            "maxLength": 40
         },
-        "description": {
+        "email": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 100
+            "maxLength": 40
         },
-        "price": {
-            "type": "number"
+        "street": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
         },
-        "quantity": {
-            "type": "integer"
+        "unit": {
+            "type": "string",
+            "maxLength": 50
+        },
+        "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+        },
+        "stateCode": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2
+        },
+        "zipcode": {
+            "type": "number",
+            "minimum": 1000,
+            "maximum": 99951
+        },
+        "phone": {
+            "type": "number",
+            "minimum": 2000000000,
+            "maximum": 10000000000
+        },
+        "transactionId": {
+            "type": "string",
+            "minLength": 1
+        },
+        "status": {
+            "type": "string",
+            "minLength": 7,
+            "maxLength": 9
+        },
+        "amount": {
+            "type": "number",
+            "minimum": 1
         }
     },
-    "additionalProperties": false,
-    "required": ["name", "description", "price", "quantity"]
+    "additionalProperties": true,
+    "required": [
+        "name",
+        "email",
+        "street",
+        "city",
+        "stateCode",
+        "zipcode",
+        "phone",
+        "transactionId",
+        "status",
+        "amount"
+    ]
 }

@@ -109,6 +109,12 @@ router.patch("/:orderId/ship", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const order = await Order.markShipped(+req.params.orderId);
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.patch("/:orderId/complete", async (req, res, next) => {

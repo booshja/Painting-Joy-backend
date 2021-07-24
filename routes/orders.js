@@ -6,7 +6,7 @@ const orderNewSchema = require("../schemas/orderNew.json");
 
 const router = express.Router({ mergeParams: true });
 
-router.post("/", (req, res, next) => {
+router.post("/", async (req, res, next) => {
     /** POST "/" { order, [ids] } => { order }
      * Create a new order
      * Optionally accepts an array of item ids to add to the order w/ creation
@@ -21,9 +21,27 @@ router.post("/", (req, res, next) => {
      *
      * Authorization required: none
      */
+    try {
+        const validator = jsonschema.validate(req.body.order, orderNewSchema);
+        if (!validator.valid) {
+            const errors = validator.errors.map((e) => e.stack);
+            throw new BadRequestError(errors);
+        }
+
+        let order;
+        if (req.body.ids) {
+            order = await Order.create(req.body.order, req.body.ids);
+        } else {
+            order = await Order.create(req.body.order);
+        }
+        return res.status(201).json({ order });
+    } catch (err) {
+        console.log(err);
+        return next(err);
+    }
 });
 
-router.post("/:orderId/add/:itemId", (req, res, next) => {
+router.post("/:orderId/add/:itemId", async (req, res, next) => {
     /** POST "/add/{id}" => { order }
      * Adds an existing item to an existing order by orderId & itemId
      *
@@ -35,7 +53,7 @@ router.post("/:orderId/add/:itemId", (req, res, next) => {
      */
 });
 
-router.get("/:orderId", (req, res, next) => {
+router.get("/:orderId", async (req, res, next) => {
     /** GET "/{orderId}" => { order }
      * Gets an order by id
      *
@@ -47,7 +65,7 @@ router.get("/:orderId", (req, res, next) => {
      */
 });
 
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
     /** GET "/" => { [ orders ] }
      * Gets an array of all orders
      *
@@ -61,7 +79,7 @@ router.get("/", (req, res, next) => {
      */
 });
 
-router.patch("/:orderId/ship", (req, res, next) => {
+router.patch("/:orderId/ship", async (req, res, next) => {
     /** PATCH "/{orderId}/ship" => { order }
      * Changes order's status to "Shipped"
      *
@@ -72,7 +90,7 @@ router.patch("/:orderId/ship", (req, res, next) => {
      */
 });
 
-router.patch("/:orderId/complete", (req, res, next) => {
+router.patch("/:orderId/complete", async (req, res, next) => {
     /** PATCH "/{orderId}/complete" => { order }
      * Changes order's status to "Completed"
      *
@@ -83,7 +101,7 @@ router.patch("/:orderId/complete", (req, res, next) => {
      */
 });
 
-router.patch("/:orderId/remove/:itemId", (req, res, next) => {
+router.patch("/:orderId/remove/:itemId", async (req, res, next) => {
     /** PATCH "/{orderId}/remove/{itemId}" => { msg }
      * Removes an item from the order
      *
@@ -93,7 +111,7 @@ router.patch("/:orderId/remove/:itemId", (req, res, next) => {
      */
 });
 
-router.delete("/:orderId", (req, res, next) => {
+router.delete("/:orderId", async (req, res, next) => {
     /** DELETE "/{orderId}" => { msg }
      * Deletes an order from the db by id
      *
@@ -102,3 +120,5 @@ router.delete("/:orderId", (req, res, next) => {
      * Authorization required: admin
      */
 });
+
+module.exports = router;

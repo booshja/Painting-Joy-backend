@@ -24,7 +24,6 @@ class Order {
             !data.email ||
             !data.name ||
             !data.street ||
-            !data.unit ||
             !data.city ||
             !data.stateCode ||
             !data.zipcode ||

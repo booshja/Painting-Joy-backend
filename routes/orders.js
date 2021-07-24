@@ -36,7 +36,6 @@ router.post("/", async (req, res, next) => {
         }
         return res.status(201).json({ order });
     } catch (err) {
-        console.log(err);
         return next(err);
     }
 });
@@ -126,6 +125,12 @@ router.patch("/:orderId/complete", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const order = await Order.markCompleted(+req.params.orderId);
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.patch("/:orderId/remove/:itemId", async (req, res, next) => {

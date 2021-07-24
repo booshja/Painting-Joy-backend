@@ -330,65 +330,67 @@ describe("/orders/", () => {
 
 /***************** PATCH /orders/:orderId/ship */
 
-// describe("/orders/:orderId/ship", () => {
-//     it("updates an order's status to 'Shipped' by id", async () => {
-//         const resp = request(app).patch(`/orders/${testOrderIds[1]}/ship`);
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             order: {
-//                 id: testOrderIds[1],
-//                 email: "krew@email.com",
-//                 name: "Krew Corgi",
-//                 street: "123 Space Needle Ctr.",
-//                 unit: "Unit 1299",
-//                 city: "Seattle",
-//                 stateCode: "WA",
-//                 zipcode: 99599,
-//                 phone: "5558015555",
-//                 transactionId: "1234abcd",
-//                 status: "Shipped",
-//                 amount: "42990.99",
-//                 listItems: [],
-//             },
-//         });
-//     });
+describe("/orders/:orderId/ship", () => {
+    it("updates an order's status to 'Shipped' by id", async () => {
+        const resp = await request(app).patch(
+            `/orders/${testOrderIds[1]}/ship`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            order: {
+                id: testOrderIds[1],
+                email: "krew@email.com",
+                name: "Krew Corgi",
+                street: "123 Space Needle Ctr.",
+                unit: "Unit 1299",
+                city: "Seattle",
+                stateCode: "WA",
+                zipcode: 99599,
+                phone: "5558015555",
+                transactionId: "1234abcd",
+                status: "Shipped",
+                amount: "42990.99",
+            },
+        });
+    });
 
-//     it("gives not found for invalid id", async () => {
-//         const resp = await request(app).patch(`/orders/${-1}/ship`);
-//         expect(resp.statusCode).toBe(404);
-//     });
-// });
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).patch(`/orders/${-1}/ship`);
+        expect(resp.statusCode).toBe(404);
+    });
+});
 
 /************* PATCH /orders/:orderId/complete */
 
-// describe("/orders/:orderId/complete", () => {
-//     it("updates an order's status to 'Completed' by id", async () => {
-//         const resp = request(app).patch(`/orders/${testOrderIds[1]}/complete`);
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             order: {
-//                 id: testOrderIds[1],
-//                 email: "krew@email.com",
-//                 name: "Krew Corgi",
-//                 street: "123 Space Needle Ctr.",
-//                 unit: "Unit 1299",
-//                 city: "Seattle",
-//                 stateCode: "WA",
-//                 zipcode: 99599,
-//                 phone: "5558015555",
-//                 transactionId: "1234abcd",
-//                 status: "Completed",
-//                 amount: "42990.99",
-//                 listItems: [],
-//             },
-//         });
-//     });
+describe("/orders/:orderId/complete", () => {
+    it("updates an order's status to 'Completed' by id", async () => {
+        const resp = await request(app).patch(
+            `/orders/${testOrderIds[1]}/complete`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            order: {
+                id: testOrderIds[1],
+                email: "krew@email.com",
+                name: "Krew Corgi",
+                street: "123 Space Needle Ctr.",
+                unit: "Unit 1299",
+                city: "Seattle",
+                stateCode: "WA",
+                zipcode: 99599,
+                phone: "5558015555",
+                transactionId: "1234abcd",
+                status: "Completed",
+                amount: "42990.99",
+            },
+        });
+    });
 
-//     it("gives not found for invalid id", async () => {
-//         const resp = await request(app).patch(`/orders/${-1}/complete`);
-//         expect(resp.statusCode).toBe(404);
-//     });
-// });
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).patch(`/orders/${-1}/complete`);
+        expect(resp.statusCode).toBe(404);
+    });
+});
 
 /******* PATCH /orders/:orderId/remove/:itemId */
 

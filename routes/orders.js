@@ -2,7 +2,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 const Order = require("../models/order");
-// const orderNewSchema = require("../schemas/orderNew.json");
+const orderNewSchema = require("../schemas/orderNew.json");
 
 const router = express.Router({ mergeParams: true });
 

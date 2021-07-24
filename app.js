@@ -5,10 +5,11 @@ const { NotFoundError } = require("./expressError");
 
 // const { authenticateJWT } = require("./middleware/auth");
 const homepageRoutes = require("./routes/homepage");
+const igPostsRoutes = require("./routes/igposts");
+const itemsRoutes = require("./routes/items");
 const messagesRoutes = require("./routes/messages");
 const muralsRoutes = require("./routes/murals");
-const igPosts = require("./routes/igposts");
-const items = require("./routes/items");
+const ordersRoutes = require("./routes/orders");
 
 const morgan = require("morgan");
 
@@ -20,10 +21,11 @@ app.use(morgan("common"));
 // app.use(authenticateJWT);
 
 app.use("/homepage", homepageRoutes);
+app.use("/igposts", igPostsRoutes);
+app.use("/items", itemsRoutes);
 app.use("/messages", messagesRoutes);
 app.use("/murals", muralsRoutes);
-app.use("/igposts", igPosts);
-app.use("/items", items);
+app.use("/orders", ordersRoutes);
 
 /** Handle 404 Errors */
 app.use((req, res, next) => {

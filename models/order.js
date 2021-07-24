@@ -237,7 +237,7 @@ class Order {
                     status,
                     amount
                 FROM orders
-                WHERE id=$1`,
+                WHERE id=$1 AND is_deleted=false`,
             [id]
         );
         const order = result.rows[0];

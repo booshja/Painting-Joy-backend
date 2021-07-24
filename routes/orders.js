@@ -156,10 +156,19 @@ router.delete("/:orderId", async (req, res, next) => {
     /** DELETE "/{orderId}" => { msg }
      * Deletes an order from the db by id
      *
+     * Note: This is a logical delete.
+     *      Records will still be kept in the database.
+     *
      * Returns { msg: "Removed." }
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Order.remove(+req.params.orderId);
+        return res.status(200).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 module.exports = router;

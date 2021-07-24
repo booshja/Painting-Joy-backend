@@ -424,22 +424,22 @@ describe("/orders/:orderId/remove/:itemId", () => {
 
 /********************* DELETE /orders/:orderId */
 
-// describe("/orders/:orderId", () => {
-//     it("deltes an order by id", async () => {
-//         const resp = await request(app).delete(`/orders/${testOrderIds[0]}`);
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             message: {
-//                 msg: "Deleted.",
-//             },
-//         });
+describe("/orders/:orderId", () => {
+    it("deletes an order by id", async () => {
+        const resp = await request(app).delete(`/orders/${testOrderIds[0]}`);
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            message: {
+                msg: "Removed.",
+            },
+        });
 
-//         const checkResp = await request(app).get(`/orders/${testOrderIds[0]}`);
-//         expect(checkResp.statusCode).toEqual(404);
-//     });
+        const checkResp = await request(app).get(`/orders/${testOrderIds[0]}`);
+        expect(checkResp.statusCode).toEqual(404);
+    });
 
-//     it("gives not found for invalid id", async () => {
-//         const resp = await request(app).delete(`/orders/${-1}`);
-//         expect(resp.statusCode).toBe(404);
-//     });
-// });
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).delete(`/orders/${-1}`);
+        expect(resp.statusCode).toBe(404);
+    });
+});

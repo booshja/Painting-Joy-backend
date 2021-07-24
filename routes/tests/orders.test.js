@@ -394,55 +394,33 @@ describe("/orders/:orderId/complete", () => {
 
 /******* PATCH /orders/:orderId/remove/:itemId */
 
-// describe("/orders/:orderId/remove/:itemId", () => {
-//     it("removes an item from an order by orderId & itemId", async () => {
-//         const resp = await request(app).patch(
-//             `/orders/${testOrderIds[0]}/remove/${testItemIds[1]}`
-//         );
-//         expect(resp.statusCode).toBe(200);
-//         expect(resp.body).toEqual({
-//             order: {
-//                 id: testOrderIds[0],
-//                 email: "ralph@email.com",
-//                 name: "Ralph Schnauzer",
-//                 street: "123 Space Needle Dr.",
-//                 unit: null,
-//                 city: "Seattle",
-//                 stateCode: "WA",
-//                 zipcode: 99999,
-//                 phone: "5552065555",
-//                 transactionId: "abcd1234",
-//                 status: "Confirmed",
-//                 amount: "240.00",
-//                 listItems: [
-//                     {
-//                         id: testItemIds[0],
-//                         name: "Item1",
-//                         description: "This is item 1!",
-//                         price: "100.99",
-//                         quantity: 1,
-//                         created: expect.any(String),
-//                         isSold: false,
-//                     },
-//                 ],
-//             },
-//         });
-//     });
+describe("/orders/:orderId/remove/:itemId", () => {
+    it("removes an item from an order by orderId & itemId", async () => {
+        const resp = await request(app).patch(
+            `/orders/${testOrderIds[0]}/remove/${testItemIds[1]}`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            message: {
+                msg: "Item removed.",
+            },
+        });
+    });
 
-//     it("gives not found for invalid order id", async () => {
-//         const resp = await request(app).patch(
-//             `/orders/${-1}/remove/${testItemIds[0]}`
-//         );
-//         expect(resp.statusCode).toBe(404);
-//     });
+    it("gives not found for invalid order id", async () => {
+        const resp = await request(app).patch(
+            `/orders/${-1}/remove/${testItemIds[0]}`
+        );
+        expect(resp.statusCode).toBe(404);
+    });
 
-//     it("gives not found for invalid item id", async () => {
-//         const resp = await request(app).get(
-//             `/orders/${testOrderIds[0]}/remove/${-1}`
-//         );
-//         expect(resp.statusCode).toBe(404);
-//     });
-// });
+    it("gives not found for invalid item id", async () => {
+        const resp = await request(app).get(
+            `/orders/${testOrderIds[0]}/remove/${-1}`
+        );
+        expect(resp.statusCode).toBe(404);
+    });
+});
 
 /********************* DELETE /orders/:orderId */
 

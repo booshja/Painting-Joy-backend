@@ -141,6 +141,15 @@ router.patch("/:orderId/remove/:itemId", async (req, res, next) => {
      *
      * Authorization required: admin
      */
+    try {
+        const message = await Order.removeItem(
+            +req.params.orderId,
+            +req.params.itemId
+        );
+        return res.status(200).json({ message });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.delete("/:orderId", async (req, res, next) => {

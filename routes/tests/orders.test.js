@@ -210,21 +210,9 @@ describe("/orders/:orderId/add/:itemId", () => {
                 status: "Confirmed",
                 amount: "240",
                 listItems: [
-                    {
-                        name: "Item1",
-                        description: "This is item 1!",
-                        price: "100.99",
-                    },
-                    {
-                        name: "Item2",
-                        description: "This is item 2!",
-                        price: "200.99",
-                    },
-                    {
-                        name: "Item1",
-                        description: "This is item 1!",
-                        price: "100.99",
-                    },
+                    expect.any(Object),
+                    expect.any(Object),
+                    expect.any(Object),
                 ],
             },
         });

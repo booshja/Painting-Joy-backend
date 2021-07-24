@@ -230,7 +230,6 @@ class Item {
                                     price,
                                     quantity,
                                     created,
-                                    image,
                                     is_sold AS "isSold"`;
 
         // query db to update item
@@ -353,7 +352,7 @@ class Item {
         // if no record returned, no item found, throw NotFoundError
         if (!item) throw new NotFoundError(`No item: ${id}`);
 
-        return item.image;
+        return item;
     }
 
     static async deleteImage(id) {

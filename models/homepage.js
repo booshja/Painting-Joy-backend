@@ -1,5 +1,5 @@
 const db = require("../db");
-const { BadRequestError } = require("../expressError");
+const { BadRequestError, NotFoundError } = require("../expressError");
 
 class Homepage {
     /** Homepage Model */
@@ -52,6 +52,33 @@ class Homepage {
         return info;
     }
 
+    static async getImage() {
+        /** Get image data for homepage
+         *
+         * Returns { image }
+         *
+         * Throws NotFoundError if no homepage found
+         * Throws NotFoundError if homepage found, but no image
+         */
+        // query db to get data
+        const result = await db.query(
+            `SELECT image
+                FROM homepages
+                ORDER BY id
+                DESC
+                LIMIT 1`
+        );
+        const image = result.rows[0];
+
+        // if no record returned, no homepage found, throw NotFoundError
+        if (!image) throw new NotFoundError("No homepage found.");
+
+        // if no image attribute, no image found on homepage, throw NotFoundError
+        if (!image.image) throw new NotFoundError("No image found.");
+
+        return image.image;
+    }
+
     static async update(data) {
         /** Delete previous record from db, add updated info
          *
@@ -82,6 +109,75 @@ class Homepage {
         const info = result.rows[0];
 
         return info;
+    }
+
+    static async uploadImage(data) {
+        /** Updates homepage with image data
+         *
+         * data can include: { upload }
+         *
+         * Returns { msg: "Upload successful." }
+         *
+         * Throws BadRequestError if missing input
+         * Throws NotFoundError if homepage not found
+         */
+        // check for missing/incomplete inputs
+        if (!data) throw new BadRequestError("No input.");
+        if (!data.image) throw new BadRequestError("No image.");
+
+        // query db to get item id
+        const idRes = await db.query(
+            `SELECT id
+                FROM homepages
+                ORDER BY id
+                DESC
+                LIMIT 1`
+        );
+        const idObj = idRes.rows[0];
+
+        // if no record returned, no homepage found, throw NotFoundError
+        if (!idObj || !idObj.id) throw new NotFoundError("No homepage found.");
+
+        // query db to update homepage with image
+        await db.query(
+            `UPDATE homepages
+                SET image = $1
+                WHERE id = $2`,
+            [data.image, idObj.id]
+        );
+
+        return { msg: "Upload successful." };
+    }
+
+    static async deleteImage() {
+        /** Deletes a homepage's image
+         *
+         * Returns { msg: "Deleted." }
+         *
+         * Throws NotFoundError if no homepage found
+         */
+        // query db to get homepage id
+        const result = await db.query(
+            `SELECT id
+                FROM homepages
+                ORDER BY id
+                DESC
+                LIMIT 1`
+        );
+        const id = result.rows[0];
+
+        // if no record returned, no homepage found, throw NotFoundError
+        if (!id || !id.id) throw new NotFoundError("No homepage found.");
+
+        // query db to update image to null
+        await db.query(
+            `UPDATE homepages
+                SET image = null
+                WHERE id = $1`,
+            [id]
+        );
+
+        return { msg: "Deleted." };
     }
 }
 

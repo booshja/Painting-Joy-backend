@@ -12,8 +12,8 @@ CREATE TABLE admins (
 CREATE TABLE homepages (
     id SERIAL PRIMARY KEY,
     greeting VARCHAR(50) NOT NULL,
-    message VARCHAR(200) NOT NULL
-    -- image BYTEA NOT NULL
+    message VARCHAR(200) NOT NULL,
+    image BYTEA DEFAULT NULL
 );
 
 CREATE TABLE murals (

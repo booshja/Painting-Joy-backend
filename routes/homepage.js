@@ -1,11 +1,29 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
-const { BadRequestError } = require("../expressError");
+const multer = require("multer");
+const { BadRequestError, NotFoundError } = require("../expressError");
 const Homepage = require("../models/homepage");
 const homepageNewSchema = require("../schemas/homepageNew.json");
 const homepageUpdateSchema = require("../schemas/homepageUpdate.json");
 
 const router = express.Router({ mergeParams: true });
+
+// multer options
+const upload = multer({
+    limits: {
+        // limits filesize to 1 megabyte
+        fileSize: 1000000,
+    },
+    fileFilter(req, file, cb) {
+        // restricts file types to png, jpg, jpeg
+        if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+            // callback to throw error if filetype not image
+            cb(new BadRequestError("Please upload an image."));
+        }
+        // callback to continue
+        cb(undefined, true);
+    },
+});
 
 router.post("/", async (req, res, next) => {
     /** POST "/" { homepage } => { homepage }
@@ -31,6 +49,31 @@ router.post("/", async (req, res, next) => {
     }
 });
 
+router.post(
+    "/image",
+    upload.single("upload"),
+    async (req, res) => {
+        /** POST "/image" { file upload } => { message }
+         * Upload an image and save as binary to db
+         *
+         * Returns { msg: "Upload successful." }
+         *
+         * Authorization required: admin
+         */
+        try {
+            const message = await Homepage.uploadImage({
+                image: req.file.buffer,
+            });
+            res.status(200).send({ message });
+        } catch (err) {
+            res.status(400).send(err);
+        }
+    },
+    (error, req, res, next) => {
+        res.status(400).send({ error: error.message });
+    }
+);
+
 router.get("/", async (req, res, next) => {
     /** GET "/" => { homepage }
      * Returns the homepage data
@@ -44,6 +87,28 @@ router.get("/", async (req, res, next) => {
         return res.status(200).json({ homepage });
     } catch (err) {
         return next(err);
+    }
+});
+
+router.get("/image", async (req, res) => {
+    /** GET "/image" => image
+     * Returns the image associated with the homepage
+     *
+     * Returns image data
+     *
+     * Authentication required: none
+     */
+    try {
+        // get homepage image
+        const image = await Homepage.getImage();
+        //if no image, throw NotFoundError
+        if (!image) throw new NotFoundError("No image found.");
+
+        //response header, use set
+        res.set("Content-Type", "image/png");
+        res.status(200).send(image);
+    } catch (err) {
+        res.status(404).send(err);
     }
 });
 
@@ -68,6 +133,22 @@ router.put("/", async (req, res, next) => {
         return res.status(200).json({ homepage });
     } catch (err) {
         return next(err);
+    }
+});
+
+router.delete("/image", async (req, res) => {
+    /** DELETE "/upload" => { message }
+     * Deletes image data from homepage
+     *
+     * Returns { msg: "Deleted." }
+     *
+     * Authorization required: admin
+     */
+    try {
+        const message = await Homepage.deleteImage();
+        res.status(200).send({ message });
+    } catch (err) {
+        res.status(400).send(err);
     }
 });
 

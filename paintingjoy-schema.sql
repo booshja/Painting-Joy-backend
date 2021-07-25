@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE admins (
     username VARCHAR(25) PRIMARY KEY,
     password TEXT NOT NULL,
@@ -53,15 +55,15 @@ CREATE TABLE items (
 
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(40) NOT NULL,
-    email VARCHAR(40) NOT NULL,
-    street VARCHAR(50) NOT NULL,
-    unit VARCHAR(50),
-    city VARCHAR(50) NOT NULL,
-    state_code VARCHAR(2) NOT NULL,
-    zipcode INTEGER CHECK (zipcode < 100000) NOT NULL,
-    phone NUMERIC NOT NULL,
-    transaction_id TEXT NOT NULL,
+    name BYTEA NOT NULL,
+    email BYTEA NOT NULL,
+    street BYTEA NOT NULL,
+    unit BYTEA,
+    city BYTEA NOT NULL,
+    state_code BYTEA NOT NULL,
+    zipcode BYTEA NOT NULL,
+    phone BYTEA NOT NULL,
+    transaction_id BYTEA NOT NULL,
     amount NUMERIC NOT NULL,
     status VARCHAR(10) NOT NULL DEFAULT 'Confirmed',
     is_deleted BOOLEAN NOT NULL DEFAULT false

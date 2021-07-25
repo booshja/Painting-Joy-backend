@@ -1,4 +1,10 @@
 const db = require("../db");
+const {
+    encrypt,
+    decrypt,
+    encryptOrder,
+    decryptOrder,
+} = require("../helpers/encrypt");
 const { BadRequestError, NotFoundError } = require("../expressError");
 
 class Order {
@@ -34,6 +40,8 @@ class Order {
         )
             throw new BadRequestError("Missing data.");
 
+        // const encData = encryptOrder(data);
+
         // query db to create new order
         const result = await db.query(
             `INSERT INTO orders (email,
@@ -47,17 +55,27 @@ class Order {
                                 transaction_id,
                                 status,
                                 amount)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                VALUES (pgp_sym_encrypt($1, $12),
+                        pgp_sym_encrypt($2, $12),
+                        pgp_sym_encrypt($3, $12),
+                        pgp_sym_encrypt($4, $12),
+                        pgp_sym_encrypt($5, $12),
+                        pgp_sym_encrypt($6, $12),
+                        pgp_sym_encrypt($7, $12),
+                        pgp_sym_encrypt($8, $12),
+                        pgp_sym_encrypt($9, $12),
+                        $10,
+                        $11)
                 RETURNING id,
-                        email,
-                        name,
-                        street,
-                        unit,
-                        city,
-                        state_code AS "stateCode",
-                        zipcode,
-                        phone,
-                        transaction_id AS "transactionId",
+                        pgp_sym_decrypt(email, $12) AS email,
+                        pgp_sym_decrypt(name, $12) AS name,
+                        pgp_sym_decrypt(street, $12) AS street,
+                        pgp_sym_decrypt(unit, $12) AS unit,
+                        pgp_sym_decrypt(city, $12) AS city,
+                        pgp_sym_decrypt(state_code, $12) AS "stateCode",
+                        pgp_sym_decrypt(zipcode, $12) AS zipcode,
+                        pgp_sym_decrypt(phone, $12) AS phone,
+                        pgp_sym_decrypt(transaction_id, $12) AS "transactionId",
                         status,
                         amount`,
             [
@@ -72,8 +90,10 @@ class Order {
                 data.transactionId,
                 data.status,
                 data.amount,
+                process.env.KEY,
             ]
         );
+        // const order = decryptOrder(result.rows[0]);
         const order = result.rows[0];
 
         // if there are ids in the ids array, add each relation in the db
@@ -148,20 +168,20 @@ class Order {
         // query db to get order
         const orderRes = await db.query(
             `SELECT id,
-                    email,
-                    name,
-                    street,
-                    unit,
-                    city,
-                    state_code as "stateCode",
-                    zipcode,
-                    phone,
-                    transaction_id AS "transactionId",
+                    pgp_sym_decrypt(email, $2) AS email,
+                        pgp_sym_decrypt(name, $2) AS name,
+                        pgp_sym_decrypt(street, $2) AS street,
+                        pgp_sym_decrypt(unit, $2) AS unit,
+                        pgp_sym_decrypt(city, $2) AS city,
+                        pgp_sym_decrypt(state_code, $2) AS "stateCode",
+                        pgp_sym_decrypt(zipcode, $2) AS zipcode,
+                        pgp_sym_decrypt(phone, $2) AS phone,
+                        pgp_sym_decrypt(transaction_id, $2) AS "transactionId",
                     status,
                     amount
                 FROM orders
                 WHERE id=$1`,
-            [orderId]
+            [orderId, process.env.KEY]
         );
         const order = orderRes.rows[0];
 
@@ -225,20 +245,20 @@ class Order {
 
         const result = await db.query(
             `SELECT id,
-                    email,
-                    name,
-                    street,
-                    unit,
-                    city,
-                    state_code AS "stateCode",
-                    zipcode,
-                    phone,
-                    transaction_id as "transactionId",
+                    pgp_sym_decrypt(email, $2) AS email,
+                        pgp_sym_decrypt(name, $2) AS name,
+                        pgp_sym_decrypt(street, $2) AS street,
+                        pgp_sym_decrypt(unit, $2) AS unit,
+                        pgp_sym_decrypt(city, $2) AS city,
+                        pgp_sym_decrypt(state_code, $2) AS "stateCode",
+                        pgp_sym_decrypt(zipcode, $2) AS zipcode,
+                        pgp_sym_decrypt(phone, $2) AS phone,
+                        pgp_sym_decrypt(transaction_id, $2) AS "transactionId",
                     status,
                     amount
                 FROM orders
                 WHERE id=$1 AND is_deleted=false`,
-            [id]
+            [id, process.env.KEY]
         );
         const order = result.rows[0];
 
@@ -270,18 +290,19 @@ class Order {
         // query db to get list of orders
         const result = await db.query(
             `SELECT id,
-                    email,
-                    name,
-                    street,
-                    unit,
-                    city,
-                    state_code AS "stateCode",
-                    zipcode,
-                    phone,
-                    transaction_id AS "transactionId",
+                    pgp_sym_decrypt(email, $1) AS email,
+                        pgp_sym_decrypt(name, $1) AS name,
+                        pgp_sym_decrypt(street, $1) AS street,
+                        pgp_sym_decrypt(unit, $1) AS unit,
+                        pgp_sym_decrypt(city, $1) AS city,
+                        pgp_sym_decrypt(state_code, $1) AS "stateCode",
+                        pgp_sym_decrypt(zipcode, $1) AS zipcode,
+                        pgp_sym_decrypt(phone, $1) AS phone,
+                        pgp_sym_decrypt(transaction_id, $1) AS "transactionId",
                     status,
                     amount
-                FROM orders`
+                FROM orders`,
+            [process.env.KEY]
         );
 
         return result.rows;
@@ -307,18 +328,18 @@ class Order {
                 SET status = $1
                 WHERE id = $2
                 RETURNING id,
-                        email,
-                        name,
-                        street,
-                        unit,
-                        city,
-                        state_code AS "stateCode",
-                        zipcode,
-                        phone,
-                        transaction_id AS "transactionId",
+                        pgp_sym_decrypt(email, $3) AS email,
+                        pgp_sym_decrypt(name, $3) AS name,
+                        pgp_sym_decrypt(street, $3) AS street,
+                        pgp_sym_decrypt(unit, $3) AS unit,
+                        pgp_sym_decrypt(city, $3) AS city,
+                        pgp_sym_decrypt(state_code, $3) AS "stateCode",
+                        pgp_sym_decrypt(zipcode, $3) AS zipcode,
+                        pgp_sym_decrypt(phone, $3) AS phone,
+                        pgp_sym_decrypt(transaction_id, $3) AS "transactionId",
                         status,
                         amount`,
-            ["Shipped", id]
+            ["Shipped", id, process.env.KEY]
         );
         const order = result.rows[0];
 
@@ -348,18 +369,18 @@ class Order {
                 SET status = $1
                 WHERE id = $2
                 RETURNING id,
-                        email,
-                        name,
-                        street,
-                        unit,
-                        city,
-                        state_code AS "stateCode",
-                        zipcode,
-                        phone,
-                        transaction_id AS "transactionId",
+                        pgp_sym_decrypt(email, $3) AS email,
+                        pgp_sym_decrypt(name, $3) AS name,
+                        pgp_sym_decrypt(street, $3) AS street,
+                        pgp_sym_decrypt(unit, $3) AS unit,
+                        pgp_sym_decrypt(city, $3) AS city,
+                        pgp_sym_decrypt(state_code, $3) AS "stateCode",
+                        pgp_sym_decrypt(zipcode, $3) AS zipcode,
+                        pgp_sym_decrypt(phone, $3) AS phone,
+                        pgp_sym_decrypt(transaction_id, $3) AS "transactionId",
                         status,
                         amount`,
-            ["Completed", id]
+            ["Completed", id, process.env.KEY]
         );
         const order = result.rows[0];
 
@@ -386,20 +407,20 @@ class Order {
         // query db to get order
         const orderRes = await db.query(
             `SELECT id,
-                    email,
-                    name,
-                    street,
-                    unit,
-                    city,
-                    state_code AS "stateCode",
-                    zipcode,
-                    phone,
-                    transaction_id AS "transactionId",
+                    pgp_sym_decrypt(email, $2) AS email,
+                        pgp_sym_decrypt(name, $2) AS name,
+                        pgp_sym_decrypt(street, $2) AS street,
+                        pgp_sym_decrypt(unit, $2) AS unit,
+                        pgp_sym_decrypt(city, $2) AS city,
+                        pgp_sym_decrypt(state_code, $2) AS "stateCode",
+                        pgp_sym_decrypt(zipcode, $2) AS zipcode,
+                        pgp_sym_decrypt(phone, $2) AS phone,
+                        pgp_sym_decrypt(transaction_id, $2) AS "transactionId",
                     status,
                     amount
                 FROM orders
                 WHERE id=$1`,
-            [orderId]
+            [orderId, process.env.KEY]
         );
         const order = orderRes.rows[0];
 

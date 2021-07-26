@@ -17,6 +17,7 @@ beforeAll(async () => {
         description: "This is item 1!",
         price: 100.99,
         quantity: 1,
+        shipping: 1.99,
     });
     testItemIds.push(item1.id);
 
@@ -25,6 +26,7 @@ beforeAll(async () => {
         description: "This is item 2!",
         price: 200.99,
         quantity: 2,
+        shipping: 2.99,
     });
     testItemIds.push(item2.id);
 
@@ -156,6 +158,7 @@ describe("/orders/", () => {
                         description: "This is item 1!",
                         price: "100.99",
                         quantity: 1,
+                        shipping: "1.99",
                         created: expect.any(String),
                         isSold: false,
                     },
@@ -165,6 +168,7 @@ describe("/orders/", () => {
                         description: "This is item 2!",
                         price: "200.99",
                         quantity: 2,
+                        shipping: "2.99",
                         created: expect.any(String),
                         isSold: false,
                     },
@@ -259,12 +263,14 @@ describe("/orders/:orderId", () => {
                         description: "This is item 1!",
                         price: "100.99",
                         quantity: 1,
+                        shipping: "1.99",
                     },
                     {
                         name: "Item2",
                         description: "This is item 2!",
                         price: "200.99",
                         quantity: 2,
+                        shipping: "2.99",
                     },
                 ],
             },

@@ -125,6 +125,7 @@ class Order {
                     i.name,
                     i.description,
                     i.price,
+                    i.shipping,
                     i.quantity,
                     i.created,
                     i.is_sold AS "isSold"
@@ -188,6 +189,7 @@ class Order {
                     name,
                     description,
                     price,
+                    shipping,
                     created
                 FROM items
                 WHERE id=$1`,
@@ -207,7 +209,10 @@ class Order {
 
         // query db for list of all items associated with order
         const listRes = await db.query(
-            `SELECT i.name, i.description, i.price
+            `SELECT i.name,
+                    i.description,
+                    i.price,
+                    i.shipping
                 FROM orders_items oi
                 JOIN items i
                 ON oi.item_id=i.id
@@ -259,7 +264,11 @@ class Order {
         if (!order) throw new NotFoundError(`No order: ${id}`);
 
         const itemsRes = await db.query(
-            `SELECT i.name, i.description, i.price, i.quantity
+            `SELECT i.name,
+                    i.description,
+                    i.price,
+                    i.shipping,
+                    i.quantity
                 FROM orders_items oi
                 JOIN items i
                 ON oi.item_id=i.id
@@ -427,6 +436,7 @@ class Order {
                     name,
                     description,
                     price,
+                    shipping,
                     created
                 FROM items
                 WHERE id=$1`,

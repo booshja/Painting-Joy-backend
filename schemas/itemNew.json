@@ -16,10 +16,13 @@
         "price": {
             "type": "number"
         },
+        "shipping": {
+            "type": "number"
+        },
         "quantity": {
             "type": "number"
         }
     },
     "additionalProperties": false,
-    "required": ["name", "description", "price", "quantity"]
+    "required": ["name", "description", "price", "shipping", "quantity"]
 }

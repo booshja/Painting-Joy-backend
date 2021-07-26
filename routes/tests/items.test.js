@@ -12,6 +12,7 @@ beforeAll(async () => {
         name: "TestItem1",
         description: "This is test item 1!",
         price: 100.99,
+        shipping: 10.99,
         quantity: 1,
     });
     testItemIds.push(item1.id);
@@ -20,6 +21,7 @@ beforeAll(async () => {
         name: "TestItem2",
         description: "This is test item 2!",
         price: 200.99,
+        shipping: 20.99,
         quantity: 2,
     });
     testItemIds.push(item2.id);
@@ -45,6 +47,7 @@ describe("POST, /items/", () => {
             name: "NewItem",
             description: "This is a new item!",
             price: 99.99,
+            shipping: 100.88,
             quantity: 9,
         });
         expect(resp.statusCode).toBe(201);
@@ -54,6 +57,7 @@ describe("POST, /items/", () => {
                 name: "NewItem",
                 description: "This is a new item!",
                 price: "99.99",
+                shipping: "100.88",
                 quantity: 9,
                 created: expect.any(String),
                 isSold: false,
@@ -85,6 +89,7 @@ describe("GET, /items/", () => {
                     name: "TestItem1",
                     description: "This is test item 1!",
                     price: "100.99",
+                    shipping: "10.99",
                     quantity: 1,
                     created: expect.any(String),
                     isSold: false,
@@ -94,6 +99,7 @@ describe("GET, /items/", () => {
                     name: "TestItem2",
                     description: "This is test item 2!",
                     price: "200.99",
+                    shipping: "20.99",
                     quantity: 2,
                     created: expect.any(String),
                     isSold: false,
@@ -115,6 +121,7 @@ describe("GET, /items/item/:id", () => {
                 name: "TestItem1",
                 description: "This is test item 1!",
                 price: "100.99",
+                shipping: "10.99",
                 quantity: 1,
                 created: expect.any(String),
                 isSold: false,
@@ -136,6 +143,7 @@ describe("GET, /items/available", () => {
                     name: "TestItem1",
                     description: "This is test item 1!",
                     price: "100.99",
+                    shipping: "10.99",
                     quantity: 1,
                     created: expect.any(String),
                 },
@@ -144,6 +152,7 @@ describe("GET, /items/available", () => {
                     name: "TestItem2",
                     description: "This is test item 2!",
                     price: "200.99",
+                    shipping: "20.99",
                     quantity: 2,
                     created: expect.any(String),
                 },
@@ -160,11 +169,13 @@ describe("GET, /items/sold", () => {
             `INSERT INTO items(name,
                                 description,
                                 price,
+                                shipping,
                                 quantity,
                                 is_sold)
                 VALUES('Sold Item',
                         'This item is sold!',
                         120.99,
+                        12.66,
                         0,
                         true)
                 RETURNING id`
@@ -180,6 +191,7 @@ describe("GET, /items/sold", () => {
                     name: "Sold Item",
                     description: "This item is sold!",
                     price: "120.99",
+                    shipping: "12.66",
                     quantity: 0,
                     created: expect.any(String),
                 },
@@ -198,6 +210,7 @@ describe("PATCH, /items/update/:id", () => {
                 name: "Updated",
                 description: "This has now been updated!",
                 price: 1.99,
+                shipping: 10000.99,
                 quantity: 7,
             });
         expect(resp.statusCode).toBe(200);
@@ -207,6 +220,7 @@ describe("PATCH, /items/update/:id", () => {
                 name: "Updated",
                 description: "This has now been updated!",
                 price: "1.99",
+                shipping: "10000.99",
                 quantity: 7,
                 created: expect.any(String),
                 isSold: false,
@@ -227,6 +241,7 @@ describe("PATCH, /items/update/:id", () => {
                 name: "Updated Twice!",
                 description: "This is test item 2!",
                 price: "200.99",
+                shipping: "20.99",
                 quantity: 2,
                 created: expect.any(String),
                 isSold: false,
@@ -254,6 +269,7 @@ describe("PATCH, /items/sell/:id", () => {
                 name: "TestItem2",
                 description: "This is test item 2!",
                 price: "200.99",
+                shipping: "20.99",
                 quantity: 1,
                 created: expect.any(String),
                 isSold: false,
@@ -270,6 +286,7 @@ describe("PATCH, /items/sell/:id", () => {
                 name: "TestItem1",
                 description: "This is test item 1!",
                 price: "100.99",
+                shipping: "10.99",
                 quantity: 0,
                 created: expect.any(String),
                 isSold: true,
@@ -295,6 +312,7 @@ describe("PATCH, /items/sold/:id", () => {
                 name: "TestItem2",
                 description: "This is test item 2!",
                 price: "200.99",
+                shipping: "20.99",
                 quantity: 0,
                 created: expect.any(String),
                 isSold: true,

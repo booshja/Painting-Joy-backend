@@ -44,11 +44,12 @@ beforeAll(async function () {
         `INSERT INTO items(name,
                             description,
                             price,
+                            shipping,
                             quantity)
-            VALUES ('Item1', 'This is item 1.', 10.99, 1),
-                    ('Item2', 'This is item 2.', 20.99, 2),
-                    ('Item3', 'This is item 3.', 30.99, 3),
-                    ('Item4', 'This is item 4.', 40.99, 4)
+            VALUES ('Item1', 'This is item 1.', 10.99, 1.99, 1),
+                    ('Item2', 'This is item 2.', 20.99, 2.99, 2),
+                    ('Item3', 'This is item 3.', 30.99, 3.99, 3),
+                    ('Item4', 'This is item 4.', 40.99, 4.99, 4)
             RETURNING id`
     );
     testItemIds.splice(0, 0, ...itemsRes.rows.map((row) => row.id));
@@ -153,6 +154,7 @@ describe("create", () => {
                     description: "This is item 1.",
                     price: "10.99",
                     quantity: 1,
+                    shipping: "1.99",
                     created: expect.any(Date),
                     isSold: false,
                 },
@@ -162,6 +164,7 @@ describe("create", () => {
                     description: "This is item 2.",
                     price: "20.99",
                     quantity: 2,
+                    shipping: "2.99",
                     created: expect.any(Date),
                     isSold: false,
                 },
@@ -171,6 +174,7 @@ describe("create", () => {
                     description: "This is item 3.",
                     price: "30.99",
                     quantity: 3,
+                    shipping: "3.99",
                     created: expect.any(Date),
                     isSold: false,
                 },
@@ -180,6 +184,7 @@ describe("create", () => {
                     description: "This is item 4.",
                     price: "40.99",
                     quantity: 4,
+                    shipping: "4.99",
                     created: expect.any(Date),
                     isSold: false,
                 },
@@ -306,12 +311,14 @@ describe("get", () => {
                     description: "This is item 1.",
                     price: "10.99",
                     quantity: 1,
+                    shipping: "1.99",
                 },
                 {
                     name: "Item4",
                     description: "This is item 4.",
                     price: "40.99",
                     quantity: 4,
+                    shipping: "4.99",
                 },
             ],
         });

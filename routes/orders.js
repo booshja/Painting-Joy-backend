@@ -7,9 +7,21 @@ const orderNewSchema = require("../schemas/orderNew.json");
 
 const router = express.Router({ mergeParams: true });
 
-const calculateOrderAmount = (items) => {
-    // calculation of the order's amount
-    // calculate on server to prevent manipulation
+const calculateOrderAmount = (listItems) => {
+    /** Calculates total order amount
+     * Do this on the server to prevent client-side manipulation
+     *
+     * Accepts [ listItems ]
+     *      listItems should be an array of items objects associated w/ order
+     *
+     * Returns totalAmount
+     */
+    let totalAmount = 0;
+    for (item of items) {
+        totalAmount = totalAmount + item.price + item.shipping;
+    }
+
+    return totalAmount;
 };
 
 router.post("/", async (req, res, next) => {
@@ -76,14 +88,20 @@ router.post("/create-payment-intent", async (req, res, next) => {
      * Authorization required: none
      */
     try {
-        const { listItems } = req.body;
+        // get totalAmount of all items in order
+        const totalAmount = calculateOrderAmount(req.body.listItems);
+
+        // if 0 or undefined returned, return BadRequestError
+        if (!totalAmount)
+            return res.status(400).send(new BadRequestError("No items."));
+
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await stripe.paymentIntents.create({
             amount: calculateOrderAmount(listItems),
             currency: "usd",
         });
 
-        res.send({
+        return res.send({
             clientSecret: paymentIntent.client_secret,
         });
     } catch (err) {

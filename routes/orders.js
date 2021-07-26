@@ -1,10 +1,16 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
+const stripe = require("stripe")(process.env.STRIPE_API_KEY);
 const { BadRequestError } = require("../expressError");
 const Order = require("../models/order");
 const orderNewSchema = require("../schemas/orderNew.json");
 
 const router = express.Router({ mergeParams: true });
+
+const calculateOrderAmount = (items) => {
+    // calculation of the order's amount
+    // calculate on server to prevent manipulation
+};
 
 router.post("/", async (req, res, next) => {
     /** POST "/" { order, [ids] } => { order }
@@ -56,6 +62,30 @@ router.post("/:orderId/add/:itemId", async (req, res, next) => {
             req.params.itemId
         );
         return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
+});
+
+router.post("/create-payment-intent", async (req, res, next) => {
+    /** POST "/create-payment-intent" => { payment intent }
+     * Creates a payment intent through Stripe and returns the client secret
+     *
+     * Returns { clientSecret }
+     *
+     * Authorization required: none
+     */
+    try {
+        const { listItems } = req.body;
+        // Create a PaymentIntent with the order amount and currency
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: calculateOrderAmount(listItems),
+            currency: "usd",
+        });
+
+        res.send({
+            clientSecret: paymentIntent.client_secret,
+        });
     } catch (err) {
         return next(err);
     }

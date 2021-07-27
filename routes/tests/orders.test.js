@@ -191,12 +191,12 @@ describe("/orders/", () => {
     });
 });
 
-/*********** POST /orders/:orderId/add/:itemId */
+/*********** POST /orders/order/:orderId/add/:itemId */
 
-describe("/orders/:orderId/add/:itemId", () => {
+describe("/orders/order/:orderId/add/:itemId", () => {
     it("adds an item to an order by orderId & itemId", async () => {
         const resp = await request(app).post(
-            `/orders/${testOrderIds[0]}/add/${testItemIds[0]}`
+            `/orders/order/${testOrderIds[0]}/add/${testItemIds[0]}`
         );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
@@ -224,24 +224,24 @@ describe("/orders/:orderId/add/:itemId", () => {
 
     it("gives not found for invalid order id", async () => {
         const resp = await request(app).post(
-            `/orders/${-1}/add/${testItemIds[1]}`
+            `/orders/order/${-1}/add/${testItemIds[1]}`
         );
         expect(resp.statusCode).toBe(404);
     });
 
     it("gives not found for invalid item id", async () => {
         const resp = await request(app).post(
-            `/orders/${testOrderIds[0]}/add/${-1}`
+            `/orders/order/${testOrderIds[0]}/add/${-1}`
         );
         expect(resp.statusCode).toBe(404);
     });
 });
 
-/************************ GET /orders/:orderId */
+/************************ GET /orders/order:orderId */
 
-describe("/orders/:orderId", () => {
+describe("/orders/order:orderId", () => {
     it("gets an order by id", async () => {
-        const resp = await request(app).get(`/orders/${testOrderIds[0]}`);
+        const resp = await request(app).get(`/orders/order/${testOrderIds[0]}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
@@ -278,7 +278,7 @@ describe("/orders/:orderId", () => {
     });
 
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).get(`/orders/${-1}`);
+        const resp = await request(app).get(`/orders/order${-1}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -322,12 +322,12 @@ describe("/orders/", () => {
     });
 });
 
-/***************** PATCH /orders/:orderId/ship */
+/***************** PATCH /orders/order/:orderId/ship */
 
-describe("/orders/:orderId/ship", () => {
+describe("/orders/order/:orderId/ship", () => {
     it("updates an order's status to 'Shipped' by id", async () => {
         const resp = await request(app).patch(
-            `/orders/${testOrderIds[1]}/ship`
+            `/orders/order/${testOrderIds[1]}/ship`
         );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
@@ -349,17 +349,17 @@ describe("/orders/:orderId/ship", () => {
     });
 
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).patch(`/orders/${-1}/ship`);
+        const resp = await request(app).patch(`/orders/order/${-1}/ship`);
         expect(resp.statusCode).toBe(404);
     });
 });
 
-/************* PATCH /orders/:orderId/complete */
+/************* PATCH /orders/order/:orderId/complete */
 
-describe("/orders/:orderId/complete", () => {
+describe("/orders/order/:orderId/complete", () => {
     it("updates an order's status to 'Completed' by id", async () => {
         const resp = await request(app).patch(
-            `/orders/${testOrderIds[1]}/complete`
+            `/orders/order/${testOrderIds[1]}/complete`
         );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
@@ -381,17 +381,17 @@ describe("/orders/:orderId/complete", () => {
     });
 
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).patch(`/orders/${-1}/complete`);
+        const resp = await request(app).patch(`/orders/order/${-1}/complete`);
         expect(resp.statusCode).toBe(404);
     });
 });
 
-/******* PATCH /orders/:orderId/remove/:itemId */
+/******* PATCH /orders/order/:orderId/remove/:itemId */
 
-describe("/orders/:orderId/remove/:itemId", () => {
+describe("/orders/order/:orderId/remove/:itemId", () => {
     it("removes an item from an order by orderId & itemId", async () => {
         const resp = await request(app).patch(
-            `/orders/${testOrderIds[0]}/remove/${testItemIds[1]}`
+            `/orders/order/${testOrderIds[0]}/remove/${testItemIds[1]}`
         );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
@@ -403,24 +403,26 @@ describe("/orders/:orderId/remove/:itemId", () => {
 
     it("gives not found for invalid order id", async () => {
         const resp = await request(app).patch(
-            `/orders/${-1}/remove/${testItemIds[0]}`
+            `/orders/order/${-1}/remove/${testItemIds[0]}`
         );
         expect(resp.statusCode).toBe(404);
     });
 
     it("gives not found for invalid item id", async () => {
         const resp = await request(app).get(
-            `/orders/${testOrderIds[0]}/remove/${-1}`
+            `/orders/order/${testOrderIds[0]}/remove/${-1}`
         );
         expect(resp.statusCode).toBe(404);
     });
 });
 
-/********************* DELETE /orders/:orderId */
+/********************* DELETE /orders/order:orderId */
 
-describe("/orders/:orderId", () => {
+describe("/orders/order:orderId", () => {
     it("deletes an order by id", async () => {
-        const resp = await request(app).delete(`/orders/${testOrderIds[0]}`);
+        const resp = await request(app).delete(
+            `/orders/order/${testOrderIds[0]}`
+        );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: {
@@ -428,12 +430,14 @@ describe("/orders/:orderId", () => {
             },
         });
 
-        const checkResp = await request(app).get(`/orders/${testOrderIds[0]}`);
+        const checkResp = await request(app).get(
+            `/orders/order${testOrderIds[0]}`
+        );
         expect(checkResp.statusCode).toEqual(404);
     });
 
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).delete(`/orders/${-1}`);
+        const resp = await request(app).delete(`/orders/order${-1}`);
         expect(resp.statusCode).toBe(404);
     });
 });

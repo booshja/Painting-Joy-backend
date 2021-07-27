@@ -122,6 +122,34 @@ class Item {
         return itemImg.image;
     }
 
+    static async getQuantity(id) {
+        /** Gets the quantity of an item by id
+         *
+         * Accepts id
+         *
+         * Returns { quantity }
+         *
+         * Throws BadRequestError if no input
+         * Throws NotFoundError if no item found by id
+         */
+        // check for missing data
+        if (!id) throw new BadRequestError("No input.");
+
+        // query db to get data
+        const result = await db.query(
+            `SELECT quantity
+                FROM items
+                WHERE id = $1`,
+            [id]
+        );
+        const quantity = result.rows[0];
+
+        // if no record returned, no item found, throw NotFoundError
+        if (!quantity) throw new NotFoundError(`No item: ${id}`);
+
+        return quantity;
+    }
+
     static async getAll() {
         /** Gets an array of items
          *

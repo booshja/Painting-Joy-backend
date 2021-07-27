@@ -115,6 +115,35 @@ describe("get", () => {
     });
 });
 
+/********************************* getQuantity */
+
+describe("get", () => {
+    it("gets an item's quantity by id", async () => {
+        const item = await Item.getQuantity(testItemIds[0]);
+        expect(item).toEqual({
+            quantity: 1,
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Item.getQuantity();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Item.getQuantity(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
 /************************************** getAll */
 
 describe("getAll", () => {

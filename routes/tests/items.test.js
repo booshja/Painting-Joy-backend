@@ -200,6 +200,18 @@ describe("GET, /items/sold", () => {
     });
 });
 
+/**************** GET /items/item/:id/quantity */
+
+describe("GET, /items/item/:id/quantity", () => {
+    it("gets an item quantity by id", async () => {
+        const resp = await request(app).get(
+            `/items/item/${testItemIds[1]}/quantity`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({ quantity: 2 });
+    });
+});
+
 /********************* PATCH /items/update/:id */
 
 describe("PATCH, /items/update/:id", () => {

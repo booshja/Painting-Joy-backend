@@ -30,7 +30,7 @@ router.post("/", async (req, res, next) => {
      * Optionally accepts an array of item ids to add to the order w/ creation
      *
      * order should be { name, email, street, unit, city, stateCode, zipcode,
-     *                      phone ,transactionId status, amount }
+     *                      phone ,transactionId, status, amount }
      * ids (optional) should be an array of existing item ids to add to order
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -58,8 +58,8 @@ router.post("/", async (req, res, next) => {
     }
 });
 
-router.post("/:orderId/add/:itemId", async (req, res, next) => {
-    /** POST "/add/{id}" => { order }
+router.post("/order/:orderId/add/:itemId", async (req, res, next) => {
+    /** POST "/order/{orderId}/add/{itemId}" => { order }
      * Adds an existing item to an existing order by orderId & itemId
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -109,8 +109,8 @@ router.post("/create-payment-intent", async (req, res, next) => {
     }
 });
 
-router.get("/:orderId", async (req, res, next) => {
-    /** GET "/{orderId}" => { order }
+router.get("/order/:orderId", async (req, res, next) => {
+    /** GET "/order/{orderId}" => { order }
      * Gets an order by id
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -147,8 +147,8 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-router.patch("/:orderId/ship", async (req, res, next) => {
-    /** PATCH "/{orderId}/ship" => { order }
+router.patch("/order/:orderId/ship", async (req, res, next) => {
+    /** PATCH "/order/{orderId}/ship" => { order }
      * Changes order's status to "Shipped"
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -164,8 +164,8 @@ router.patch("/:orderId/ship", async (req, res, next) => {
     }
 });
 
-router.patch("/:orderId/complete", async (req, res, next) => {
-    /** PATCH "/{orderId}/complete" => { order }
+router.patch("/order/:orderId/complete", async (req, res, next) => {
+    /** PATCH "/order/{orderId}/complete" => { order }
      * Changes order's status to "Completed"
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -181,8 +181,8 @@ router.patch("/:orderId/complete", async (req, res, next) => {
     }
 });
 
-router.patch("/:orderId/remove/:itemId", async (req, res, next) => {
-    /** PATCH "/{orderId}/remove/{itemId}" => { msg }
+router.patch("/order/:orderId/remove/:itemId", async (req, res, next) => {
+    /** PATCH "/order/{orderId}/remove/{itemId}" => { msg }
      * Removes an item from the order
      *
      * Returns { msg: "Item removed." }
@@ -200,8 +200,8 @@ router.patch("/:orderId/remove/:itemId", async (req, res, next) => {
     }
 });
 
-router.delete("/:orderId", async (req, res, next) => {
-    /** DELETE "/{orderId}" => { msg }
+router.delete("/order/:orderId", async (req, res, next) => {
+    /** DELETE "/order/{orderId}" => { msg }
      * Deletes an order from the db by id
      *
      * Note: This is a logical delete.

@@ -150,8 +150,8 @@ class Order {
          *
          * Returns { id, email, name, street, unit, city, stateCode, zipcode, phone,
          *               transactionId, status, amount, listItems: [ { id, name,
-         *                  description, price, created }, { id, name, description,
-         *                  price, created }, ...] }
+         *                  description, price, shipping, created }, { id, name,
+         *                  description, price, shipping, created }, ...] }
          *
          * Throws BadRequestError if no missing orderId or itemId
          * Throws NotFoundError if no such item

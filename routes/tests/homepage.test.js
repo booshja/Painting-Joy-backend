@@ -40,7 +40,7 @@ describe("POST /homepage", () => {
                 message: "This is a test message!",
             })
             .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toEqual(201);
+        expect(resp.statusCode).toBe(201);
         expect(resp.body).toEqual({
             homepage: {
                 id: expect.any(Number),
@@ -68,7 +68,7 @@ describe("POST /homepage", () => {
                 greeting: "Oh, hello!",
             })
             .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toEqual(400);
+        expect(resp.statusCode).toBe(400);
     });
 
     it("gives bad request with no data", async () => {
@@ -76,7 +76,7 @@ describe("POST /homepage", () => {
             .post("/homepage")
             .send()
             .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toEqual(400);
+        expect(resp.statusCode).toBe(400);
     });
 });
 
@@ -85,7 +85,7 @@ describe("POST /homepage", () => {
 describe("GET /homepage", () => {
     it("works", async () => {
         const resp = await request(app).get("/homepage");
-        expect(resp.statusCode).toEqual(200);
+        expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             homepage: {
                 id: expect.any(Number),
@@ -107,7 +107,7 @@ describe("PUT /homepage", () => {
                 message: "This is a test put message!",
             })
             .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toEqual(200);
+        expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             homepage: {
                 id: expect.any(Number),
@@ -117,6 +117,14 @@ describe("PUT /homepage", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).put("/homepage").send({
+            greeting: "Hello there!",
+            message: "Welcome to my website!",
+        });
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives bad request with partial missing data", async () => {
         const resp = await request(app)
             .put("/homepage")
@@ -124,7 +132,7 @@ describe("PUT /homepage", () => {
                 greeting: "Oh, hello!",
             })
             .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toEqual(400);
+        expect(resp.statusCode).toBe(400);
     });
 
     it("gives bad request with no data", async () => {
@@ -132,6 +140,6 @@ describe("PUT /homepage", () => {
             .put("/homepage")
             .send()
             .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toEqual(400);
+        expect(resp.statusCode).toBe(400);
     });
 });

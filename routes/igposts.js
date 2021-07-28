@@ -1,12 +1,13 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
+const { ensureAdmin } = require("../middleware/auth");
 const IGPost = require("../models/igpost");
 const igPostsNewSchema = require("../schemas/igPostsNew.json");
 
 const router = express.Router({ mergeParams: true });
 
-router.post("/", async (req, res, next) => {
+router.post("/", ensureAdmin, async (req, res, next) => {
     /** POST "/" { igpost } => { igpost }
      * Creates a new igpost
      *
@@ -45,7 +46,7 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-router.get("/post/:id", async (req, res, next) => {
+router.get("/post/:id", ensureAdmin, async (req, res, next) => {
     /** GET "/post/{id}" => { igpost }
      * Returns an igpost by id
      *
@@ -61,7 +62,7 @@ router.get("/post/:id", async (req, res, next) => {
     }
 });
 
-router.delete("/delete/:id", async (req, res, next) => {
+router.delete("/delete/:id", ensureAdmin, async (req, res, next) => {
     /** DELETE "/delete/:id" => { msg: "Deleted." }
      * Deletes an igpost by id
      *

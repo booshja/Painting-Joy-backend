@@ -1,9 +1,11 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
+const { createAdminToken } = require("../../helpers/tokens");
 const IGPost = require("../../models/igpost");
 
-testIgPostIds = [];
+const testIgPostIds = [];
+let adminToken;
 
 beforeAll(async () => {
     await db.query("DELETE FROM igposts");
@@ -23,6 +25,8 @@ beforeAll(async () => {
         imageUrl: "example.com/image2.jpg",
     });
     testIgPostIds.push(igpost2.igId);
+
+    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -41,12 +45,15 @@ afterAll(async () => {
 
 describe("POST, /igposts/", () => {
     it("creates a new igpost", async () => {
-        const resp = await request(app).post("/igposts/").send({
-            igId: "new123",
-            caption: "This is newly added!",
-            permUrl: "www.example.com/new1",
-            imageUrl: "www.example.com/new1.jpg",
-        });
+        const resp = await request(app)
+            .post("/igposts/")
+            .send({
+                igId: "new123",
+                caption: "This is newly added!",
+                permUrl: "www.example.com/new1",
+                imageUrl: "www.example.com/new1.jpg",
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(201);
         expect(resp.body).toEqual({
             igPost: {
@@ -58,15 +65,31 @@ describe("POST, /igposts/", () => {
         });
     });
 
+    it("gives unauth if non-admin", async () => {
+        const resp = await request(app).post("/igposts/").send({
+            igId: "nope",
+            caption: "nuh uh",
+            permUrl: "nooope",
+            imageUrl: "still-no",
+        });
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives bad request if no data", async () => {
-        const resp = await request(app).post("/igposts/").send();
+        const resp = await request(app)
+            .post("/igposts/")
+            .send()
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(400);
     });
 
     it("gives bad request if nmissing data", async () => {
-        const resp = await request(app).post("/igposts/").send({
-            igId: "nahhh",
-        });
+        const resp = await request(app)
+            .post("/igposts/")
+            .send({
+                igId: "nahhh",
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(400);
     });
 });
@@ -100,9 +123,9 @@ describe("GET, /igposts/", () => {
 
 describe("GET, /igposts/post/:id", () => {
     it("gets an igpost by id", async () => {
-        const resp = await request(app).get(
-            `/igposts/post/${testIgPostIds[0]}`
-        );
+        const resp = await request(app)
+            .get(`/igposts/post/${testIgPostIds[0]}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             igPost: {
@@ -114,8 +137,15 @@ describe("GET, /igposts/post/:id", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).get("/igposts/post/2");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).get("/igposts/post/-1");
+        const resp = await request(app)
+            .get("/igposts/post/-1")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -124,10 +154,9 @@ describe("GET, /igposts/post/:id", () => {
 
 describe("DELETE, /igposts/:id", () => {
     it("deletes an igpost by id", async () => {
-        const resp = await request(app).delete(
-            `/igposts/delete/${testIgPostIds[1]}`
-        );
-        console.log(resp.body);
+        const resp = await request(app)
+            .delete(`/igposts/delete/${testIgPostIds[1]}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: {
@@ -136,8 +165,15 @@ describe("DELETE, /igposts/:id", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).delete("/igposts/delete/1");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).delete("/igposts/delete/-1");
+        const resp = await request(app)
+            .delete("/igposts/delete/-1")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
     });
 });

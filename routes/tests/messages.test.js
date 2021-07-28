@@ -1,8 +1,10 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
+const { createAdminToken } = require("../../helpers/tokens");
 const Message = require("../../models/message");
 
+let adminToken;
 const testMessageIds = [];
 
 beforeAll(async () => {
@@ -22,6 +24,8 @@ beforeAll(async () => {
 
     testMessageIds.push(msg1.id);
     testMessageIds.push(msg2.id);
+
+    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -74,7 +78,9 @@ describe("POST, /messages/", () => {
 
 describe("GET, /messages/", () => {
     it("returns a list of all messages", async () => {
-        const resp = await request(app).get("/messages");
+        const resp = await request(app)
+            .get("/messages")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             messages: [
@@ -97,15 +103,20 @@ describe("GET, /messages/", () => {
             ],
         });
     });
+
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).get("/messages");
+        expect(resp.statusCode).toBe(401);
+    });
 });
 
 /******************* GET /messages/message/:id */
 
 describe("GET, /messages/message/:id", () => {
     it("returns a message by id", async () => {
-        const resp = await request(app).get(
-            `/messages/message/${testMessageIds[0]}`
-        );
+        const resp = await request(app)
+            .get(`/messages/message/${testMessageIds[0]}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             message: {
@@ -119,8 +130,15 @@ describe("GET, /messages/message/:id", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).get("/messages/message/1");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found with invalid id", async () => {
-        const resp = await request(app).get("/messages/message/-1");
+        const resp = await request(app)
+            .get("/messages/message/-1")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(404);
     });
 });
@@ -129,7 +147,9 @@ describe("GET, /messages/message/:id", () => {
 
 describe("GET, /messages/active", () => {
     it("returns a list of all active messages", async () => {
-        const resp = await request(app).get("/messages/active");
+        const resp = await request(app)
+            .get("/messages/active")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             messages: [
@@ -150,6 +170,11 @@ describe("GET, /messages/active", () => {
             ],
         });
     });
+
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).get("/messages/active");
+        expect(resp.statusCode).toBe(401);
+    });
 });
 
 /********************** GET /messages/archived */
@@ -167,7 +192,9 @@ describe("GET, /messages/archived", () => {
                                         RETURNING id`);
         const newMsgId = res.rows[0].id;
 
-        const resp = await request(app).get("/messages/archived");
+        const resp = await request(app)
+            .get("/messages/archived")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             messages: [
@@ -181,15 +208,20 @@ describe("GET, /messages/archived", () => {
             ],
         });
     });
+
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).get("/messages/archived");
+        expect(resp.statusCode).toBe(401);
+    });
 });
 
 /***************** PATCH /messages/archive/:id */
 
 describe("PATCH, /messages/archive/:id", () => {
     it("archives a message by id", async () => {
-        const resp = await request(app).patch(
-            `/messages/archive/${testMessageIds[0]}`
-        );
+        const resp = await request(app)
+            .patch(`/messages/archive/${testMessageIds[0]}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             message: {
@@ -203,8 +235,15 @@ describe("PATCH, /messages/archive/:id", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).patch("/messages/archive/1");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found for non-matching id", async () => {
-        const resp = await request(app).patch("/messages/archive/-1");
+        const resp = await request(app)
+            .patch("/messages/archive/-1")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(404);
     });
 });
@@ -224,9 +263,9 @@ describe("PATCH, /messages/unarchive/:id", () => {
                                             RETURNING id`);
         const newMsgId = res.rows[0].id;
 
-        const resp = await request(app).patch(
-            `/messages/unarchive/${newMsgId}`
-        );
+        const resp = await request(app)
+            .patch(`/messages/unarchive/${newMsgId}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             message: {
@@ -240,8 +279,15 @@ describe("PATCH, /messages/unarchive/:id", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).patch("/messages/unarchive/1");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found for non-matching id", async () => {
-        const resp = await request(app).patch("/messages/unarchive/-1");
+        const resp = await request(app)
+            .patch("/messages/unarchive/-1")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(404);
     });
 });
@@ -250,17 +296,24 @@ describe("PATCH, /messages/unarchive/:id", () => {
 
 describe("DELETE, /messages/delete/:id", () => {
     it("deletes a message by id", async () => {
-        const resp = await request(app).delete(
-            `/messages/delete/${testMessageIds[1]}`
-        );
+        const resp = await request(app)
+            .delete(`/messages/delete/${testMessageIds[1]}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             message: { msg: "Deleted." },
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).delete("/messages/delete/1");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found for non-matching id", async () => {
-        const resp = await request(app).delete(`/messages/delete/-1`);
+        const resp = await request(app)
+            .delete(`/messages/delete/-1`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(404);
     });
 });

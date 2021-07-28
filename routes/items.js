@@ -2,6 +2,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const multer = require("multer");
 const { BadRequestError, NotFoundError } = require("../expressError");
+const { ensureAdmin } = require("../middleware/auth");
 const Item = require("../models/item");
 const itemNewSchema = require("../schemas/itemNew.json");
 const itemUpdateSchema = require("../schemas/itemUpdate.json");
@@ -25,7 +26,7 @@ const upload = multer({
     },
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", ensureAdmin, async (req, res, next) => {
     /** POST "/" { item } => { item }
      * Create a new store item
      *
@@ -51,6 +52,7 @@ router.post("/", async (req, res, next) => {
 
 router.post(
     "/upload/:itemId",
+    ensureAdmin,
     upload.single("upload"),
     async (req, res) => {
         /** POST "/upload/{itemId}" { file upload } => { message }
@@ -91,7 +93,7 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-router.get("/item/:id", async (req, res, next) => {
+router.get("/item/:id", ensureAdmin, async (req, res, next) => {
     /** GET "/item/{id}" => { item }
      * Returns an item by id
      *
@@ -99,7 +101,7 @@ router.get("/item/:id", async (req, res, next) => {
      *
      * Returns { id name, description, price, quantity, created, isSold }
      *
-     * Authorization required: none
+     * Authorization required: admin
      */
     try {
         const item = await Item.get(+req.params.id);
@@ -148,14 +150,14 @@ router.get("/available", async (req, res, next) => {
     }
 });
 
-router.get("/sold", async (req, res, next) => {
+router.get("/sold", ensureAdmin, async (req, res, next) => {
     /** GET "/sold" => [ items ]
      * Returns a list of sold items
      *
      * Returns [ { id, name, description, price, quantity, created, isSold},
      *              { id, name, description, price, quantity, created, isSold}, ...]
      *
-     * Authorization required: none
+     * Authorization required: admin
      */
     try {
         const items = await Item.getAllSold();
@@ -181,7 +183,7 @@ router.get("/item/:id/quantity", async (req, res, next) => {
     }
 });
 
-router.patch("/update/:id", async (req, res, next) => {
+router.patch("/update/:id", ensureAdmin, async (req, res, next) => {
     /** PATCH "/update/{id}" { data }=> { item }
      * Updates an item. NOTE: This is a partial update, not all fields are required.
      *
@@ -221,7 +223,7 @@ router.patch("/sell/:id", async (req, res, next) => {
     }
 });
 
-router.patch("/sold/:id", async (req, res, next) => {
+router.patch("/sold/:id", ensureAdmin, async (req, res, next) => {
     /** PATCH "/sold/{id}" => { item }
      * Marks an item as sold, decreases quantity to 0
      *
@@ -237,7 +239,7 @@ router.patch("/sold/:id", async (req, res, next) => {
     }
 });
 
-router.delete("/item/:imageId/image", async (req, res) => {
+router.delete("/item/:imageId/image", ensureAdmin, async (req, res) => {
     /** DELETE "/upload" => {message}
      * Deletes image data from an item
      *
@@ -253,7 +255,7 @@ router.delete("/item/:imageId/image", async (req, res) => {
     }
 });
 
-router.delete("/delete/:id", async (req, res, next) => {
+router.delete("/delete/:id", ensureAdmin, async (req, res, next) => {
     /** DELETE "/delete/{id}" => { item }
      * Deletes an item
      *

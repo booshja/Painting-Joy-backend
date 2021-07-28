@@ -1,8 +1,10 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
+const { createAdminToken } = require("../../helpers/tokens");
 const Mural = require("../../models/mural");
 
+let adminToken;
 const testMuralIds = [];
 
 beforeAll(async () => {
@@ -28,6 +30,8 @@ beforeAll(async () => {
     testMuralIds.push(mural1.id);
     testMuralIds.push(mural2.id);
     testMuralIds.push(mural3.id);
+
+    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -46,10 +50,13 @@ afterAll(async () => {
 
 describe("POST, /murals", () => {
     it("creates new mural", async () => {
-        const resp = await request(app).post("/murals/").send({
-            title: "Posting Test",
-            description: "This is a description for a test!",
-        });
+        const resp = await request(app)
+            .post("/murals/")
+            .send({
+                title: "Posting Test",
+                description: "This is a description for a test!",
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(201);
         expect(resp.body).toEqual({
             mural: {
@@ -61,15 +68,24 @@ describe("POST, /murals", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).post("/murals/");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives bad request for no data", async () => {
-        const resp = await request(app).post("/murals/").send();
+        const resp = await request(app)
+            .post("/murals/")
+            .send()
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(400);
     });
 
     it("gives bad request for missing data", async () => {
         const resp = await request(app)
             .post("/murals/")
-            .send({ title: "oooops" });
+            .send({ title: "oooops" })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(400);
     });
 });
@@ -78,7 +94,9 @@ describe("POST, /murals", () => {
 
 describe("GET, /murals/", () => {
     it("returns a list of all murals", async () => {
-        const resp = await request(app).get("/murals/");
+        const resp = await request(app)
+            .get("/murals/")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             murals: [
@@ -102,6 +120,11 @@ describe("GET, /murals/", () => {
                 },
             ],
         });
+    });
+
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).get("/murals/");
+        expect(resp.statusCode).toBe(401);
     });
 });
 
@@ -132,7 +155,9 @@ describe("GET, /murals/active", () => {
 
 describe("GET, /murals/archived", () => {
     it("returns a list of all archived murals", async () => {
-        const resp = await request(app).get("/murals/archived");
+        const resp = await request(app)
+            .get("/murals/archived")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             murals: [
@@ -143,6 +168,11 @@ describe("GET, /murals/archived", () => {
                 },
             ],
         });
+    });
+
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).get("/murals/archived");
+        expect(resp.statusCode).toBe(401);
     });
 });
 
@@ -176,7 +206,8 @@ describe("PATCH, /murals/mural/:id", () => {
             .send({
                 title: "ChangedTest1",
                 description: "This description was changed!",
-            });
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             mural: {
@@ -187,10 +218,16 @@ describe("PATCH, /murals/mural/:id", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).patch("/murals/mural/1");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("does a partial update on a mural by id", async () => {
         const resp = await request(app)
             .patch(`/murals/mural/${testMuralIds[0]}`)
-            .send({ description: "This was changed again!" });
+            .send({ description: "This was changed again!" })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             mural: {
@@ -204,7 +241,8 @@ describe("PATCH, /murals/mural/:id", () => {
     it("gives not found if invalid id", async () => {
         const resp = await request(app)
             .patch("/murals/mural/-1")
-            .send({ title: "uh oh!" });
+            .send({ title: "uh oh!" })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -213,9 +251,9 @@ describe("PATCH, /murals/mural/:id", () => {
 
 describe("PATCH, /murals/mural/:id/archive", () => {
     it("archives a mural by id", async () => {
-        const resp = await request(app).patch(
-            `/murals/mural/${testMuralIds[1]}/archive`
-        );
+        const resp = await request(app)
+            .patch(`/murals/mural/${testMuralIds[1]}/archive`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             mural: {
@@ -227,8 +265,15 @@ describe("PATCH, /murals/mural/:id/archive", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).patch("/murals/mural/1/archive");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found with invalid id", async () => {
-        const resp = await request(app).patch(`/murals/mural/-2/archive`);
+        const resp = await request(app)
+            .patch(`/murals/mural/-2/archive`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -237,9 +282,9 @@ describe("PATCH, /murals/mural/:id/archive", () => {
 
 describe("PATCH, /murals/mural/:id/unarchive", () => {
     it("un-archives a mural by id", async () => {
-        const resp = await request(app).patch(
-            `/murals/mural/${testMuralIds[2]}/unarchive`
-        );
+        const resp = await request(app)
+            .patch(`/murals/mural/${testMuralIds[2]}/unarchive`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             mural: {
@@ -251,8 +296,15 @@ describe("PATCH, /murals/mural/:id/unarchive", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).patch("/murals/mural/1/unarchive");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found with invalid id", async () => {
-        const resp = await request(app).patch("/murals/mural/-2/unarchive");
+        const resp = await request(app)
+            .patch("/murals/mural/-2/unarchive")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -261,17 +313,24 @@ describe("PATCH, /murals/mural/:id/unarchive", () => {
 
 describe("DELETE, /murals/mural/:id", () => {
     it("deletes mural by id", async () => {
-        const resp = await request(app).delete(
-            `/murals/mural/${testMuralIds[2]}`
-        );
+        const resp = await request(app)
+            .delete(`/murals/mural/${testMuralIds[2]}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: { msg: "Deleted." },
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).delete("/murals/mural/1");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found with invalid id", async () => {
-        const resp = await request(app).delete("/murals/mural/-2");
+        const resp = await request(app)
+            .delete("/murals/mural/-2")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
     });
 });

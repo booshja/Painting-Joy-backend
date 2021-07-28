@@ -41,6 +41,7 @@ class Admin {
             const isValid = await bcrypt.compare(password, admin.password);
             if (isValid === true) {
                 delete admin.password;
+                admin.isAdmin = true;
                 return admin;
             }
         }

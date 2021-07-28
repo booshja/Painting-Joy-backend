@@ -36,6 +36,7 @@ describe("authenticate", () => {
             username: "testadmin1",
             firstName: "Test",
             email: "test@email.com",
+            isAdmin: true,
         });
     });
 

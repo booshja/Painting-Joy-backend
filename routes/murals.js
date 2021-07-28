@@ -2,6 +2,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const multer = require("multer");
 const { BadRequestError, NotFoundError } = require("../expressError");
+const { ensureAdmin } = require("../middleware/auth");
 const Mural = require("../models/mural");
 const muralNewSchema = require("../schemas/muralNew.json");
 const muralUpdateSchema = require("../schemas/muralUpdate.json");
@@ -25,7 +26,7 @@ const upload = multer({
     },
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", ensureAdmin, async (req, res, next) => {
     /** POST "/" { mural } => { mural }
      * Creates a new mural
      *
@@ -51,6 +52,7 @@ router.post("/", async (req, res, next) => {
 
 router.post(
     "/upload/:muralId/image/:imageNum",
+    ensureAdmin,
     upload.single("upload"),
     async (req, res) => {
         /** POST "/" { file upload } => { message }
@@ -81,13 +83,13 @@ router.post(
     }
 );
 
-router.get("/", async (req, res, next) => {
+router.get("/", ensureAdmin, async (req, res, next) => {
     /** GET "/" => { [ murals ] }
      * Returns a list of all murals
      *
      * Returns { id, title, description }
      *
-     * Authorization required: none
+     * Authorization required: admin
      */
     try {
         const murals = await Mural.getAll();
@@ -113,13 +115,13 @@ router.get("/active", async (req, res, next) => {
     }
 });
 
-router.get("/archived", async (req, res, next) => {
+router.get("/archived", ensureAdmin, async (req, res, next) => {
     /** GET, "/archived" => { [ murals ] }
      * Returns a list of all archived murals
      *
      * Returns [ {id, title, description }, {id, title, description }, ...]
      *
-     * Authorization required: none
+     * Authorization required: admin
      */
     try {
         const murals = await Mural.getArchived();
@@ -170,7 +172,7 @@ router.get("/mural/:muralId/image/:imageNum", async (req, res) => {
     }
 });
 
-router.patch("/mural/:id", async (req, res, next) => {
+router.patch("/mural/:id", ensureAdmin, async (req, res, next) => {
     /** PATCH "/{id}" { mural } => { mural }
      * Partial update of a mural by id
      *
@@ -195,7 +197,7 @@ router.patch("/mural/:id", async (req, res, next) => {
     }
 });
 
-router.patch("/mural/:id/archive", async (req, res, next) => {
+router.patch("/mural/:id/archive", ensureAdmin, async (req, res, next) => {
     /** PATCH "/mural/{id}/archive" => { mural }
      * Updates a mural as archived
      *
@@ -211,7 +213,7 @@ router.patch("/mural/:id/archive", async (req, res, next) => {
     }
 });
 
-router.patch("/mural/:id/unarchive", async (req, res, next) => {
+router.patch("/mural/:id/unarchive", ensureAdmin, async (req, res, next) => {
     /** PATCH "/mural/{id}/unarchive" => { mural }
      * Updates a mural as NOT archived
      *
@@ -227,25 +229,32 @@ router.patch("/mural/:id/unarchive", async (req, res, next) => {
     }
 });
 
-router.delete("/mural/:muralId/image/:imageNum", async (req, res) => {
-    /** DELETE "/upload" => {message}
-     * Deletes image data from a mural
-     *
-     * Returns { msg: "Deleted." }
-     *
-     * Authorization required: admin
-     */
-    try {
-        const imageName = "image" + req.params.imageNum;
-        // delete mural image by muralId and imageName
-        const message = await Mural.deleteImage(+req.params.imageId, imageName);
-        res.status(200).send({ message });
-    } catch (err) {
-        res.status(400).send(err);
+router.delete(
+    "/mural/:muralId/image/:imageNum",
+    ensureAdmin,
+    async (req, res) => {
+        /** DELETE "/upload" => {message}
+         * Deletes image data from a mural
+         *
+         * Returns { msg: "Deleted." }
+         *
+         * Authorization required: admin
+         */
+        try {
+            const imageName = "image" + req.params.imageNum;
+            // delete mural image by muralId and imageName
+            const message = await Mural.deleteImage(
+                +req.params.imageId,
+                imageName
+            );
+            res.status(200).send({ message });
+        } catch (err) {
+            res.status(400).send(err);
+        }
     }
-});
+);
 
-router.delete("/mural/:id", async (req, res, next) => {
+router.delete("/mural/:id", ensureAdmin, async (req, res, next) => {
     /** DELETE "/{id}" => { msg: "Deleted." }
      * Deletes a mural
      *

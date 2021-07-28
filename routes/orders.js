@@ -2,6 +2,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const stripe = require("stripe")(process.env.STRIPE_API_KEY);
 const { BadRequestError } = require("../expressError");
+const { ensureAdmin } = require("../middleware/auth");
 const Order = require("../models/order");
 const Item = require("../models/item");
 const orderNewSchema = require("../schemas/orderNew.json");
@@ -25,23 +26,23 @@ const calculateOrderAmount = (listItems) => {
     return totalAmount;
 };
 
-router.post("/", async (req, res, next) => {
-    /** POST "/"  => { order }
-     * Create a new order
-     *
-     * Returns { id, status }
-     *
-     * Authorization required: none
-     */
-    try {
-        // create new pending order in db
-        const order = await Order.create();
+// router.post("/", async (req, res, next) => {
+//     /** POST "/"  => { order }
+//      * Create a new order
+//      *
+//      * Returns { id, status }
+//      *
+//      * Authorization required: none
+//      */
+//     try {
+//         // create new pending order in db
+//         const order = await Order.create();
 
-        return res.status(201).json({ order });
-    } catch (err) {
-        return next(err);
-    }
-});
+//         return res.status(201).json({ order });
+//     } catch (err) {
+//         return next(err);
+//     }
+// });
 
 router.post("/order/:orderId/info", async (req, res, next) => {
     /** POST "/order/{orderId}/info" { data } => { order }
@@ -113,26 +114,30 @@ router.post("/checkout", async (req, res, next) => {
     }
 });
 
-router.post("/order/:orderId/add/:itemId", async (req, res, next) => {
-    /** POST "/order/{orderId}/add/{itemId}" => { order }
-     * Adds an existing item to an existing order by orderId & itemId
-     *
-     * Returns { id, email, name, street, unit, city, stateCode, zipcode,
-     *              phone, transactionId, status, amount, listItems }
-     * Where listItems is an array of all items associated with the order.
-     *
-     * Authorization required: none
-     */
-    try {
-        const message = await Order.addItem(
-            +req.params.orderId,
-            req.params.itemId
-        );
-        return res.status(200).json({ message });
-    } catch (err) {
-        return next(err);
+router.post(
+    "/order/:orderId/add/:itemId",
+    ensureAdmin,
+    async (req, res, next) => {
+        /** POST "/order/{orderId}/add/{itemId}" => { order }
+         * Adds an existing item to an existing order by orderId & itemId
+         *
+         * Returns { id, email, name, street, unit, city, stateCode, zipcode,
+         *              phone, transactionId, status, amount, listItems }
+         * Where listItems is an array of all items associated with the order.
+         *
+         * Authorization required: admin
+         */
+        try {
+            const message = await Order.addItem(
+                +req.params.orderId,
+                req.params.itemId
+            );
+            return res.status(200).json({ message });
+        } catch (err) {
+            return next(err);
+        }
     }
-});
+);
 
 router.post("/create-payment-intent", async (req, res, next) => {
     /** POST "/create-payment-intent" => { payment intent }
@@ -164,7 +169,7 @@ router.post("/create-payment-intent", async (req, res, next) => {
     }
 });
 
-router.get("/order/:orderId", async (req, res, next) => {
+router.get("/order/:orderId", ensureAdmin, async (req, res, next) => {
     /** GET "/order/{orderId}" => { order }
      * Gets an order by id
      *
@@ -172,7 +177,7 @@ router.get("/order/:orderId", async (req, res, next) => {
      *              phone, transactionId, status, amount, listItems }
      * Where listItems is an array of all items associated with the order.
      *
-     * Authorization required: none
+     * Authorization required: admin
      */
     try {
         const order = await Order.get(+req.params.orderId);
@@ -182,7 +187,7 @@ router.get("/order/:orderId", async (req, res, next) => {
     }
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", ensureAdmin, async (req, res, next) => {
     /** GET "/" => { [ orders ] }
      * Gets an array of all orders
      *
@@ -192,7 +197,7 @@ router.get("/", async (req, res, next) => {
      *                  zipcode, phone, transactionId, status, amount },
      *              ...]
      *
-     * Authorization required: none
+     * Authorization required: admin
      */
     try {
         const orders = await Order.getAll();
@@ -202,14 +207,14 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-router.patch("/order/:orderId/confirm", async (req, res, next) => {
+router.patch("/order/:orderId/confirm", ensureAdmin, async (req, res, next) => {
     /** PATCH "/order/{orderId}/confirm" { transactionId } => { order }
      * Changes order's status to "Confirmed"
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
      *              phone, transactionId, status, amount }
      *
-     * Authorization required: none
+     * Authorization required: admin
      */
     try {
         const order = await Order.markConfirmed(
@@ -222,7 +227,7 @@ router.patch("/order/:orderId/confirm", async (req, res, next) => {
     }
 });
 
-router.patch("/order/:orderId/ship", async (req, res, next) => {
+router.patch("/order/:orderId/ship", ensureAdmin, async (req, res, next) => {
     /** PATCH "/order/{orderId}/ship" => { order }
      * Changes order's status to "Shipped"
      *
@@ -239,41 +244,49 @@ router.patch("/order/:orderId/ship", async (req, res, next) => {
     }
 });
 
-router.patch("/order/:orderId/complete", async (req, res, next) => {
-    /** PATCH "/order/{orderId}/complete" => { order }
-     * Changes order's status to "Completed"
-     *
-     * Returns { id, email, name, street, unit, city, stateCode, zipcode,
-     *              phone, transactionId, status, amount }
-     *
-     * Authorization required: admin
-     */
-    try {
-        const order = await Order.markCompleted(+req.params.orderId);
-        return res.status(200).json({ order });
-    } catch (err) {
-        return next(err);
+router.patch(
+    "/order/:orderId/complete",
+    ensureAdmin,
+    async (req, res, next) => {
+        /** PATCH "/order/{orderId}/complete" => { order }
+         * Changes order's status to "Completed"
+         *
+         * Returns { id, email, name, street, unit, city, stateCode, zipcode,
+         *              phone, transactionId, status, amount }
+         *
+         * Authorization required: admin
+         */
+        try {
+            const order = await Order.markCompleted(+req.params.orderId);
+            return res.status(200).json({ order });
+        } catch (err) {
+            return next(err);
+        }
     }
-});
+);
 
-router.patch("/order/:orderId/remove/:itemId", async (req, res, next) => {
-    /** PATCH "/order/{orderId}/remove/{itemId}" => { msg }
-     * Removes an item from the order
-     *
-     * Returns { msg: "Item removed." }
-     *
-     * Authorization required: admin
-     */
-    try {
-        const message = await Order.removeItem(
-            +req.params.orderId,
-            req.params.itemId
-        );
-        return res.status(200).json({ message });
-    } catch (err) {
-        return next(err);
+router.patch(
+    "/order/:orderId/remove/:itemId",
+    ensureAdmin,
+    async (req, res, next) => {
+        /** PATCH "/order/{orderId}/remove/{itemId}" => { msg }
+         * Removes an item from the order
+         *
+         * Returns { msg: "Item removed." }
+         *
+         * Authorization required: admin
+         */
+        try {
+            const message = await Order.removeItem(
+                +req.params.orderId,
+                req.params.itemId
+            );
+            return res.status(200).json({ message });
+        } catch (err) {
+            return next(err);
+        }
     }
-});
+);
 
 router.delete("/order/:orderId/abort", async (req, res, next) => {
     /** DELETE "/order/{orderId}/abort" => { message }
@@ -289,25 +302,21 @@ router.delete("/order/:orderId/abort", async (req, res, next) => {
 
         // add back items into db availability
         for (item of order.listItems) {
-            console.log("in for item loop", item);
             await Item.update(item.id, {
                 quantity: item.quantity + 1,
                 is_sold: false,
             });
-            console.log("after item update");
         }
 
         // delete order from db
         const message = await Order.delete(+req.params.orderId);
-        console.log("after delete", message);
         return res.status(200).json({ message });
     } catch (err) {
-        console.log("ERROR!!!!!", err);
         return next(err);
     }
 });
 
-router.delete("/order/:orderId", async (req, res, next) => {
+router.delete("/order/:orderId", ensureAdmin, async (req, res, next) => {
     /** DELETE "/order/{orderId}" => { msg }
      * Deletes an order from the db by id
      *

@@ -280,50 +280,49 @@ describe("get", () => {
 describe("getAll", () => {
     it("gets all orders", async () => {
         const orders = await Order.getAll();
-        expect(orders).toEqual([
-            {
-                id: testOrderIds[0],
-                email: "1@email.com",
-                name: "Tester1",
-                street: "123 Main St",
-                unit: "Apt 1",
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "99999",
-                phone: "5555555555",
-                transactionId: "abcd1234",
-                status: "Confirmed",
-                amount: "1299.99",
-            },
-            {
-                id: testOrderIds[1],
-                email: "2@email.com",
-                name: "Tester2",
-                street: "456 State St",
-                unit: null,
-                city: "Boston",
-                stateCode: "MA",
-                zipcode: "88888",
-                phone: "6666666666",
-                transactionId: "efgh5678",
-                status: "Shipped",
-                amount: "2499.99",
-            },
-            {
-                id: testOrderIds[2],
-                email: "3@email.com",
-                name: "Tester3",
-                street: "789 University St",
-                unit: "Unit 3420",
-                city: "Austin",
-                stateCode: "TX",
-                zipcode: "77777",
-                phone: "7777777777",
-                transactionId: "ijkl1234",
-                status: "Completed",
-                amount: "3699.99",
-            },
-        ]);
+        expect(orders.length).toBe(3);
+        expect(orders).toContainEqual({
+            id: testOrderIds[0],
+            email: "1@email.com",
+            name: "Tester1",
+            street: "123 Main St",
+            unit: "Apt 1",
+            city: "Seattle",
+            stateCode: "WA",
+            zipcode: "99999",
+            phone: "5555555555",
+            transactionId: "abcd1234",
+            status: "Confirmed",
+            amount: "1299.99",
+        });
+        expect(orders).toContainEqual({
+            id: testOrderIds[1],
+            email: "2@email.com",
+            name: "Tester2",
+            street: "456 State St",
+            unit: null,
+            city: "Boston",
+            stateCode: "MA",
+            zipcode: "88888",
+            phone: "6666666666",
+            transactionId: "efgh5678",
+            status: "Shipped",
+            amount: "2499.99",
+        });
+        expect(orders).toContainEqual({
+            id: testOrderIds[2],
+            email: "3@email.com",
+            name: "Tester3",
+            street: "789 University St",
+            unit: "Unit 3420",
+            city: "Austin",
+            stateCode: "TX",
+            zipcode: "77777",
+            phone: "7777777777",
+            transactionId: "ijkl1234",
+            status: "Completed",
+            amount: "3699.99",
+        });
     });
 });
 

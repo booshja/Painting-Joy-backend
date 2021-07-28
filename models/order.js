@@ -86,6 +86,7 @@ class Order {
                     zipcode = pgp_sym_encrypt($7, $10),
                     phone = pgp_sym_encrypt($8, $10),
                     amount = $9
+                WHERE id = $11
                 RETURNING id,
                         pgp_sym_decrypt(email, $10) AS email,
                         pgp_sym_decrypt(name, $10) AS name,
@@ -108,12 +109,13 @@ class Order {
                 data.phone,
                 data.amount,
                 process.env.KEY,
+                orderId,
             ]
         );
         const order = result.rows[0];
 
         // if no record returned, invalid order id, throw NotFoundError
-        if (!order) throw new NotFoundError(`No order: ${id}`);
+        if (!order) throw new NotFoundError(`No order: ${orderId}`);
 
         return order;
     }

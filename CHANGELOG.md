@@ -1,3 +1,34 @@
+### 0.7.0 (2021-07-28)
+
+##### Chores
+
+*  updated bcrypt work factor ([27bb4c7c](https://github.com/booshja/Painting-Joy-backend/commit/27bb4c7c60c6c12c0d938511468c5719c97047ec))
+*  added calculateOrderAmount helper function ([f599b6e7](https://github.com/booshja/Painting-Joy-backend/commit/f599b6e7fd5f87186cf4b3082b0bb3e9e4bfc2a1))
+
+##### Documentation Changes
+
+*  updated docstring with correct params ([637715de](https://github.com/booshja/Painting-Joy-backend/commit/637715de73ff1fb8b49326e4523259a1a5ea6ecb))
+
+##### New Features
+
+*  added abort route ([a53f8eae](https://github.com/booshja/Painting-Joy-backend/commit/a53f8eae91a916a219789608031d915f3b4db043))
+*  added checkout route ([5bea107d](https://github.com/booshja/Painting-Joy-backend/commit/5bea107dc9b9f4acb07fa2a36db77d1a9c0e3778))
+*  added markConfirmed method ([97eb3aea](https://github.com/booshja/Painting-Joy-backend/commit/97eb3aeaf679565d6a1ed2498ed758800086a77a))
+*  changed create method ([92c032ad](https://github.com/booshja/Painting-Joy-backend/commit/92c032ad0cce62fcaf0ccf626350646dfc572994))
+*  added get quantity route ([d7fbaa23](https://github.com/booshja/Painting-Joy-backend/commit/d7fbaa23589232c25f346d096179d9e16d87036c))
+*  added getQuantity method to Item model ([8e0093f1](https://github.com/booshja/Painting-Joy-backend/commit/8e0093f1c2e720a01f047d123cf695956ff6cd0d))
+*  added shipping to item ([322f7159](https://github.com/booshja/Painting-Joy-backend/commit/322f71596ca229b8d3050b5eec2528a947123d53))
+*  added stripe ([b736ad8f](https://github.com/booshja/Painting-Joy-backend/commit/b736ad8f914c7aaaf0b7002294d9331c37454fdc))
+
+##### Other Changes
+
+*  Merge pull request [#15](https://github.com/booshja/Painting-Joy-backend/pull/15) from booshja/payment ([3fff596b](https://github.com/booshja/Painting-Joy-backend/commit/3fff596b9f5cc5fdf132273796ed018adda055ca))
+
+##### Refactors
+
+*  updated route naming structure ([d28599bb](https://github.com/booshja/Painting-Joy-backend/commit/d28599bbdc8a15069ab7e770240aeb6f8d7fdd07))
+*  update route naming structure ([572f7c58](https://github.com/booshja/Painting-Joy-backend/commit/572f7c58d2c729ced001c210569da1a35cf462c6))
+
 ### 0.6.0 (2021-07-25)
 
 ##### Chores

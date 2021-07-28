@@ -127,7 +127,6 @@ describe("DELETE, /igposts/:id", () => {
         const resp = await request(app).delete(
             `/igposts/delete/${testIgPostIds[1]}`
         );
-        console.log(resp.body);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: {

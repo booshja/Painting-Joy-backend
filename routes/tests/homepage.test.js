@@ -1,7 +1,10 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
+const { createAdminToken } = require("../../helpers/tokens");
 const Homepage = require("../../models/homepage");
+
+let adminToken;
 
 beforeAll(async () => {
     await db.query("DELETE FROM homepages");
@@ -10,6 +13,8 @@ beforeAll(async () => {
         greeting: "Initial test greeting",
         message: "Initial test message",
     });
+
+    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -27,11 +32,14 @@ afterAll(async () => {
 /****************************** POST /homepage */
 
 describe("POST /homepage", () => {
-    test("works: unathorized", async () => {
-        const resp = await request(app).post("/homepage").send({
-            greeting: "Hi this is a test!",
-            message: "This is a test message!",
-        });
+    it("works: authorized", async () => {
+        const resp = await request(app)
+            .post("/homepage")
+            .send({
+                greeting: "Hi this is a test!",
+                message: "This is a test message!",
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(201);
         expect(resp.body).toEqual({
             homepage: {
@@ -42,15 +50,32 @@ describe("POST /homepage", () => {
         });
     });
 
-    test("bad request with partial missing data", async () => {
-        const resp = await request(app).post("/homepage").send({
-            greeting: "Oh, hello!",
-        });
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app)
+            .post("/homepage")
+            .send({
+                greeting: "Wasssssuppppppp",
+                message: "Oh hello there!",
+            })
+            .set("authorization", "");
+        expect(resp.statusCode).toBe(401);
+    });
+
+    it("gives bad request with partial missing data", async () => {
+        const resp = await request(app)
+            .post("/homepage")
+            .send({
+                greeting: "Oh, hello!",
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(400);
     });
 
-    test("bad request with no data", async () => {
-        const resp = await request(app).post("/homepage").send();
+    it("gives bad request with no data", async () => {
+        const resp = await request(app)
+            .post("/homepage")
+            .send()
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(400);
     });
 });
@@ -58,7 +83,7 @@ describe("POST /homepage", () => {
 /******************************* GET /homepage */
 
 describe("GET /homepage", () => {
-    test("works", async () => {
+    it("works", async () => {
         const resp = await request(app).get("/homepage");
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
@@ -74,11 +99,14 @@ describe("GET /homepage", () => {
 /******************************* PUT /homepage */
 
 describe("PUT /homepage", () => {
-    test("works: unathorized", async () => {
-        const resp = await request(app).put("/homepage").send({
-            greeting: "Hi this is a put test!",
-            message: "This is a test put message!",
-        });
+    it("works: authorized", async () => {
+        const resp = await request(app)
+            .put("/homepage")
+            .send({
+                greeting: "Hi this is a put test!",
+                message: "This is a test put message!",
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             homepage: {
@@ -89,15 +117,21 @@ describe("PUT /homepage", () => {
         });
     });
 
-    test("bad request with partial missing data", async () => {
-        const resp = await request(app).put("/homepage").send({
-            greeting: "Oh, hello!",
-        });
+    it("gives bad request with partial missing data", async () => {
+        const resp = await request(app)
+            .put("/homepage")
+            .send({
+                greeting: "Oh, hello!",
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(400);
     });
 
-    test("bad request with no data", async () => {
-        const resp = await request(app).put("/homepage").send();
+    it("gives bad request with no data", async () => {
+        const resp = await request(app)
+            .put("/homepage")
+            .send()
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(400);
     });
 });

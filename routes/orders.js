@@ -289,20 +289,16 @@ router.delete("/order/:orderId/abort", async (req, res, next) => {
 
         // add back items into db availability
         for (item of order.listItems) {
-            console.log("in for item loop", item);
             await Item.update(item.id, {
                 quantity: item.quantity + 1,
                 is_sold: false,
             });
-            console.log("after item update");
         }
 
         // delete order from db
         const message = await Order.delete(+req.params.orderId);
-        console.log("after delete", message);
         return res.status(200).json({ message });
     } catch (err) {
-        console.log("ERROR!!!!!", err);
         return next(err);
     }
 });

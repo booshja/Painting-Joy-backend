@@ -2,6 +2,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const multer = require("multer");
 const { BadRequestError, NotFoundError } = require("../expressError");
+const { ensureAdmin } = require("../middleware/auth");
 const Homepage = require("../models/homepage");
 const homepageNewSchema = require("../schemas/homepageNew.json");
 const homepageUpdateSchema = require("../schemas/homepageUpdate.json");
@@ -25,7 +26,7 @@ const upload = multer({
     },
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", ensureAdmin, async (req, res, next) => {
     /** POST "/" { homepage } => { homepage }
      * Creates a new mural
      *
@@ -51,6 +52,7 @@ router.post("/", async (req, res, next) => {
 
 router.post(
     "/image",
+    ensureAdmin,
     upload.single("upload"),
     async (req, res) => {
         /** POST "/image" { file upload } => { message }
@@ -112,7 +114,7 @@ router.get("/image", async (req, res) => {
     }
 });
 
-router.put("/", async (req, res, next) => {
+router.put("/", ensureAdmin, async (req, res, next) => {
     /** PUT "/" { homepage } => { homepage }
      * Updates the homepage data
      *
@@ -136,7 +138,7 @@ router.put("/", async (req, res, next) => {
     }
 });
 
-router.delete("/image", async (req, res) => {
+router.delete("/image", ensureAdmin, async (req, res) => {
     /** DELETE "/upload" => { message }
      * Deletes image data from homepage
      *

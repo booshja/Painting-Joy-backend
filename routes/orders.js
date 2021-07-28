@@ -42,56 +42,6 @@ router.post("/", async (req, res, next) => {
     }
 });
 
-router.post("/checkout", async (req, res, next) => {
-    /** POST "/checkout" { order, items } => { order }
-     * Creates order, adds items to it, removes items from inventory
-     *
-     * order should be { name, email, street, unit, city, stateCode, zipcode,
-     *                  phone, transactionId, status, amount }
-     * items should be [ {item}, {item}, {item}, ... ]
-     *      item should be { itemId, quantity }
-     *
-     * Returns { order, notAdded }
-     *
-     * Authorization required: none
-     */
-    try {
-        // validate json schema for order
-        const validator = jsonschema.validate(req.body.order, orderNewSchema);
-        if (!validator.valid) {
-            const errors = validator.errors.map((e) => e.stack);
-            throw new BadRequestError(errors);
-        }
-
-        // if no ids or nothing in ids, throw BadRequestError
-        if (!req.body.ids || req.body.ids.length === 0)
-            throw new BadRequestError("No item ids.");
-
-        // create new order
-        let order = await Order.create(req.body.order);
-
-        const notAdded = [];
-
-        for (item of req.body.items) {
-            // decrease item quantity, add item to order
-            for (let i = 0; i < item.quantity; i++) {
-                try {
-                    await Order.addItem(order.id, item.id);
-                } catch (err) {
-                    // if error add item id to notAdded array
-                    notAdded.push(item.id);
-                }
-            }
-        }
-
-        order = await Order.get(order.id);
-
-        return { order, notAdded };
-    } catch (err) {
-        return next(err);
-    }
-});
-
 router.post("/order/:orderId/info", async (req, res, next) => {
     /** POST "/order/{orderId}/info" { data } => { order }
      * Adds customer data to existing order by id
@@ -109,13 +59,54 @@ router.post("/order/:orderId/info", async (req, res, next) => {
         const validator = jsonschema.validate(req.body, orderNewSchema);
         if (!validator.valid) {
             const errors = validator.errors.map((e) => e.stack);
-            console.log(errors);
             throw new BadRequestError(errors);
         }
 
         // Add customer data to order and db, return order
         const order = await Order.addInfo(+req.params.orderId, req.body);
         return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
+});
+
+router.post("/checkout", async (req, res, next) => {
+    /** POST "/checkout" { items } => { order }
+     * Creates order, adds items to it, removes items from inventory
+     *
+     * items should be [ {item}, {item}, {item}, ... ]
+     *      item should be { itemId, quantity }
+     *
+     * Returns { order, notAdded }
+     *
+     * Authorization required: none
+     */
+    try {
+        // if no ids or nothing in ids, throw BadRequestError
+        if (!req.body.items || Object.keys(req.body.items).length === 0)
+            throw new BadRequestError("No item ids.");
+
+        // create new order
+        let order = await Order.create();
+
+        const notAdded = [];
+
+        for (item of req.body.items) {
+            // decrease item quantity, add item to order
+            for (let i = 0; i < item.quantity; i++) {
+                try {
+                    await Order.addItem(order.id, item.id);
+                } catch (err) {
+                    // if error add item to notAdded array
+                    notAdded.push(item.id);
+                    continue;
+                }
+            }
+        }
+
+        order = await Order.get(order.id);
+
+        return res.status(200).json({ order, notAdded });
     } catch (err) {
         return next(err);
     }
@@ -132,11 +123,11 @@ router.post("/order/:orderId/add/:itemId", async (req, res, next) => {
      * Authorization required: none
      */
     try {
-        const order = await Order.addItem(
+        const message = await Order.addItem(
             +req.params.orderId,
             req.params.itemId
         );
-        return res.status(200).json({ order });
+        return res.status(200).json({ message });
     } catch (err) {
         return next(err);
     }

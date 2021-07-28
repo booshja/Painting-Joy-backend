@@ -177,7 +177,7 @@ describe("addInfo", () => {
 describe("addItem", () => {
     it("add the item to the order", async () => {
         const added = await Order.addItem(testOrderIds[0], testItemIds[0]);
-        expect(added.listItems.length).toEqual(3);
+        expect(added).toEqual({ msg: "Added." });
     });
 
     it("throws BadRequestError if no id", async () => {
@@ -237,17 +237,17 @@ describe("get", () => {
             amount: "1299.99",
             listItems: [
                 {
+                    id: testItemIds[0],
                     name: "Item1",
                     description: "This is item 1.",
                     price: "10.99",
-                    quantity: 1,
                     shipping: "1.99",
                 },
                 {
+                    id: testItemIds[3],
                     name: "Item4",
                     description: "This is item 4.",
                     price: "40.99",
-                    quantity: 4,
                     shipping: "4.99",
                 },
             ],
@@ -360,7 +360,6 @@ describe("markConfirmed", () => {
             await Order.markConfirmed(-1, "abc");
             fail();
         } catch (err) {
-            console.log(err);
             expect(err instanceof NotFoundError).toBeTruthy();
         }
     });

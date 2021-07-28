@@ -123,10 +123,7 @@ class Order {
          *
          * Accepts orderId, itemId
          *
-         * Returns { id, email, name, street, unit, city, stateCode, zipcode, phone,
-         *               transactionId, status, amount, listItems: [ { id, name,
-         *                  description, price, shipping, created }, { id, name,
-         *                  description, price, shipping, created }, ...] }
+         * Returns { msg: "Added." }
          *
          * Throws BadRequestError if no missing orderId or itemId
          * Throws NotFoundError if no such item
@@ -182,24 +179,7 @@ class Order {
             [orderId, itemId]
         );
 
-        // query db for list of all items associated with order
-        const listRes = await db.query(
-            `SELECT i.name,
-                    i.description,
-                    i.price,
-                    i.shipping
-                FROM orders_items oi
-                JOIN items i
-                ON oi.item_id=i.id
-                WHERE oi.order_id=$1`,
-            [orderId]
-        );
-        const listItems = listRes.rows;
-
-        // insert listItems into order object and return
-        order.listItems = listItems;
-
-        return order;
+        return { msg: "Added." };
     }
 
     static async get(id) {
@@ -239,11 +219,11 @@ class Order {
         if (!order) throw new NotFoundError(`No order: ${id}`);
 
         const itemsRes = await db.query(
-            `SELECT i.name,
+            `SELECT i.id,
+                    i.name,
                     i.description,
                     i.price,
-                    i.shipping,
-                    i.quantity
+                    i.shipping
                 FROM orders_items oi
                 JOIN items i
                 ON oi.item_id=i.id

@@ -64,7 +64,54 @@ describe("POST, /orders/", () => {
     });
 });
 
-/****************** POST /orders/order/:orderId/info */
+/*********************** POST /orders/checkout */
+
+describe("POST, /orders/checkout", () => {
+    it("creates order, adds item to it, removes items from inventory", async () => {
+        const resp = await request(app)
+            .post(`/orders/checkout`)
+            .send({
+                items: [
+                    { id: testItemIds[0], quantity: 1 },
+                    { id: -1, quantity: 2 },
+                ],
+            });
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            order: {
+                id: expect.any(Number),
+                email: "Pending",
+                name: "Pending",
+                phone: "Pending",
+                street: "Pending",
+                unit: "Pending",
+                city: "Pending",
+                stateCode: "Pending",
+                zipcode: "Pending",
+                transactionId: "Pending",
+                amount: "0",
+                status: "Pending",
+                listItems: [
+                    {
+                        id: expect.any(Number),
+                        name: "Item1",
+                        description: "This is item 1!",
+                        price: "100.99",
+                        shipping: "1.99",
+                    },
+                ],
+            },
+            notAdded: [-1, -1],
+        });
+    });
+
+    it("gives bad request with no body", async () => {
+        const resp = await request(app).post(`/orders/checkout`);
+        expect(resp.statusCode).toBe(400);
+    });
+});
+
+/************ POST /orders/order/:orderId/info */
 
 describe("POST, /orders/order/:orderId/info", () => {
     it("adds customer data to order by orderId", async () => {
@@ -100,7 +147,7 @@ describe("POST, /orders/order/:orderId/info", () => {
     });
 });
 
-/*********** POST /orders/order/:orderId/add/:itemId */
+/***** POST /orders/order/:orderId/add/:itemId */
 
 describe("POST, /orders/order/:orderId/add/:itemId", () => {
     it("adds an item to an order by orderId & itemId", async () => {
@@ -109,20 +156,8 @@ describe("POST, /orders/order/:orderId/add/:itemId", () => {
         );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
-            order: {
-                id: testOrderIds[0],
-                email: "Pending",
-                name: "Pending",
-                street: "Pending",
-                unit: "Pending",
-                city: "Pending",
-                stateCode: "Pending",
-                zipcode: "Pending",
-                phone: "Pending",
-                transactionId: "Pending",
-                status: "Pending",
-                amount: "0",
-                listItems: [expect.any(Object)],
+            message: {
+                msg: "Added.",
             },
         });
     });
@@ -142,7 +177,7 @@ describe("POST, /orders/order/:orderId/add/:itemId", () => {
     });
 });
 
-/************************ GET /orders/order:orderId */
+/******************* GET /orders/order:orderId */
 
 describe("GET, /orders/order:orderId", () => {
     it("gets an order by id", async () => {
@@ -212,7 +247,7 @@ describe("GET, /orders/", () => {
     });
 });
 
-/***************** PATCH /orders/order/:orderId/ship */
+/*********** PATCH /orders/order/:orderId/ship */
 
 describe("PATCH, /orders/order/:orderId/ship", () => {
     it("updates an order's status to 'Shipped' by id", async () => {
@@ -244,7 +279,7 @@ describe("PATCH, /orders/order/:orderId/ship", () => {
     });
 });
 
-/************* PATCH /orders/order/:orderId/complete */
+/******* PATCH /orders/order/:orderId/complete */
 
 describe("PATCH, /orders/order/:orderId/complete", () => {
     it("updates an order's status to 'Completed' by id", async () => {
@@ -276,7 +311,7 @@ describe("PATCH, /orders/order/:orderId/complete", () => {
     });
 });
 
-/******* PATCH /orders/order/:orderId/remove/:itemId */
+/* PATCH /orders/order/:orderId/remove/:itemId */
 
 describe("PATCH, /orders/order/:orderId/remove/:itemId", () => {
     it("removes an item from an order by orderId & itemId", async () => {
@@ -311,7 +346,7 @@ describe("PATCH, /orders/order/:orderId/remove/:itemId", () => {
     });
 });
 
-/********************* DELETE /orders/order:orderId */
+/**************** DELETE /orders/order:orderId */
 
 describe("DELETE, /orders/order:orderId", () => {
     it("deletes an order by id", async () => {

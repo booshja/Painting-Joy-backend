@@ -1,8 +1,10 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
+const { createAdminToken } = require("../../helpers/tokens");
 const Item = require("../../models/item");
 
+let adminToken;
 const testItemIds = [];
 
 beforeAll(async () => {
@@ -25,6 +27,8 @@ beforeAll(async () => {
         quantity: 2,
     });
     testItemIds.push(item2.id);
+
+    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -43,13 +47,16 @@ afterAll(async () => {
 
 describe("POST, /items/", () => {
     it("creates an item", async () => {
-        const resp = await request(app).post("/items/").send({
-            name: "NewItem",
-            description: "This is a new item!",
-            price: 99.99,
-            shipping: 100.88,
-            quantity: 9,
-        });
+        const resp = await request(app)
+            .post("/items/")
+            .send({
+                name: "NewItem",
+                description: "This is a new item!",
+                price: 99.99,
+                shipping: 100.88,
+                quantity: 9,
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(201);
         expect(resp.body).toEqual({
             item: {
@@ -65,13 +72,24 @@ describe("POST, /items/", () => {
         });
     });
 
-    it("gives bad request for no input", async () => {
+    it("gives unauth for non-admin", async () => {
         const resp = await request(app).post("/items").send();
+        expect(resp.statusCode).toBe(401);
+    });
+
+    it("gives bad request for no input", async () => {
+        const resp = await request(app)
+            .post("/items")
+            .send()
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(400);
     });
 
     it("gives bad request for missing input", async () => {
-        const resp = await request(app).post("/items").send({ name: "Uh oh!" });
+        const resp = await request(app)
+            .post("/items")
+            .send({ name: "Uh oh!" })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(400);
     });
 });
@@ -113,7 +131,9 @@ describe("GET, /items/", () => {
 
 describe("GET, /items/item/:id", () => {
     it("get an item by id", async () => {
-        const resp = await request(app).get(`/items/item/${testItemIds[0]}`);
+        const resp = await request(app)
+            .get(`/items/item/${testItemIds[0]}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             item: {
@@ -127,6 +147,11 @@ describe("GET, /items/item/:id", () => {
                 isSold: false,
             },
         });
+    });
+
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).get("/items/item/1");
+        expect(resp.statusCode).toBe(401);
     });
 });
 
@@ -182,7 +207,9 @@ describe("GET, /items/sold", () => {
         );
         const itemId = res.rows[0].id;
 
-        const resp = await request(app).get("/items/sold");
+        const resp = await request(app)
+            .get("/items/sold")
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             items: [
@@ -197,6 +224,11 @@ describe("GET, /items/sold", () => {
                 },
             ],
         });
+    });
+
+    it("gives unauth if non-admin", async () => {
+        const resp = await request(app).get("/items/sold");
+        expect(resp.statusCode).toBe(401);
     });
 });
 
@@ -224,7 +256,8 @@ describe("PATCH, /items/update/:id", () => {
                 price: 1.99,
                 shipping: 10000.99,
                 quantity: 7,
-            });
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             item: {
@@ -240,12 +273,20 @@ describe("PATCH, /items/update/:id", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).patch("/items/update/1").send({
+            name: "nuh-uh",
+        });
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("does a partial update on an item", async () => {
         const resp = await request(app)
             .patch(`/items/update/${testItemIds[1]}`)
             .send({
                 name: "Updated Twice!",
-            });
+            })
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             item: {
@@ -264,7 +305,8 @@ describe("PATCH, /items/update/:id", () => {
     it("gives bad request for no data", async () => {
         const resp = await request(app)
             .patch(`/items/update/${testItemIds[1]}`)
-            .send();
+            .send()
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(400);
     });
 });
@@ -316,7 +358,9 @@ describe("PATCH, /items/sell/:id", () => {
 
 describe("PATCH, /items/sold/:id", () => {
     it("decreases quantity and marks sold", async () => {
-        const resp = await request(app).patch(`/items/sold/${testItemIds[1]}`);
+        const resp = await request(app)
+            .patch(`/items/sold/${testItemIds[1]}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             item: {
@@ -332,8 +376,15 @@ describe("PATCH, /items/sold/:id", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).patch("/items/sold/1");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).patch(`/items/sold/-1`);
+        const resp = await request(app)
+            .patch(`/items/sold/-1`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -342,9 +393,9 @@ describe("PATCH, /items/sold/:id", () => {
 
 describe("DELETE, /items/delete/:id", () => {
     it("deletes an item by id", async () => {
-        const resp = await request(app).delete(
-            `/items/delete/${testItemIds[0]}`
-        );
+        const resp = await request(app)
+            .delete(`/items/delete/${testItemIds[0]}`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: {
@@ -353,8 +404,15 @@ describe("DELETE, /items/delete/:id", () => {
         });
     });
 
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).delete("/items/delete/1");
+        expect(resp.statusCode).toBe(401);
+    });
+
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).delete(`/items/delete/-1`);
+        const resp = await request(app)
+            .delete(`/items/delete/-1`)
+            .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
     });
 });

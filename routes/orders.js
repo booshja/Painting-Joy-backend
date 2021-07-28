@@ -1,47 +1,120 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
+const stripe = require("stripe")(process.env.STRIPE_API_KEY);
 const { BadRequestError } = require("../expressError");
 const Order = require("../models/order");
+const Item = require("../models/item");
 const orderNewSchema = require("../schemas/orderNew.json");
 
 const router = express.Router({ mergeParams: true });
 
+const calculateOrderAmount = (listItems) => {
+    /** Calculates total order amount
+     * Do this on the server to prevent client-side manipulation
+     *
+     * Accepts [ listItems ]
+     *      listItems should be an array of items objects associated w/ order
+     *
+     * Returns totalAmount
+     */
+    let totalAmount = 0;
+    for (item of listItems) {
+        totalAmount = totalAmount + item.price + item.shipping;
+    }
+
+    return totalAmount;
+};
+
 router.post("/", async (req, res, next) => {
-    /** POST "/" { order, [ids] } => { order }
+    /** POST "/"  => { order }
      * Create a new order
-     * Optionally accepts an array of item ids to add to the order w/ creation
      *
-     * order should be { name, email, street, unit, city, stateCode, zipcode,
-     *                      phone ,transactionId status, amount }
-     * ids (optional) should be an array of existing item ids to add to order
-     *
-     * Returns { id, email, name, street, unit, city, stateCode, zipcode,
-     *              phone, transactionId, status, amount, listItems }
-     * Where listItems is an array of all items associated with the order.
+     * Returns { id, status }
      *
      * Authorization required: none
      */
     try {
-        const validator = jsonschema.validate(req.body.order, orderNewSchema);
-        if (!validator.valid) {
-            const errors = validator.errors.map((e) => e.stack);
-            throw new BadRequestError(errors);
-        }
+        // create new pending order in db
+        const order = await Order.create();
 
-        let order;
-        if (req.body.ids) {
-            order = await Order.create(req.body.order, req.body.ids);
-        } else {
-            order = await Order.create(req.body.order);
-        }
         return res.status(201).json({ order });
     } catch (err) {
         return next(err);
     }
 });
 
-router.post("/:orderId/add/:itemId", async (req, res, next) => {
-    /** POST "/add/{id}" => { order }
+router.post("/order/:orderId/info", async (req, res, next) => {
+    /** POST "/order/{orderId}/info" { data } => { order }
+     * Adds customer data to existing order by id
+     *
+     * data should be { email, name, street, unit, city, stateCode, zipcode,
+     *                  phone, amount }
+     *
+     * Returns { id, email, name, street, unit, city, stateCode, zipcode,
+     *          phone, status, amount }
+     *
+     * Authorization required: none
+     */
+    try {
+        // validate json schema for order
+        const validator = jsonschema.validate(req.body, orderNewSchema);
+        if (!validator.valid) {
+            const errors = validator.errors.map((e) => e.stack);
+            throw new BadRequestError(errors);
+        }
+
+        // Add customer data to order and db, return order
+        const order = await Order.addInfo(+req.params.orderId, req.body);
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
+});
+
+router.post("/checkout", async (req, res, next) => {
+    /** POST "/checkout" { items } => { order }
+     * Creates order, adds items to it, removes items from inventory
+     *
+     * items should be [ {item}, {item}, {item}, ... ]
+     *      item should be { itemId, quantity }
+     *
+     * Returns { order, notAdded }
+     *
+     * Authorization required: none
+     */
+    try {
+        // if no ids or nothing in ids, throw BadRequestError
+        if (!req.body.items || Object.keys(req.body.items).length === 0)
+            throw new BadRequestError("No item ids.");
+
+        // create new order
+        let order = await Order.create();
+
+        const notAdded = [];
+
+        for (item of req.body.items) {
+            // decrease item quantity, add item to order
+            for (let i = 0; i < item.quantity; i++) {
+                try {
+                    await Order.addItem(order.id, item.id);
+                } catch (err) {
+                    // if error add item to notAdded array
+                    notAdded.push(item.id);
+                    continue;
+                }
+            }
+        }
+
+        order = await Order.get(order.id);
+
+        return res.status(200).json({ order, notAdded });
+    } catch (err) {
+        return next(err);
+    }
+});
+
+router.post("/order/:orderId/add/:itemId", async (req, res, next) => {
+    /** POST "/order/{orderId}/add/{itemId}" => { order }
      * Adds an existing item to an existing order by orderId & itemId
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -51,18 +124,48 @@ router.post("/:orderId/add/:itemId", async (req, res, next) => {
      * Authorization required: none
      */
     try {
-        const order = await Order.addItem(
+        const message = await Order.addItem(
             +req.params.orderId,
             req.params.itemId
         );
-        return res.status(200).json({ order });
+        return res.status(200).json({ message });
     } catch (err) {
         return next(err);
     }
 });
 
-router.get("/:orderId", async (req, res, next) => {
-    /** GET "/{orderId}" => { order }
+router.post("/create-payment-intent", async (req, res, next) => {
+    /** POST "/create-payment-intent" => { payment intent }
+     * Creates a payment intent through Stripe and returns the client secret
+     *
+     * Returns { clientSecret }
+     *
+     * Authorization required: none
+     */
+    try {
+        // get totalAmount of all items in order
+        const totalAmount = calculateOrderAmount(req.body.listItems);
+
+        // if 0 or undefined returned, return BadRequestError
+        if (!totalAmount)
+            return res.status(400).send(new BadRequestError("No items."));
+
+        // Create a PaymentIntent with the order amount and currency
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: calculateOrderAmount(listItems),
+            currency: "usd",
+        });
+
+        return res.send({
+            clientSecret: paymentIntent.client_secret,
+        });
+    } catch (err) {
+        return next(err);
+    }
+});
+
+router.get("/order/:orderId", async (req, res, next) => {
+    /** GET "/order/{orderId}" => { order }
      * Gets an order by id
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -99,8 +202,28 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-router.patch("/:orderId/ship", async (req, res, next) => {
-    /** PATCH "/{orderId}/ship" => { order }
+router.patch("/order/:orderId/confirm", async (req, res, next) => {
+    /** PATCH "/order/{orderId}/confirm" { transactionId } => { order }
+     * Changes order's status to "Confirmed"
+     *
+     * Returns { id, email, name, street, unit, city, stateCode, zipcode,
+     *              phone, transactionId, status, amount }
+     *
+     * Authorization required: none
+     */
+    try {
+        const order = await Order.markConfirmed(
+            +req.params.orderId,
+            req.body.transactionId
+        );
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
+});
+
+router.patch("/order/:orderId/ship", async (req, res, next) => {
+    /** PATCH "/order/{orderId}/ship" => { order }
      * Changes order's status to "Shipped"
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -116,8 +239,8 @@ router.patch("/:orderId/ship", async (req, res, next) => {
     }
 });
 
-router.patch("/:orderId/complete", async (req, res, next) => {
-    /** PATCH "/{orderId}/complete" => { order }
+router.patch("/order/:orderId/complete", async (req, res, next) => {
+    /** PATCH "/order/{orderId}/complete" => { order }
      * Changes order's status to "Completed"
      *
      * Returns { id, email, name, street, unit, city, stateCode, zipcode,
@@ -133,8 +256,8 @@ router.patch("/:orderId/complete", async (req, res, next) => {
     }
 });
 
-router.patch("/:orderId/remove/:itemId", async (req, res, next) => {
-    /** PATCH "/{orderId}/remove/{itemId}" => { msg }
+router.patch("/order/:orderId/remove/:itemId", async (req, res, next) => {
+    /** PATCH "/order/{orderId}/remove/{itemId}" => { msg }
      * Removes an item from the order
      *
      * Returns { msg: "Item removed." }
@@ -152,8 +275,40 @@ router.patch("/:orderId/remove/:itemId", async (req, res, next) => {
     }
 });
 
-router.delete("/:orderId", async (req, res, next) => {
-    /** DELETE "/{orderId}" => { msg }
+router.delete("/order/:orderId/abort", async (req, res, next) => {
+    /** DELETE "/order/{orderId}/abort" => { message }
+     * Deletes order and adds invetory back for items in order
+     *
+     * Returns { msg: "Aborted." }
+     *
+     * Authorization required: none
+     */
+    try {
+        // get order from db
+        const order = await Order.get(+req.params.orderId);
+
+        // add back items into db availability
+        for (item of order.listItems) {
+            console.log("in for item loop", item);
+            await Item.update(item.id, {
+                quantity: item.quantity + 1,
+                is_sold: false,
+            });
+            console.log("after item update");
+        }
+
+        // delete order from db
+        const message = await Order.delete(+req.params.orderId);
+        console.log("after delete", message);
+        return res.status(200).json({ message });
+    } catch (err) {
+        console.log("ERROR!!!!!", err);
+        return next(err);
+    }
+});
+
+router.delete("/order/:orderId", async (req, res, next) => {
+    /** DELETE "/order/{orderId}" => { msg }
      * Deletes an order from the db by id
      *
      * Note: This is a logical delete.

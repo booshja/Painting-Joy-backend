@@ -11,9 +11,8 @@ function getDatabaseUri() {
 }
 
 /** Bcrypt work factor (1 if testing application) */
-// const BCRYPT_WORK_FACTOR =
-//     process.env.NODE_ENV === "test" ? 1 : +process.env.BCRYPT_WORK_FACTOR;
-const BCRYPT_WORK_FACTOR = 1;
+const BCRYPT_WORK_FACTOR =
+    process.env.NODE_ENV === "test" ? 1 : +process.env.BCRYPT_WORK_FACTOR;
 
 module.exports = {
     SECRET_KEY,

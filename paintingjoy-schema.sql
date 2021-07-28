@@ -47,6 +47,7 @@ CREATE TABLE items (
     name VARCHAR(50) NOT NULL,
     description VARCHAR(100) NOT NULL,
     price NUMERIC NOT NULL,
+    shipping NUMERIC NOT NULL,
     quantity INTEGER NOT NULL,
     is_sold BOOLEAN NOT NULL DEFAULT false,
     created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -65,7 +66,7 @@ CREATE TABLE orders (
     phone BYTEA NOT NULL,
     transaction_id BYTEA NOT NULL,
     amount NUMERIC NOT NULL,
-    status VARCHAR(10) NOT NULL DEFAULT 'Confirmed',
+    status VARCHAR(10) NOT NULL DEFAULT 'Pending',
     is_deleted BOOLEAN NOT NULL DEFAULT false
 );
 

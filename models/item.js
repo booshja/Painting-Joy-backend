@@ -17,7 +17,13 @@ class Item {
          */
         // check for missing / incomplete data
         if (!data) throw new BadRequestError("No data.");
-        if (!data.name || !data.description || !data.price || !data.quantity)
+        if (
+            !data.name ||
+            !data.description ||
+            !data.price ||
+            !data.shipping ||
+            !data.quantity
+        )
             throw new BadRequestError("Missing data.");
 
         // query db to create new item
@@ -25,19 +31,28 @@ class Item {
             `INSERT INTO items(name,
                             description,
                             price,
+                            shipping,
                             quantity)
                 VALUES($1,
                         $2,
                         $3,
-                        $4)
+                        $4,
+                        $5)
                 RETURNING id,
                         name,
                         description,
                         price,
+                        shipping,
                         quantity,
                         created,
                         is_sold AS "isSold"`,
-            [data.name, data.description, data.price, data.quantity]
+            [
+                data.name,
+                data.description,
+                data.price,
+                data.shipping,
+                data.quantity,
+            ]
         );
         const item = result.rows[0];
 
@@ -63,6 +78,7 @@ class Item {
                     name,
                     description,
                     price,
+                    shipping,
                     quantity,
                     created,
                     is_sold AS "isSold"
@@ -106,6 +122,34 @@ class Item {
         return itemImg.image;
     }
 
+    static async getQuantity(id) {
+        /** Gets the quantity of an item by id
+         *
+         * Accepts id
+         *
+         * Returns { quantity }
+         *
+         * Throws BadRequestError if no input
+         * Throws NotFoundError if no item found by id
+         */
+        // check for missing data
+        if (!id) throw new BadRequestError("No input.");
+
+        // query db to get data
+        const result = await db.query(
+            `SELECT quantity
+                FROM items
+                WHERE id = $1`,
+            [id]
+        );
+        const quantity = result.rows[0];
+
+        // if no record returned, no item found, throw NotFoundError
+        if (!quantity) throw new NotFoundError(`No item: ${id}`);
+
+        return quantity;
+    }
+
     static async getAll() {
         /** Gets an array of items
          *
@@ -119,6 +163,7 @@ class Item {
                     name,
                     description,
                     price,
+                    shipping,
                     quantity,
                     created,
                     is_sold AS "isSold"
@@ -140,6 +185,7 @@ class Item {
                     name,
                     description,
                     price,
+                    shipping,
                     quantity,
                     created
                 FROM items
@@ -161,6 +207,7 @@ class Item {
                     name,
                     description,
                     price,
+                    shipping,
                     quantity,
                     created
                 FROM items
@@ -204,7 +251,7 @@ class Item {
         /** Update item data with data
          * This is a partial update, it will only change given fields
          *
-         * Data can include: { name, description, price, quantity }
+         * Data can include: { name, description, price, quantity, isSold }
          *
          * Returns: { id, name, description, price, quantity, created, ,
          *              isSold }
@@ -228,6 +275,7 @@ class Item {
                                     name,
                                     description,
                                     price,
+                                    shipping,
                                     quantity,
                                     created,
                                     is_sold AS "isSold"`;
@@ -262,6 +310,7 @@ class Item {
             `SELECT id,
                     name,
                     price,
+                    shipping,
                     description,
                     quantity,
                     created,
@@ -294,6 +343,7 @@ class Item {
                     RETURNING id,
                             name,
                             price,
+                            shipping,
                             description,
                             quantity,
                             created,
@@ -309,6 +359,7 @@ class Item {
                     RETURNING id,
                             name,
                             price,
+                            shipping,
                             description,
                             quantity,
                             created,
@@ -342,6 +393,7 @@ class Item {
                         name,
                         description,
                         price,
+                        shipping,
                         quantity,
                         created,
                         is_sold AS "isSold"`,

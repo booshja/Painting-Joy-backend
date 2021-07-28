@@ -11,10 +11,11 @@ beforeAll(async function () {
         `INSERT INTO items(name,
                             description,
                             price,
+                            shipping,
                             quantity)
-            VALUES ('Item1', 'This is a great item!', 99.99, 1),
-                ('Item2', 'This is a wonderful item!', 199.99, 2),
-                ('Item3', 'This is a fantastic item!', 299.99, 3)
+            VALUES ('Item1', 'This is a great item!', 99.99, 10.99, 1),
+                ('Item2', 'This is a wonderful item!', 199.99, 20.99, 2),
+                ('Item3', 'This is a fantastic item!', 299.99, 20.99, 3)
             RETURNING id`
     );
     testItemIds.splice(0, 0, ...results.rows.map((row) => row.id));
@@ -39,6 +40,7 @@ describe("create", () => {
         name: "Lowbrow",
         description: "Look at this item! Buy it!",
         price: 27.89,
+        shipping: 4.99,
         quantity: 6,
     };
 
@@ -49,6 +51,7 @@ describe("create", () => {
             name: "Lowbrow",
             description: "Look at this item! Buy it!",
             price: "27.89",
+            shipping: "4.99",
             quantity: 6,
             created: expect.any(Date),
             isSold: false,
@@ -86,6 +89,7 @@ describe("get", () => {
             name: "Item1",
             description: "This is a great item!",
             price: "99.99",
+            shipping: "10.99",
             quantity: 1,
             created: expect.any(Date),
             isSold: false,
@@ -111,6 +115,35 @@ describe("get", () => {
     });
 });
 
+/********************************* getQuantity */
+
+describe("get", () => {
+    it("gets an item's quantity by id", async () => {
+        const item = await Item.getQuantity(testItemIds[0]);
+        expect(item).toEqual({
+            quantity: 1,
+        });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Item.getQuantity();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Item.getQuantity(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
 /************************************** getAll */
 
 describe("getAll", () => {
@@ -122,6 +155,7 @@ describe("getAll", () => {
                 name: "Item1",
                 description: "This is a great item!",
                 price: "99.99",
+                shipping: "10.99",
                 quantity: 1,
                 created: expect.any(Date),
                 isSold: false,
@@ -131,6 +165,7 @@ describe("getAll", () => {
                 name: "Item2",
                 description: "This is a wonderful item!",
                 price: "199.99",
+                shipping: "20.99",
                 quantity: 2,
                 created: expect.any(Date),
                 isSold: false,
@@ -140,6 +175,7 @@ describe("getAll", () => {
                 name: "Item3",
                 description: "This is a fantastic item!",
                 price: "299.99",
+                shipping: "20.99",
                 quantity: 3,
                 created: expect.any(Date),
                 isSold: false,
@@ -156,9 +192,10 @@ describe("getAllAvailable", () => {
             `INSERT INTO items(name,
                             description,
                             price,
+                            shipping,
                             quantity,
                             is_sold)
-                VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
+                VALUES('Item4', 'This is so great I bought it!', 399.99, 100.99, 1, true)`
         );
 
         const items = await Item.getAllAvailable();
@@ -168,6 +205,7 @@ describe("getAllAvailable", () => {
                 name: "Item1",
                 description: "This is a great item!",
                 price: "99.99",
+                shipping: "10.99",
                 quantity: 1,
                 created: expect.any(Date),
             },
@@ -176,6 +214,7 @@ describe("getAllAvailable", () => {
                 name: "Item2",
                 description: "This is a wonderful item!",
                 price: "199.99",
+                shipping: "20.99",
                 quantity: 2,
                 created: expect.any(Date),
             },
@@ -184,6 +223,7 @@ describe("getAllAvailable", () => {
                 name: "Item3",
                 description: "This is a fantastic item!",
                 price: "299.99",
+                shipping: "20.99",
                 quantity: 3,
                 created: expect.any(Date),
             },
@@ -202,9 +242,10 @@ describe("getAllSold", () => {
             `INSERT INTO items(name,
                             description,
                             price,
+                            shipping,
                             quantity,
                             is_sold)
-                VALUES('Item4', 'This is so great I bought it!', 399.99, 1, true)`
+                VALUES('Item4', 'This is so great I bought it!', 399.99, 8.99, 1, true)`
         );
 
         const items = await Item.getAllSold();
@@ -214,6 +255,7 @@ describe("getAllSold", () => {
                 name: "Item4",
                 description: "This is so great I bought it!",
                 price: "399.99",
+                shipping: "8.99",
                 quantity: 1,
                 created: expect.any(Date),
             },
@@ -232,6 +274,7 @@ describe("update", () => {
             name: "BEST THING EVER",
             description: "It's the best thing ever!",
             price: 1.99,
+            shipping: 4.99,
             quantity: 987,
         });
         expect(item).toEqual({
@@ -239,6 +282,7 @@ describe("update", () => {
             name: "BEST THING EVER",
             description: "It's the best thing ever!",
             price: "1.99",
+            shipping: "4.99",
             quantity: 987,
             created: expect.any(Date),
             isSold: false,
@@ -254,6 +298,7 @@ describe("update", () => {
             name: "Item2",
             description: "This is a wonderful item!",
             price: "199.99",
+            shipping: "20.99",
             quantity: 789,
             created: expect.any(Date),
             isSold: false,
@@ -297,6 +342,7 @@ describe("sell", () => {
             id: testItemIds[1],
             name: "Item2",
             price: "199.99",
+            shipping: "20.99",
             description: "This is a wonderful item!",
             quantity: 1,
             created: expect.any(Date),
@@ -310,6 +356,7 @@ describe("sell", () => {
             id: testItemIds[0],
             name: "Item1",
             price: "99.99",
+            shipping: "10.99",
             description: "This is a great item!",
             quantity: 0,
             created: expect.any(Date),
@@ -339,11 +386,14 @@ describe("sell", () => {
             `INSERT INTO items (name,
                                 description,
                                 price,
+                                shipping,
                                 quantity,
                                 is_sold)
                 VALUES ('SoldOutItem',
                         'This item has none!',
-                        1000.99, 0,
+                        1000.99,
+                        8.99,
+                        0,
                         true)
                 RETURNING id`
         );
@@ -368,6 +418,7 @@ describe("markSold", () => {
             name: "Item3",
             description: "This is a fantastic item!",
             price: "299.99",
+            shipping: "20.99",
             quantity: 0,
             created: expect.any(Date),
             isSold: true,

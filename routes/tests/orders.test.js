@@ -17,6 +17,7 @@ beforeAll(async () => {
         description: "This is item 1!",
         price: 100.99,
         quantity: 1,
+        shipping: 1.99,
     });
     testItemIds.push(item1.id);
 
@@ -25,40 +26,14 @@ beforeAll(async () => {
         description: "This is item 2!",
         price: 200.99,
         quantity: 2,
+        shipping: 2.99,
     });
     testItemIds.push(item2.id);
 
-    const order1 = await Order.create(
-        {
-            email: "ralph@email.com",
-            name: "Ralph Schnauzer",
-            street: "123 Space Needle Dr.",
-            unit: null,
-            city: "Seattle",
-            stateCode: "WA",
-            zipcode: 99999,
-            phone: 5552065555,
-            transactionId: "abcd1234",
-            status: "Confirmed",
-            amount: 240,
-        },
-        [item1.id, item2.id]
-    );
+    const order1 = await Order.create();
     testOrderIds.push(order1.id);
 
-    const order2 = await Order.create({
-        email: "krew@email.com",
-        name: "Krew Corgi",
-        street: "123 Space Needle Ctr.",
-        unit: "Unit 1299",
-        city: "Seattle",
-        stateCode: "WA",
-        zipcode: 99599,
-        phone: 5558015555,
-        transactionId: "1234abcd",
-        status: "Confirmed",
-        amount: 42990.99,
-    });
+    const order2 = await Order.create();
     testOrderIds.push(order2.id);
 });
 
@@ -76,316 +51,278 @@ afterAll(async () => {
 
 /******************************* POST /orders/ */
 
-describe("/orders/", () => {
-    it("creates a new order without items", async () => {
-        const resp = await request(app)
-            .post("/orders/")
-            .send({
-                order: {
-                    email: "new@email.com",
-                    name: "Mr. New",
-                    street: "123 Space Needle Ct.",
-                    unit: "Apt 122",
-                    city: "Seattle",
-                    stateCode: "WA",
-                    zipcode: 98765,
-                    phone: 5554255555,
-                    transactionId: "dcba4321",
-                    status: "Confirmed",
-                    amount: 999.99,
-                },
-            });
+describe("POST, /orders/", () => {
+    it("creates a new order", async () => {
+        const resp = await request(app).post("/orders/");
         expect(resp.statusCode).toBe(201);
         expect(resp.body).toEqual({
             order: {
                 id: expect.any(Number),
-                email: "new@email.com",
-                name: "Mr. New",
-                street: "123 Space Needle Ct.",
-                unit: "Apt 122",
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "98765",
-                phone: "5554255555",
-                transactionId: "dcba4321",
-                status: "Confirmed",
-                amount: "999.99",
-                listItems: [],
+                status: "Pending",
             },
         });
     });
+});
 
-    it("creates a new order with items", async () => {
+/*********************** POST /orders/checkout */
+
+describe("POST, /orders/checkout", () => {
+    it("creates order, adds item to it, removes items from inventory", async () => {
         const resp = await request(app)
-            .post("/orders/")
+            .post(`/orders/checkout`)
             .send({
-                order: {
-                    email: "new2@email.com",
-                    name: "Mr. New New",
-                    street: "123 Space Needle Blvd.",
-                    unit: "Apt 211",
-                    city: "Seattle",
-                    stateCode: "WA",
-                    zipcode: 98789,
-                    phone: 5554255555,
-                    transactionId: "dcbaxxxx4321",
-                    status: "Confirmed",
-                    amount: 1999.99,
-                },
-                ids: [testItemIds[0], testItemIds[1]],
+                items: [
+                    { id: testItemIds[0], quantity: 1 },
+                    { id: -1, quantity: 2 },
+                ],
             });
-        expect(resp.statusCode).toBe(201);
+        expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
                 id: expect.any(Number),
-                email: "new2@email.com",
-                name: "Mr. New New",
-                street: "123 Space Needle Blvd.",
-                unit: "Apt 211",
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "98789",
-                phone: "5554255555",
-                transactionId: "dcbaxxxx4321",
-                status: "Confirmed",
-                amount: "1999.99",
+                email: "Pending",
+                name: "Pending",
+                phone: "Pending",
+                street: "Pending",
+                unit: "Pending",
+                city: "Pending",
+                stateCode: "Pending",
+                zipcode: "Pending",
+                transactionId: "Pending",
+                amount: "0",
+                status: "Pending",
                 listItems: [
                     {
-                        id: testItemIds[0],
+                        id: expect.any(Number),
                         name: "Item1",
                         description: "This is item 1!",
                         price: "100.99",
+                        shipping: "1.99",
                         quantity: 1,
-                        created: expect.any(String),
-                        isSold: false,
-                    },
-                    {
-                        id: testItemIds[1],
-                        name: "Item2",
-                        description: "This is item 2!",
-                        price: "200.99",
-                        quantity: 2,
-                        created: expect.any(String),
-                        isSold: false,
                     },
                 ],
             },
+            notAdded: [-1, -1],
         });
     });
 
-    it("gives bad request for no data", async () => {
-        const resp = await request(app).post("/orders/").send();
-        expect(resp.statusCode).toBe(400);
-    });
-
-    it("gives bad request for incomplete data", async () => {
-        const resp = await request(app).post("/orders/").send({
-            email: "nope@email.com",
-            name: "No sir",
-        });
+    it("gives bad request with no body", async () => {
+        const resp = await request(app).post(`/orders/checkout`);
         expect(resp.statusCode).toBe(400);
     });
 });
 
-/*********** POST /orders/:orderId/add/:itemId */
+/************ POST /orders/order/:orderId/info */
 
-describe("/orders/:orderId/add/:itemId", () => {
-    it("adds an item to an order by orderId & itemId", async () => {
-        const resp = await request(app).post(
-            `/orders/${testOrderIds[0]}/add/${testItemIds[0]}`
-        );
+describe("POST, /orders/order/:orderId/info", () => {
+    it("adds customer data to order by orderId", async () => {
+        const resp = await request(app)
+            .post(`/orders/order/${testOrderIds[0]}/info`)
+            .send({
+                email: "info@email.com",
+                name: "Info Tester",
+                street: "987 State St.",
+                unit: null,
+                city: "Denver",
+                stateCode: "CO",
+                zipcode: 12321,
+                phone: 6665554444,
+                amount: 99.99,
+            });
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
                 id: testOrderIds[0],
-                email: "ralph@email.com",
-                name: "Ralph Schnauzer",
-                street: "123 Space Needle Dr.",
+                email: "info@email.com",
+                name: "Info Tester",
+                street: "987 State St.",
                 unit: null,
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "99999",
-                phone: "5552065555",
-                transactionId: "abcd1234",
-                status: "Confirmed",
-                amount: "240",
-                listItems: [
-                    expect.any(Object),
-                    expect.any(Object),
-                    expect.any(Object),
-                ],
+                city: "Denver",
+                stateCode: "CO",
+                zipcode: "12321",
+                phone: "6665554444",
+                status: "Pending",
+                amount: "99.99",
+            },
+        });
+    });
+});
+
+/***** POST /orders/order/:orderId/add/:itemId */
+
+describe("POST, /orders/order/:orderId/add/:itemId", () => {
+    it("adds an item to an order by orderId & itemId", async () => {
+        const resp = await request(app).post(
+            `/orders/order/${testOrderIds[0]}/add/${testItemIds[0]}`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            message: {
+                msg: "Added.",
             },
         });
     });
 
     it("gives not found for invalid order id", async () => {
         const resp = await request(app).post(
-            `/orders/${-1}/add/${testItemIds[1]}`
+            `/orders/order/${-1}/add/${testItemIds[1]}`
         );
         expect(resp.statusCode).toBe(404);
     });
 
     it("gives not found for invalid item id", async () => {
         const resp = await request(app).post(
-            `/orders/${testOrderIds[0]}/add/${-1}`
+            `/orders/order/${testOrderIds[0]}/add/${-1}`
         );
         expect(resp.statusCode).toBe(404);
     });
 });
 
-/************************ GET /orders/:orderId */
+/******************* GET /orders/order:orderId */
 
-describe("/orders/:orderId", () => {
+describe("GET, /orders/order:orderId", () => {
     it("gets an order by id", async () => {
-        const resp = await request(app).get(`/orders/${testOrderIds[0]}`);
+        const resp = await request(app).get(`/orders/order/${testOrderIds[0]}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
                 id: testOrderIds[0],
-                email: "ralph@email.com",
-                name: "Ralph Schnauzer",
-                street: "123 Space Needle Dr.",
-                unit: null,
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "99999",
-                phone: "5552065555",
-                transactionId: "abcd1234",
-                status: "Confirmed",
-                amount: "240",
-                listItems: [
-                    {
-                        name: "Item1",
-                        description: "This is item 1!",
-                        price: "100.99",
-                        quantity: 1,
-                    },
-                    {
-                        name: "Item2",
-                        description: "This is item 2!",
-                        price: "200.99",
-                        quantity: 2,
-                    },
-                ],
+                email: "Pending",
+                name: "Pending",
+                street: "Pending",
+                unit: "Pending",
+                city: "Pending",
+                stateCode: "Pending",
+                zipcode: "Pending",
+                phone: "Pending",
+                transactionId: "Pending",
+                status: "Pending",
+                amount: "0",
+                listItems: [],
             },
         });
     });
 
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).get(`/orders/${-1}`);
+        const resp = await request(app).get(`/orders/order${-1}`);
         expect(resp.statusCode).toBe(404);
     });
 });
 
 /******************************** GET /orders/ */
 
-describe("/orders/", () => {
+describe("GET, /orders/", () => {
     it("gets a list of all orders", async () => {
         const resp = await request(app).get("/orders/");
         expect(resp.statusCode).toBe(200);
         expect(resp.body.orders).toEqual([
             {
                 id: testOrderIds[0],
-                email: "ralph@email.com",
-                name: "Ralph Schnauzer",
-                street: "123 Space Needle Dr.",
-                unit: null,
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "99999",
-                phone: "5552065555",
-                transactionId: "abcd1234",
-                status: "Confirmed",
-                amount: "240",
+                email: "Pending",
+                name: "Pending",
+                street: "Pending",
+                unit: "Pending",
+                city: "Pending",
+                stateCode: "Pending",
+                zipcode: "Pending",
+                phone: "Pending",
+                transactionId: "Pending",
+                status: "Pending",
+                amount: "0",
             },
             {
                 id: testOrderIds[1],
-                email: "krew@email.com",
-                name: "Krew Corgi",
-                street: "123 Space Needle Ctr.",
-                unit: "Unit 1299",
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "99599",
-                phone: "5558015555",
-                transactionId: "1234abcd",
-                status: "Confirmed",
-                amount: "42990.99",
+                email: "Pending",
+                name: "Pending",
+                street: "Pending",
+                unit: "Pending",
+                city: "Pending",
+                stateCode: "Pending",
+                zipcode: "Pending",
+                phone: "Pending",
+                transactionId: "Pending",
+                status: "Pending",
+                amount: "0",
             },
         ]);
     });
 });
 
-/***************** PATCH /orders/:orderId/ship */
+/*********** PATCH /orders/order/:orderId/ship */
 
-describe("/orders/:orderId/ship", () => {
+describe("PATCH, /orders/order/:orderId/ship", () => {
     it("updates an order's status to 'Shipped' by id", async () => {
         const resp = await request(app).patch(
-            `/orders/${testOrderIds[1]}/ship`
+            `/orders/order/${testOrderIds[1]}/ship`
         );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
                 id: testOrderIds[1],
-                email: "krew@email.com",
-                name: "Krew Corgi",
-                street: "123 Space Needle Ctr.",
-                unit: "Unit 1299",
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "99599",
-                phone: "5558015555",
-                transactionId: "1234abcd",
+                email: "Pending",
+                name: "Pending",
+                street: "Pending",
+                unit: "Pending",
+                city: "Pending",
+                stateCode: "Pending",
+                zipcode: "Pending",
+                phone: "Pending",
+                transactionId: "Pending",
                 status: "Shipped",
-                amount: "42990.99",
+                amount: "0",
             },
         });
     });
 
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).patch(`/orders/${-1}/ship`);
+        const resp = await request(app).patch(`/orders/order/${-1}/ship`);
         expect(resp.statusCode).toBe(404);
     });
 });
 
-/************* PATCH /orders/:orderId/complete */
+/******* PATCH /orders/order/:orderId/complete */
 
-describe("/orders/:orderId/complete", () => {
+describe("PATCH, /orders/order/:orderId/complete", () => {
     it("updates an order's status to 'Completed' by id", async () => {
         const resp = await request(app).patch(
-            `/orders/${testOrderIds[1]}/complete`
+            `/orders/order/${testOrderIds[1]}/complete`
         );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
                 id: testOrderIds[1],
-                email: "krew@email.com",
-                name: "Krew Corgi",
-                street: "123 Space Needle Ctr.",
-                unit: "Unit 1299",
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "99599",
-                phone: "5558015555",
-                transactionId: "1234abcd",
+                email: "Pending",
+                name: "Pending",
+                street: "Pending",
+                unit: "Pending",
+                city: "Pending",
+                stateCode: "Pending",
+                zipcode: "Pending",
+                phone: "Pending",
+                transactionId: "Pending",
                 status: "Completed",
-                amount: "42990.99",
+                amount: "0",
             },
         });
     });
 
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).patch(`/orders/${-1}/complete`);
+        const resp = await request(app).patch(`/orders/order/${-1}/complete`);
         expect(resp.statusCode).toBe(404);
     });
 });
 
-/******* PATCH /orders/:orderId/remove/:itemId */
+/* PATCH /orders/order/:orderId/remove/:itemId */
 
-describe("/orders/:orderId/remove/:itemId", () => {
+describe("PATCH, /orders/order/:orderId/remove/:itemId", () => {
     it("removes an item from an order by orderId & itemId", async () => {
+        await db.query(
+            `INSERT INTO orders_items(order_id, item_id)
+                VALUES($1, $2)`,
+            [testOrderIds[0], testItemIds[1]]
+        );
         const resp = await request(app).patch(
-            `/orders/${testOrderIds[0]}/remove/${testItemIds[1]}`
+            `/orders/order/${testOrderIds[0]}/remove/${testItemIds[1]}`
         );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
@@ -397,24 +334,55 @@ describe("/orders/:orderId/remove/:itemId", () => {
 
     it("gives not found for invalid order id", async () => {
         const resp = await request(app).patch(
-            `/orders/${-1}/remove/${testItemIds[0]}`
+            `/orders/order/${-1}/remove/${testItemIds[0]}`
         );
         expect(resp.statusCode).toBe(404);
     });
 
     it("gives not found for invalid item id", async () => {
         const resp = await request(app).get(
-            `/orders/${testOrderIds[0]}/remove/${-1}`
+            `/orders/order/${testOrderIds[0]}/remove/${-1}`
         );
         expect(resp.statusCode).toBe(404);
     });
 });
 
-/********************* DELETE /orders/:orderId */
+/********* DELETE /orders/order/:orderId/abort */
 
-describe("/orders/:orderId", () => {
+describe("DELETE, /orders/order:orderId", () => {
     it("deletes an order by id", async () => {
-        const resp = await request(app).delete(`/orders/${testOrderIds[0]}`);
+        await Order.addItem(testOrderIds[0], testItemIds[0]);
+        await Order.addItem(testOrderIds[0], testItemIds[1]);
+
+        const resp = await request(app).delete(
+            `/orders/order/${testOrderIds[0]}/abort`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            message: {
+                msg: "Aborted.",
+            },
+        });
+
+        const checkResp = await request(app).get(
+            `/orders/order${testOrderIds[0]}`
+        );
+        expect(checkResp.statusCode).toEqual(404);
+    });
+
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).delete(`/orders/order${-1}/abort`);
+        expect(resp.statusCode).toBe(404);
+    });
+});
+
+/*************** DELETE /orders/order/:orderId */
+
+describe("DELETE, /orders/order:orderId", () => {
+    it("deletes an order by id", async () => {
+        const resp = await request(app).delete(
+            `/orders/order/${testOrderIds[0]}`
+        );
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: {
@@ -422,12 +390,14 @@ describe("/orders/:orderId", () => {
             },
         });
 
-        const checkResp = await request(app).get(`/orders/${testOrderIds[0]}`);
+        const checkResp = await request(app).get(
+            `/orders/order${testOrderIds[0]}`
+        );
         expect(checkResp.statusCode).toEqual(404);
     });
 
     it("gives not found for invalid id", async () => {
-        const resp = await request(app).delete(`/orders/${-1}`);
+        const resp = await request(app).delete(`/orders/order${-1}`);
         expect(resp.statusCode).toBe(404);
     });
 });

@@ -16,6 +16,9 @@
         "price": {
             "type": "number"
         },
+        "shipping": {
+            "type": "number"
+        },
         "quantity": {
             "type": "number"
         }

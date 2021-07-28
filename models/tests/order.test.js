@@ -21,18 +21,38 @@ beforeAll(async function () {
                             status,
                             amount)
             VALUES (pgp_sym_encrypt('1@email.com', $1),
-                    pgp_sym_encrypt('Tester1', $1),
-                    pgp_sym_encrypt('123 Main St', $1),
-                    pgp_sym_encrypt('Apt 1', $1),
-                    pgp_sym_encrypt('Seattle', $1),
-                    pgp_sym_encrypt('WA', $1),
-                    pgp_sym_encrypt('99999', $1),
-                    pgp_sym_encrypt('5555555555', $1),
-                    pgp_sym_encrypt('abcd1234', $1),
-                    'Confirmed',
-                    1299.99),
-                    (pgp_sym_encrypt('2@email.com', $1), pgp_sym_encrypt('Tester2', $1), pgp_sym_encrypt('456 State St', $1), pgp_sym_encrypt(null, $1), pgp_sym_encrypt('Boston', $1), pgp_sym_encrypt('MA', $1), pgp_sym_encrypt('88888', $1), pgp_sym_encrypt('6666666666', $1), pgp_sym_encrypt('efgh5678', $1), 'Shipped', 2499.99),
-                    (pgp_sym_encrypt('3@email.com', $1), pgp_sym_encrypt('Tester3', $1), pgp_sym_encrypt('789 University St', $1), pgp_sym_encrypt('Unit 3420', $1), pgp_sym_encrypt('Austin', $1), pgp_sym_encrypt('TX', $1), pgp_sym_encrypt('77777', $1), pgp_sym_encrypt('7777777777', $1), pgp_sym_encrypt('ijkl1234', $1), 'Completed', 3699.99)
+                        pgp_sym_encrypt('Tester1', $1),
+                        pgp_sym_encrypt('123 Main St', $1),
+                        pgp_sym_encrypt('Apt 1', $1),
+                        pgp_sym_encrypt('Seattle', $1),
+                        pgp_sym_encrypt('WA', $1),
+                        pgp_sym_encrypt('99999', $1),
+                        pgp_sym_encrypt('5555555555', $1),
+                        pgp_sym_encrypt('abcd1234', $1),
+                        'Confirmed',
+                        1299.99),
+                    (pgp_sym_encrypt('2@email.com', $1),
+                        pgp_sym_encrypt('Tester2', $1),
+                        pgp_sym_encrypt('456 State St', $1),
+                        pgp_sym_encrypt(null, $1),
+                        pgp_sym_encrypt('Boston', $1),
+                        pgp_sym_encrypt('MA', $1),
+                        pgp_sym_encrypt('88888', $1),
+                        pgp_sym_encrypt('6666666666', $1),
+                        pgp_sym_encrypt('efgh5678', $1),
+                        'Shipped',
+                        2499.99),
+                    (pgp_sym_encrypt('3@email.com', $1),
+                        pgp_sym_encrypt('Tester3', $1),
+                        pgp_sym_encrypt('789 University St', $1),
+                        pgp_sym_encrypt('Unit 3420', $1),
+                        pgp_sym_encrypt('Austin', $1),
+                        pgp_sym_encrypt('TX', $1),
+                        pgp_sym_encrypt('77777', $1),
+                        pgp_sym_encrypt('7777777777', $1),
+                        pgp_sym_encrypt('ijkl1234', $1),
+                        'Completed',
+                        3699.99)
             RETURNING id`,
         [process.env.KEY]
     );
@@ -44,11 +64,12 @@ beforeAll(async function () {
         `INSERT INTO items(name,
                             description,
                             price,
+                            shipping,
                             quantity)
-            VALUES ('Item1', 'This is item 1.', 10.99, 1),
-                    ('Item2', 'This is item 2.', 20.99, 2),
-                    ('Item3', 'This is item 3.', 30.99, 3),
-                    ('Item4', 'This is item 4.', 40.99, 4)
+            VALUES ('Item1', 'This is item 1.', 10.99, 1.99, 1),
+                    ('Item2', 'This is item 2.', 20.99, 2.99, 2),
+                    ('Item3', 'This is item 3.', 30.99, 3.99, 3),
+                    ('Item4', 'This is item 4.', 40.99, 4.99, 4)
             RETURNING id`
     );
     testItemIds.splice(0, 0, ...itemsRes.rows.map((row) => row.id));
@@ -84,165 +105,79 @@ afterAll(async function () {
 /************************************** create */
 
 describe("create", () => {
-    it("creates a new order with no item ids", async () => {
-        const newOrder = {
-            email: "99@email.com",
-            name: "Tester99",
-            street: "99 Main St",
-            unit: "Apt 99",
+    it("creates a new order", async () => {
+        const order = await Order.create();
+        expect(order).toEqual({
+            id: expect.any(Number),
+            status: "Pending",
+        });
+    });
+});
+
+/************************************* addInfo */
+
+describe("addInfo", () => {
+    it("adds customer data to order by id", async () => {
+        const order = await Order.addInfo(testOrderIds[0], {
+            email: "jack@email.com",
+            name: "Jackary Johansson",
+            street: "456 Main Ave.",
+            unit: "Apt. 99",
             city: "Seattle",
             stateCode: "WA",
             zipcode: 98789,
-            phone: 1111111111,
-            transactionId: "1234abcd",
-            status: "Confirmed",
-            amount: 9999.99,
-        };
-
-        const order = await Order.create(newOrder);
+            phone: 2065559999,
+            amount: 45653.99,
+        });
         expect(order).toEqual({
-            id: expect.any(Number),
-            email: "99@email.com",
-            name: "Tester99",
-            street: "99 Main St",
-            unit: "Apt 99",
+            id: testOrderIds[0],
+            email: "jack@email.com",
+            name: "Jackary Johansson",
+            street: "456 Main Ave.",
+            unit: "Apt. 99",
             city: "Seattle",
             stateCode: "WA",
             zipcode: "98789",
-            phone: "1111111111",
-            transactionId: "1234abcd",
+            phone: "2065559999",
             status: "Confirmed",
-            amount: "9999.99",
-            listItems: [],
+            amount: "45653.99",
         });
     });
 
-    it("creates a new order with item ids", async () => {
-        const newOrder = {
-            email: "99@email.com",
-            name: "Tester99",
-            street: "99 Main St",
-            unit: "Apt 99",
-            city: "Seattle",
-            stateCode: "WA",
-            zipcode: 98789,
-            phone: 1111111111,
-            transactionId: "1234abcd",
-            status: "Confirmed",
-            amount: 9999.99,
-        };
-
-        const order = await Order.create(newOrder, testItemIds);
-        expect(order).toEqual({
-            id: expect.any(Number),
-            email: "99@email.com",
-            name: "Tester99",
-            street: "99 Main St",
-            unit: "Apt 99",
-            city: "Seattle",
-            stateCode: "WA",
-            zipcode: "98789",
-            phone: "1111111111",
-            transactionId: "1234abcd",
-            status: "Confirmed",
-            amount: "9999.99",
-            listItems: [
-                {
-                    id: testItemIds[0],
-                    name: "Item1",
-                    description: "This is item 1.",
-                    price: "10.99",
-                    quantity: 1,
-                    created: expect.any(Date),
-                    isSold: false,
-                },
-                {
-                    id: testItemIds[1],
-                    name: "Item2",
-                    description: "This is item 2.",
-                    price: "20.99",
-                    quantity: 2,
-                    created: expect.any(Date),
-                    isSold: false,
-                },
-                {
-                    id: testItemIds[2],
-                    name: "Item3",
-                    description: "This is item 3.",
-                    price: "30.99",
-                    quantity: 3,
-                    created: expect.any(Date),
-                    isSold: false,
-                },
-                {
-                    id: testItemIds[3],
-                    name: "Item4",
-                    description: "This is item 4.",
-                    price: "40.99",
-                    quantity: 4,
-                    created: expect.any(Date),
-                    isSold: false,
-                },
-            ],
-        });
-    });
-
-    it("throws BadRequestError with an invalid item id", async () => {
-        const newOrder = {
-            email: "99@email.com",
-            name: "Tester99",
-            street: "99 Main St",
-            unit: "Apt 99",
-            city: "Seattle",
-            stateCode: "WA",
-            zipcode: 98789,
-            phone: 1111111111,
-            transactionId: "1234abcd",
-            status: "Confirmed",
-            amount: 9999.99,
-        };
-
+    it("throws BadRequestError if no input", async () => {
         try {
-            await Order.create(newOrder, [-1]);
+            await Order.addInfo();
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();
         }
     });
 
-    it("throws BadRequestError if no data", async () => {
+    it("throws NotFoundError if invalid order id", async () => {
         try {
-            await Order.create();
-            fail();
-        } catch (err) {
-            expect(err instanceof BadRequestError).toBeTruthy();
-        }
-    });
-
-    it("throws BadRequestError if missing data", async () => {
-        try {
-            await Order.create({
-                email: "1@email.com",
-                name: "Tester1",
-                street: "123 Main St",
-                unit: "Apt 1",
-                city: "Seattle",
-                stateCode: "WA",
-                zipcode: "99999",
+            await Order.addInfo(-1, {
+                email: "xx",
+                name: "xx",
+                street: "xx",
+                unit: "xx",
+                city: "xx",
+                stateCode: "xx",
+                zipcode: 98789,
+                phone: 2065559999,
+                amount: 1000000,
             });
-            fail();
         } catch (err) {
-            expect(err instanceof BadRequestError).toBeTruthy();
+            expect(err instanceof NotFoundError).toBeTruthy();
         }
     });
 });
 
-/***************************************** addItem */
+/************************************* addItem */
 
 describe("addItem", () => {
     it("add the item to the order", async () => {
         const added = await Order.addItem(testOrderIds[0], testItemIds[0]);
-        expect(added.listItems.length).toEqual(3);
+        expect(added).toEqual({ msg: "Added." });
     });
 
     it("throws BadRequestError if no id", async () => {
@@ -302,15 +237,19 @@ describe("get", () => {
             amount: "1299.99",
             listItems: [
                 {
+                    id: testItemIds[0],
                     name: "Item1",
                     description: "This is item 1.",
                     price: "10.99",
+                    shipping: "1.99",
                     quantity: 1,
                 },
                 {
+                    id: testItemIds[3],
                     name: "Item4",
                     description: "This is item 4.",
                     price: "40.99",
+                    shipping: "4.99",
                     quantity: 4,
                 },
             ],
@@ -385,6 +324,46 @@ describe("getAll", () => {
                 amount: "3699.99",
             },
         ]);
+    });
+});
+
+/******************************* markConfirmed */
+
+describe("markConfirmed", () => {
+    it("updates order status to confirmed", async () => {
+        const order = await Order.markConfirmed(testOrderIds[0], "1234abcd");
+        expect(order).toEqual({
+            id: testOrderIds[0],
+            email: "1@email.com",
+            name: "Tester1",
+            street: "123 Main St",
+            unit: "Apt 1",
+            city: "Seattle",
+            stateCode: "WA",
+            zipcode: "99999",
+            phone: "5555555555",
+            transactionId: "1234abcd",
+            status: "Confirmed",
+            amount: "1299.99",
+        });
+    });
+
+    it("throws BadRequestError if no input", async () => {
+        try {
+            await Order.markConfirmed();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.markConfirmed(-1, "abc");
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
     });
 });
 
@@ -552,6 +531,33 @@ describe("remove", () => {
     it("throws NotFoundError if order not found", async () => {
         try {
             await Order.remove(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
+/************************************** delete */
+
+describe("delete", () => {
+    it("deletes order by id", async () => {
+        const deleted = await Order.delete(testOrderIds[1]);
+        expect(deleted).toEqual({ msg: "Aborted." });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.delete();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.delete(-1);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();

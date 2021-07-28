@@ -165,6 +165,22 @@ router.get("/sold", async (req, res, next) => {
     }
 });
 
+router.get("/item/:id/quantity", async (req, res, next) => {
+    /** GET "/item/{id}/quantity" => { quantity }
+     * Returns the current available quantity of an item by id
+     *
+     * Returns { quantity }
+     *
+     * Authorization required: none
+     */
+    try {
+        const quantity = await Item.getQuantity(req.params.id);
+        return res.status(200).json(quantity);
+    } catch (err) {
+        return next(err);
+    }
+});
+
 router.patch("/update/:id", async (req, res, next) => {
     /** PATCH "/update/{id}" { data }=> { item }
      * Updates an item. NOTE: This is a partial update, not all fields are required.

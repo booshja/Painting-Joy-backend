@@ -286,6 +286,49 @@ class Order {
         return result.rows;
     }
 
+    static async markConfirmed(id, transactionId) {
+        /** Update order status to confirmed
+         *
+         * Accepts id
+         *
+         * Returns { id, email, name, street, unit, city, stateCode,
+         *              zipcode, phone, transactionId, status, amount }
+         *
+         * Throws BadRequestError if no id
+         * Throws NotFoundError if no such order
+         */
+        // check for missing input
+        if (!id || !transactionId)
+            throw new BadRequestError("No input provided.");
+
+        // query db to update transactionId and status to "Confirmed"
+        const result = await db.query(
+            `UPDATE orders
+                SET status = $1,
+                    transaction_id = pgp_sym_encrypt($3, $4)
+                WHERE id = $2
+                RETURNING id,
+                        pgp_sym_decrypt(email, $4) AS email,
+                        pgp_sym_decrypt(name, $4) AS name,
+                        pgp_sym_decrypt(street, $4) AS street,
+                        pgp_sym_decrypt(unit, $4) AS unit,
+                        pgp_sym_decrypt(city, $4) AS city,
+                        pgp_sym_decrypt(state_code, $4) AS "stateCode",
+                        pgp_sym_decrypt(zipcode, $4) AS zipcode,
+                        pgp_sym_decrypt(phone, $4) AS phone,
+                        pgp_sym_decrypt(transaction_id, $4) AS "transactionId",
+                        status,
+                        amount`,
+            ["Confirmed", id, transactionId, process.env.KEY]
+        );
+        const order = result.rows[0];
+
+        // if no record returned, no order found, throw NotFoundError
+        if (!order) throw new NotFoundError(`No order: ${id}`);
+
+        return order;
+    }
+
     static async markShipped(id) {
         /** Update order status to shipped
          *

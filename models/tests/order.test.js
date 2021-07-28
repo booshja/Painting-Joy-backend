@@ -325,6 +325,47 @@ describe("getAll", () => {
     });
 });
 
+/******************************* markConfirmed */
+
+describe("markConfirmed", () => {
+    it("updates order status to confirmed", async () => {
+        const order = await Order.markConfirmed(testOrderIds[0], "1234abcd");
+        expect(order).toEqual({
+            id: testOrderIds[0],
+            email: "1@email.com",
+            name: "Tester1",
+            street: "123 Main St",
+            unit: "Apt 1",
+            city: "Seattle",
+            stateCode: "WA",
+            zipcode: "99999",
+            phone: "5555555555",
+            transactionId: "1234abcd",
+            status: "Confirmed",
+            amount: "1299.99",
+        });
+    });
+
+    it("throws BadRequestError if no input", async () => {
+        try {
+            await Order.markConfirmed();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.markConfirmed(-1, "abc");
+            fail();
+        } catch (err) {
+            console.log(err);
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
 /********************************* markShipped */
 
 describe("markShipped", () => {

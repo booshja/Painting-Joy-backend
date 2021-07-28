@@ -210,6 +210,26 @@ router.get("/", async (req, res, next) => {
     }
 });
 
+router.patch("/order/:orderId/confirm", async (req, res, next) => {
+    /** PATCH "/order/{orderId}/confirm" { transactionId } => { order }
+     * Changes order's status to "Confirmed"
+     *
+     * Returns { id, email, name, street, unit, city, stateCode, zipcode,
+     *              phone, transactionId, status, amount }
+     *
+     * Authorization required: none
+     */
+    try {
+        const order = await Order.markConfirmed(
+            +req.params.orderId,
+            req.body.transactionId
+        );
+        return res.status(200).json({ order });
+    } catch (err) {
+        return next(err);
+    }
+});
+
 router.patch("/order/:orderId/ship", async (req, res, next) => {
     /** PATCH "/order/{orderId}/ship" => { order }
      * Changes order's status to "Shipped"

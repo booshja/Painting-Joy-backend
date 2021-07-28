@@ -66,7 +66,7 @@ CREATE TABLE orders (
     phone BYTEA NOT NULL,
     transaction_id BYTEA NOT NULL,
     amount NUMERIC NOT NULL,
-    status VARCHAR(10) NOT NULL DEFAULT 'Confirmed',
+    status VARCHAR(10) NOT NULL DEFAULT 'Pending',
     is_deleted BOOLEAN NOT NULL DEFAULT false
 );
 

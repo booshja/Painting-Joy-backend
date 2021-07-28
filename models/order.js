@@ -4,37 +4,12 @@ const { BadRequestError, NotFoundError } = require("../expressError");
 class Order {
     /** Order Model */
 
-    static async create(data, ids = []) {
-        /** Create an order (from data and (optionally), an array of item ids),
+    static async create() {
+        /** Create an order,
          *      update db, return new order data
          *
-         * Accepts data, ids (optional)
-         * data should be: { email, name, street, unit, city, stateCode,
-         *                  zipcode, phone, transactionId, status, amount }
-         * ids should be: an array of (existing) item ids to add to order
-         *
-         * Returns { id, email, name, street, unit, city, stateCode,
-         *              zipcode, phone, transactionId, status, amount, listItems }
-         *
-         * Throws BadRequestError if incomplete or no data
+         * Returns { id, status }
          */
-        // check for missing / incomplete data
-        if (!data) throw new BadRequestError("No data.");
-        if (
-            !data.email ||
-            !data.name ||
-            !data.street ||
-            !data.city ||
-            !data.stateCode ||
-            !data.zipcode ||
-            !data.phone ||
-            !data.transactionId ||
-            !data.status ||
-            !data.amount
-        )
-            throw new BadRequestError("Missing data.");
-
-        // const encData = encryptOrder(data);
 
         // query db to create new order
         const result = await db.query(
@@ -61,15 +36,65 @@ class Order {
                         $10,
                         $11)
                 RETURNING id,
-                        pgp_sym_decrypt(email, $12) AS email,
-                        pgp_sym_decrypt(name, $12) AS name,
-                        pgp_sym_decrypt(street, $12) AS street,
-                        pgp_sym_decrypt(unit, $12) AS unit,
-                        pgp_sym_decrypt(city, $12) AS city,
-                        pgp_sym_decrypt(state_code, $12) AS "stateCode",
-                        pgp_sym_decrypt(zipcode, $12) AS zipcode,
-                        pgp_sym_decrypt(phone, $12) AS phone,
-                        pgp_sym_decrypt(transaction_id, $12) AS "transactionId",
+                        status`,
+            [
+                "Pending",
+                "Pending",
+                "Pending",
+                "Pending",
+                "Pending",
+                "Pending",
+                "Pending",
+                "Pending",
+                "Pending",
+                "Pending",
+                0,
+                process.env.KEY,
+            ]
+        );
+        const order = result.rows[0];
+
+        return order;
+    }
+
+    static async addInfo(orderId, data) {
+        /** Adds customer data to an order
+         *
+         * Accepts orderId, data
+         * data should be { email, name, street, unit, city, stateCode,
+         *                  zipcode, phone, amount }
+         *
+         * Returns { id, email, name, street, unit, city, stateCode, zipcode,
+         *          phone, amount }
+         *
+         * Throws BadRequestError if missing orderId or data
+         * Throws NotFoundError if no such order
+         */
+        // check for missing / incomplete input
+        if (!orderId && !data) throw new BadRequestError("No input.");
+        if (!orderId || !data) throw new BadRequestError("Missing input.");
+
+        // query db to update order with data
+        const result = await db.query(
+            `UPDATE orders
+                SET email = pgp_sym_encrypt($1, $10),
+                    name = pgp_sym_encrypt($2, $10),
+                    street = pgp_sym_encrypt($3, $10),
+                    unit = pgp_sym_encrypt($4, $10),
+                    city = pgp_sym_encrypt($5, $10),
+                    state_code = pgp_sym_encrypt($6, $10),
+                    zipcode = pgp_sym_encrypt($7, $10),
+                    phone = pgp_sym_encrypt($8, $10),
+                    amount = $9
+                RETURNING id,
+                        pgp_sym_decrypt(email, $10) AS email,
+                        pgp_sym_decrypt(name, $10) AS name,
+                        pgp_sym_decrypt(street, $10) AS street,
+                        pgp_sym_decrypt(unit, $10) AS unit,
+                        pgp_sym_decrypt(city, $10) AS city,
+                        pgp_sym_decrypt(state_code, $10) AS "stateCode",
+                        pgp_sym_decrypt(zipcode, $10) AS zipcode,
+                        pgp_sym_decrypt(phone, $10) AS phone,
                         status,
                         amount`,
             [
@@ -81,64 +106,14 @@ class Order {
                 data.stateCode,
                 data.zipcode,
                 data.phone,
-                data.transactionId,
-                data.status,
                 data.amount,
                 process.env.KEY,
             ]
         );
-        // const order = decryptOrder(result.rows[0]);
         const order = result.rows[0];
 
-        // if there are ids in the ids array, add each relation in the db
-        if (ids.length > 0) {
-            const errors = [];
-
-            // loop through array and try to add items to order
-            for (let i = 0; i < ids.length; i++) {
-                try {
-                    // query db to create relation
-                    await db.query(
-                        `INSERT INTO orders_items(order_id, item_id)
-                            VALUES($1, $2)`,
-                        [order.id, ids[i]]
-                    );
-                } catch (err) {
-                    // push id into errors array
-                    errors.push(ids[i]);
-                }
-            }
-
-            // if there are errors accumulated, throw BadRequestError
-            if (errors.length > 0) {
-                throw new BadRequestError(
-                    `Invalid item id(s): ${errors.join(
-                        ", "
-                    )}. Item(s) not added.`
-                );
-            }
-        }
-
-        // query db for all items associated with order
-        const listRes = await db.query(
-            `SELECT i.id,
-                    i.name,
-                    i.description,
-                    i.price,
-                    i.shipping,
-                    i.quantity,
-                    i.created,
-                    i.is_sold AS "isSold"
-                FROM orders_items oi
-                JOIN items i
-                ON oi.item_id=i.id
-                WHERE oi.order_id=$1`,
-            [order.id]
-        );
-        const listItems = listRes.rows;
-
-        // add list of items associated to order object
-        order.listItems = listItems;
+        // if no record returned, invalid order id, throw NotFoundError
+        if (!order) throw new NotFoundError(`No order: ${id}`);
 
         return order;
     }

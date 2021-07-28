@@ -1,3 +1,27 @@
+### 0.8.0 (2021-07-28)
+
+##### New Features
+
+*  added auth to orders routes ([84dbb439](https://github.com/booshja/Painting-Joy-backend/commit/84dbb43969c8d80ceeed3c00bb4c3ae2828c81af))
+*  added auth to murals ([40094b2e](https://github.com/booshja/Painting-Joy-backend/commit/40094b2e6a4dfe51298e34c4fba39a5fbc37796f))
+*  added auth to messages ([ab1fb6df](https://github.com/booshja/Painting-Joy-backend/commit/ab1fb6df9fabdb51b4276ddaa8d57aad5692c975))
+*  added auth to items ([067ec37b](https://github.com/booshja/Painting-Joy-backend/commit/067ec37b6ac56dba9adcdd3bdcbf11079905a037))
+*  added auth to igposts ([492ce469](https://github.com/booshja/Painting-Joy-backend/commit/492ce469dd565f310df581ffbee12b1b70ab3445))
+*  authorization/authentication ([01c128c1](https://github.com/booshja/Painting-Joy-backend/commit/01c128c19e05c9c735b61c4dc491dbcb498119cb))
+
+##### Other Changes
+
+*  Merge pull request [#16](https://github.com/booshja/Painting-Joy-backend/pull/16) from booshja/auth ([9f684fcb](https://github.com/booshja/Painting-Joy-backend/commit/9f684fcb0dbbad08bf434934a22fa2f471d608bd))
+
+##### Refactors
+
+*  removed console.log ([d187c995](https://github.com/booshja/Painting-Joy-backend/commit/d187c99521eb11cc778d66429da03b5e3ac82957))
+*  removed unneccesary line of commented out code ([75d444ae](https://github.com/booshja/Painting-Joy-backend/commit/75d444ae0e54ea747302e211ad98b7668925e6d6))
+
+##### Tests
+
+*  updated tests ([801ca964](https://github.com/booshja/Painting-Joy-backend/commit/801ca964339ec091d8565a9900c2c6879c9c8ac5))
+
 ### 0.7.0 (2021-07-28)
 
 ##### Chores

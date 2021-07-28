@@ -46,7 +46,6 @@ describe("POST, /auth/token", () => {
             username: "noooooope",
             password: "thisiswrong",
         });
-        console.log(resp.statusCode);
         expect(resp.statusCode).toBe(401);
     });
 

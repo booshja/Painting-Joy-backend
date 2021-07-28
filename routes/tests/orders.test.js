@@ -98,6 +98,7 @@ describe("POST, /orders/checkout", () => {
                         description: "This is item 1!",
                         price: "100.99",
                         shipping: "1.99",
+                        quantity: 1,
                     },
                 ],
             },
@@ -346,7 +347,36 @@ describe("PATCH, /orders/order/:orderId/remove/:itemId", () => {
     });
 });
 
-/**************** DELETE /orders/order:orderId */
+/********* DELETE /orders/order/:orderId/abort */
+
+describe("DELETE, /orders/order:orderId", () => {
+    it("deletes an order by id", async () => {
+        await Order.addItem(testOrderIds[0], testItemIds[0]);
+        await Order.addItem(testOrderIds[0], testItemIds[1]);
+
+        const resp = await request(app).delete(
+            `/orders/order/${testOrderIds[0]}/abort`
+        );
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            message: {
+                msg: "Aborted.",
+            },
+        });
+
+        const checkResp = await request(app).get(
+            `/orders/order${testOrderIds[0]}`
+        );
+        expect(checkResp.statusCode).toEqual(404);
+    });
+
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app).delete(`/orders/order${-1}/abort`);
+        expect(resp.statusCode).toBe(404);
+    });
+});
+
+/*************** DELETE /orders/order/:orderId */
 
 describe("DELETE, /orders/order:orderId", () => {
     it("deletes an order by id", async () => {

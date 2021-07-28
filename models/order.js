@@ -223,7 +223,8 @@ class Order {
                     i.name,
                     i.description,
                     i.price,
-                    i.shipping
+                    i.shipping,
+                    i.quantity
                 FROM orders_items oi
                 JOIN items i
                 ON oi.item_id=i.id
@@ -498,6 +499,35 @@ class Order {
         if (!removed) throw new NotFoundError(`No order found: ${id}`);
 
         return { msg: "Removed." };
+    }
+
+    static async delete(id) {
+        /** Deletes an order by id
+         * NOTE: This is a full deletion. The record will not remain.
+         *
+         * Accepts id
+         *
+         * Returns { msg: "Aborted." }
+         *
+         * Throws BadRequestError if no id
+         * Throws NotFoundError if not found
+         */
+        // check for missing input
+        if (!id) throw new BadRequestError("No id provided.");
+
+        // query db to delete order
+        const result = await db.query(
+            `DELETE FROM orders
+                WHERE id = $1
+                RETURNING id`,
+            [id]
+        );
+        const deleted = result.rows[0];
+
+        // if no record returned, no order found, throw NotFoundError
+        if (!deleted) throw new NotFoundError(`No order found: ${id}`);
+
+        return { msg: "Aborted." };
     }
 }
 module.exports = Order;

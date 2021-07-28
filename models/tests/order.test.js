@@ -242,6 +242,7 @@ describe("get", () => {
                     description: "This is item 1.",
                     price: "10.99",
                     shipping: "1.99",
+                    quantity: 1,
                 },
                 {
                     id: testItemIds[3],
@@ -249,6 +250,7 @@ describe("get", () => {
                     description: "This is item 4.",
                     price: "40.99",
                     shipping: "4.99",
+                    quantity: 4,
                 },
             ],
         });
@@ -529,6 +531,33 @@ describe("remove", () => {
     it("throws NotFoundError if order not found", async () => {
         try {
             await Order.remove(-1);
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
+/************************************** delete */
+
+describe("delete", () => {
+    it("deletes order by id", async () => {
+        const deleted = await Order.delete(testOrderIds[1]);
+        expect(deleted).toEqual({ msg: "Aborted." });
+    });
+
+    it("throws BadRequestError if no id", async () => {
+        try {
+            await Order.delete();
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
+    it("throws NotFoundError if order not found", async () => {
+        try {
+            await Order.delete(-1);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();

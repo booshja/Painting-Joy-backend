@@ -251,7 +251,7 @@ class Item {
         /** Update item data with data
          * This is a partial update, it will only change given fields
          *
-         * Data can include: { name, description, price, quantity }
+         * Data can include: { name, description, price, quantity, isSold }
          *
          * Returns: { id, name, description, price, quantity, created, ,
          *              isSold }

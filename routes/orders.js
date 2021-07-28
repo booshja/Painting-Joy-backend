@@ -3,6 +3,7 @@ const jsonschema = require("jsonschema");
 const stripe = require("stripe")(process.env.STRIPE_API_KEY);
 const { BadRequestError } = require("../expressError");
 const Order = require("../models/order");
+const Item = require("../models/item");
 const orderNewSchema = require("../schemas/orderNew.json");
 
 const router = express.Router({ mergeParams: true });
@@ -270,6 +271,38 @@ router.patch("/order/:orderId/remove/:itemId", async (req, res, next) => {
         );
         return res.status(200).json({ message });
     } catch (err) {
+        return next(err);
+    }
+});
+
+router.delete("/order/:orderId/abort", async (req, res, next) => {
+    /** DELETE "/order/{orderId}/abort" => { message }
+     * Deletes order and adds invetory back for items in order
+     *
+     * Returns { msg: "Aborted." }
+     *
+     * Authorization required: none
+     */
+    try {
+        // get order from db
+        const order = await Order.get(+req.params.orderId);
+
+        // add back items into db availability
+        for (item of order.listItems) {
+            console.log("in for item loop", item);
+            await Item.update(item.id, {
+                quantity: item.quantity + 1,
+                is_sold: false,
+            });
+            console.log("after item update");
+        }
+
+        // delete order from db
+        const message = await Order.delete(+req.params.orderId);
+        console.log("after delete", message);
+        return res.status(200).json({ message });
+    } catch (err) {
+        console.log("ERROR!!!!!", err);
         return next(err);
     }
 });

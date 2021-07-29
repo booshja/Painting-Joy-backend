@@ -1,6 +1,7 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const axios = require("axios");
 
 const { NotFoundError } = require("./expressError");
 
@@ -30,6 +31,12 @@ app.use("/items", itemsRoutes);
 app.use("/messages", messagesRoutes);
 app.use("/murals", muralsRoutes);
 app.use("/orders", ordersRoutes);
+
+app.post("/verify", async (req, res, next) => {
+    const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET}&response=${req.body["g-recaptcha-response"]}`;
+    const result = await axios.post(verifyUrl);
+    return res.status(200).json(result.data);
+});
 
 /** Handle 404 Errors */
 app.use((req, res, next) => {

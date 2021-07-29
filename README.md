@@ -58,6 +58,7 @@ This app uses the following environmental variables:
 | `SENDGRID_API_KEY`   | API key from SendGrid for sending emails                   |
 | `EMAIL_TO`           | Email to send when new message is sent through site        |
 | `EMAIL_FROM`         | Email to send from when new message is sent through site   |
+| `RECAPTCHA_SECRET`   | Server secret for recaptcha v3                             |
 
 <hr>
 <br>
@@ -78,6 +79,7 @@ npm test
 
 This project uses pre-commit hooks with ESLint and Prettier.
 
+<hr>
 <br>
 <br>
 <br>
@@ -97,7 +99,7 @@ This project uses pre-commit hooks with ESLint and Prettier.
 
 ## **API Routes**:
 
-A list of routes and examples can be found [HERE](https://github.com/booshja/Painting-Joy-backend/blob/main/API.md).
+A list of routes and usage can be found [HERE](https://github.com/booshja/Painting-Joy-backend/blob/main/API.md).
 
 <hr>
 <br>
@@ -121,11 +123,12 @@ A list of routes and examples can be found [HERE](https://github.com/booshja/Pai
     -   [Generate Changelog](https://github.com/lob/generate-changelog)
     -   [Bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme)
     -   [SendGrid](https://sendgrid.com/)
+    -   [reCAPTCHA](https://developers.google.com/recaptcha/docs/v3)
 -   [Express](https://expressjs.com/)
     -   [Helmet](https://helmetjs.github.io/)
     -   [Jest](https://jestjs.io/)
-    -   [Json-Schema](https://json-schema.org/)
-    -   [Json Web Token](https://github.com/auth0/node-jsonwebtoken#readme)
+    -   [JSON-Schema](https://json-schema.org/)
+    -   [JSON Web Token](https://github.com/auth0/node-jsonwebtoken#readme)
     -   [Morgan](https://expressjs.com/en/resources/middleware/morgan.html)
     -   [Multer](https://expressjs.com/en/resources/middleware/multer.html)
     -   [node-pg](https://node-postgres.com/)

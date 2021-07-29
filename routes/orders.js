@@ -20,29 +20,11 @@ const calculateOrderAmount = (listItems) => {
      */
     let totalAmount = 0;
     for (item of listItems) {
-        totalAmount = totalAmount + item.price + item.shipping;
+        totalAmount = totalAmount + +item.price + +item.shipping;
     }
 
     return totalAmount;
 };
-
-// router.post("/", async (req, res, next) => {
-//     /** POST "/"  => { order }
-//      * Create a new order
-//      *
-//      * Returns { id, status }
-//      *
-//      * Authorization required: none
-//      */
-//     try {
-//         // create new pending order in db
-//         const order = await Order.create();
-
-//         return res.status(201).json({ order });
-//     } catch (err) {
-//         return next(err);
-//     }
-// });
 
 router.post("/order/:orderId/info", async (req, res, next) => {
     /** POST "/order/{orderId}/info" { data } => { order }
@@ -223,6 +205,7 @@ router.patch("/order/:orderId/confirm", ensureAdmin, async (req, res, next) => {
         );
         return res.status(200).json({ order });
     } catch (err) {
+        console.log(err);
         return next(err);
     }
 });
@@ -335,4 +318,4 @@ router.delete("/order/:orderId", ensureAdmin, async (req, res, next) => {
     }
 });
 
-module.exports = router;
+module.exports = { router, calculateOrderAmount };

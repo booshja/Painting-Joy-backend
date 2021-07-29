@@ -153,6 +153,15 @@ describe("addInfo", () => {
         }
     });
 
+    it("throws BadRequestError if missing input", async () => {
+        try {
+            await Order.addInfo(testOrderIds[0]);
+            fail();
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+
     it("throws NotFoundError if invalid order id", async () => {
         try {
             await Order.addInfo(-1, {

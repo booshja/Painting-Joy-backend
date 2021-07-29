@@ -12,7 +12,7 @@ const igPostsRoutes = require("./routes/igposts");
 const itemsRoutes = require("./routes/items");
 const messagesRoutes = require("./routes/messages");
 const muralsRoutes = require("./routes/murals");
-const ordersRoutes = require("./routes/orders");
+const { router: ordersRoutes } = require("./routes/orders");
 
 const morgan = require("morgan");
 

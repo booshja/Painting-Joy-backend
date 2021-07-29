@@ -2,6 +2,7 @@ const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
 const { createAdminToken } = require("../../helpers/tokens");
+const { calculateOrderAmount } = require("../orders");
 const Item = require("../../models/item");
 const Order = require("../../models/order");
 
@@ -52,21 +53,6 @@ afterEach(async () => {
 afterAll(async () => {
     await db.end();
 });
-
-/******************************* POST /orders/ */
-
-// describe("POST, /orders/", () => {
-//     it("creates a new order", async () => {
-//         const resp = await request(app).post("/orders/");
-//         expect(resp.statusCode).toBe(201);
-//         expect(resp.body).toEqual({
-//             order: {
-//                 id: expect.any(Number),
-//                 status: "Pending",
-//             },
-//         });
-//     });
-// });
 
 /*********************** POST /orders/checkout */
 
@@ -149,6 +135,15 @@ describe("POST, /orders/order/:orderId/info", () => {
                 amount: "99.99",
             },
         });
+    });
+
+    it("gives bad request with invalid input", async () => {
+        const resp = await request(app)
+            .post(`/orders/order/${testOrderIds[0]}/info`)
+            .send({
+                email: 9599,
+            });
+        expect(resp.statusCode).toBe(400);
     });
 });
 
@@ -270,6 +265,47 @@ describe("GET, /orders/", () => {
     it("gives unauth for non-admin", async () => {
         const resp = await request(app).get("/orders/");
         expect(resp.statusCode).toBe(401);
+    });
+});
+
+/*********** PATCH /orders/order/:orderId/confirm */
+
+describe("PATCH, /orders/order/:orderId/confirm", () => {
+    it("updates an order's status to 'Confirmed' by id", async () => {
+        const resp = await request(app)
+            .patch(`/orders/order/${testOrderIds[0]}/confirm`)
+            .send({ transactionId: "abcd1234" })
+            .set("authorization", `Bearer ${adminToken}`);
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            order: {
+                id: testOrderIds[0],
+                email: "Pending",
+                name: "Pending",
+                street: "Pending",
+                unit: "Pending",
+                city: "Pending",
+                stateCode: "Pending",
+                zipcode: "Pending",
+                phone: "Pending",
+                transactionId: "abcd1234",
+                status: "Confirmed",
+                amount: "0",
+            },
+        });
+    });
+
+    it("gives unauth for non-admin", async () => {
+        const resp = await request(app).patch("/orders/order/1/confirm");
+        expect(resp.statusCode).toBe(401);
+    });
+
+    it("gives not found for invalid id", async () => {
+        const resp = await request(app)
+            .patch(`/orders/order/${-1}/confirm`)
+            .send({ transactionId: "nope" })
+            .set("authorization", `Bearer ${adminToken}`);
+        expect(resp.statusCode).toBe(404);
     });
 });
 
@@ -450,5 +486,28 @@ describe("DELETE, /orders/order/:orderId", () => {
             .delete(`/orders/order/${-1}`)
             .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
+    });
+});
+
+/************************ calculateOrderAmount */
+
+describe("calculateOrderAmount", () => {
+    it("calculates total amount from listItems", () => {
+        const listItems = [
+            {
+                price: "42.99",
+                shipping: "10.00",
+            },
+            {
+                price: "66.00",
+                shipping: "8.00",
+            },
+            {
+                price: "4284.51",
+                shipping: "20.00",
+            },
+        ];
+        const total = calculateOrderAmount(listItems);
+        expect(total).toBe(4431.5);
     });
 });

@@ -189,7 +189,7 @@ class Order {
          *
          * Accepts id
          *
-         * Returns { id, email, name, street, unit, city, stateCode,zipcode, phone,
+         * Returns { id, email, name, street, unit, city, stateCode, zipcode, phone,
          *               transactionId, status, amount, listItems: [ { id, name,
          *                  description, price, created }, { id, name, description,
          *                  price, created }, ...] }

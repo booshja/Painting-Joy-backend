@@ -5,15 +5,44 @@
 ### _[PaintingJoy.art](https://paintingjoy.art/)_
 
 The back end of a web app that is part Art Portfolio, part E-commerce, part custom CMS. Built for a local artist's mural painting business.
-<br>
+
 <br>
 <br>
 
 # **Local Usage**
 
+## **Summary**:
+
+Set Up:
+
+```
+git clone git@github.com:booshja/Painting-Joy-backend.git
+cd Painting-Joy-backend
+npm i
+createdb {database name here}
+createdb {test database name here}
+```
+
+-   _Don't forget to create your .env file and create your ENV's (below)_
+
+Run Tests:
+
+```
+npm test
+```
+
+Run Development server:
+
+```
+npm run dev
+```
+
+<hr>
+<br>
+
 ## **Environmental Variables**:
 
-This app uses the following environmental variables that you will need in order to run the app:
+This app uses the following environmental variables:
 
 | ENV                  | Value                                                      |
 | -------------------- | ---------------------------------------------------------- |
@@ -23,6 +52,9 @@ This app uses the following environmental variables that you will need in order 
 | `SECRET_KEY`         | Secret key                                                 |
 | `NODE_ENV`           | Whether the app is in production, developement, or testing |
 | `BCRYPT_WORK_FACTOR` | # of rounds of encryption for Bcrypt to use                |
+| `KEY`                | Encryption/Decryption password for Postgres                |
+| `ALGORITHM`          | Encryption algorithm to use for Postgres encryption        |
+| `STRIPE_API_KEY`     | API key from Stripe to use with their API                  |
 
 <hr>
 <br>
@@ -31,7 +63,7 @@ This app uses the following environmental variables that you will need in order 
 
 This app uses Jest and Supertest for testing. Tests can be run using:
 
-```js
+```
 npm i
 npm test
 ```
@@ -51,32 +83,51 @@ This project uses pre-commit hooks with ESLint and Prettier.
 
 ## **Features**:
 
-_Browse Murals/General Art_: Returns data for general site browsing.
+**_Browse Murals/General Art_**: Returns data for general site browsing.
 
-_E-Commerce_: Uses the Stripe API to process payments for an online art store.
+**_E-Commerce_**: Uses the Stripe API to process payments for an online art store.
 
-_Custom CMS_: Custom CMS Routes for the artist to manage their posts, homepage, as well as the store through the React front end.
+**_Custom CMS / Admin Dashboard_**: Custom CMS Routes for the artist to manage their posts, homepage, an Instagram feed, as well as the store.
 
 <hr>
+<br>
+
+## **API Routes**:
+
+A list of routes and examples can be found [HERE](https://github.com/booshja/Painting-Joy-backend/blob/main/API.md).
+
+<hr>
+<br>
 
 ## **External APIs**:
 
 1. [Stripe API](https://api.setlist.fm/docs/1.0/index.html)
-    - Process payments for the web store
+    - Payment Intent Token generation
 
 <hr>
 <br>
 
 ## **Tech Stack**:
 
--   JavaScript
+-   [JavaScript](https://developer.mozilla.org/en-US/docs/javascript)
+    -   [ESLint](https://eslint.org/)
+    -   [Prettier](https://prettier.io/)
 -   [Node.js](https://nodejs.org/)
+    -   [Generate Changelog](https://github.com/lob/generate-changelog)
+    -   [Bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme)
 -   [Express](https://expressjs.com/)
-    -   [node-pg](https://node-postgres.com/)
+    -   [Helmet](https://helmetjs.github.io/)
     -   [Jest](https://jestjs.io/)
+    -   [Json-Schema](https://json-schema.org/)
+    -   [Json Web Token](https://github.com/auth0/node-jsonwebtoken#readme)
+    -   [Morgan](https://expressjs.com/en/resources/middleware/morgan.html)
+    -   [Multer](https://expressjs.com/en/resources/middleware/multer.html)
+    -   [node-pg](https://node-postgres.com/)
+    -   [pg-format](https://github.com/datalanche/node-pg-format)
+    -   [Stripe](https://github.com/stripe/stripe-node)
     -   [SuperTest](https://github.com/visionmedia/supertest#readme)
 -   [PostgreSQL](https://www.postgresql.org/)
--   [Heroku](https://heroku.com/) (Express API Deployment)
+-   [Heroku](https://heroku.com/)
 -   [VSCode](https://code.visualstudio.com/)
 
 <hr>

@@ -11,7 +11,7 @@ class Item {
          * Data should be: { name, description, price, quantity }
          *
          * Returns: { id, name, description, price, quantity, created,
-         *                      isSold }
+         *                      shipping, isSold }
          *
          * Throws BadRequestError if incomplete or no data
          */
@@ -176,8 +176,9 @@ class Item {
     static async getAllAvailable() {
         /** Gets an array of items that are NOT sold
          *
-         * Returns [{ id, name, description, price, quantity, created },
-         *              { id, name, description, price, quantity, created }, ...]
+         * Returns [{ id, name, description, price, shipping, quantity,
+         *              created }, { id, name, description, price, shipping,
+         *              quantity, created }, ...]
          */
         // query db for list of all non-sold items
         const result = await db.query(
@@ -251,10 +252,11 @@ class Item {
         /** Update item data with data
          * This is a partial update, it will only change given fields
          *
-         * Data can include: { name, description, price, quantity, isSold }
+         * Data can include: { name, description, price, shipping, quantity,
+         *                      isSold }
          *
-         * Returns: { id, name, description, price, quantity, created, ,
-         *              isSold }
+         * Returns: { id, name, description, price, shipping, quantity,
+         *              created, isSold }
          *
          * Throws BadRequestError if no data
          * Throws NotFoundError if no item found
@@ -296,7 +298,8 @@ class Item {
          *
          * Accepts id
          *
-         * Returns { id, name, price, description, quantity, created, isSold }
+         * Returns { id, name, price, shipping, description, quantity, created,
+         *              isSold }
          *
          * Throws BadRequestError if no id
          * Throws NotFoundError if item not found
@@ -376,8 +379,8 @@ class Item {
          *
          * Accepts id
          *
-         * Returns: { id, name, description, price, quantity, created, ,
-         *              isSold }
+         * Returns: { id, name, description, price, shipping, quantity,
+         *              created, isSold }
          * Throws BadRequestError if no id
          * Throws NotFoundError if not found
          */

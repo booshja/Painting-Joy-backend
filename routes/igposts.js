@@ -11,6 +11,8 @@ router.post("/", ensureAdmin, async (req, res, next) => {
     /** POST "/" { igpost } => { igpost }
      * Creates a new igpost
      *
+     * igpost should be { ig_id, caption, perm_url, image_url }
+     *
      * Returns { ig_id, caption, perm_url, image_url }
      *
      * Authorization required: admin

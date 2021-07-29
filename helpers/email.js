@@ -55,4 +55,4 @@ async function sendEmail() {
     }
 }
 
-module.exports = { sendEmail };
+module.exports = { getEmailHtml, getMessage, sendEmail };

@@ -55,6 +55,9 @@ This app uses the following environmental variables:
 | `KEY`                | Encryption/Decryption password for Postgres                |
 | `ALGORITHM`          | Encryption algorithm to use for Postgres encryption        |
 | `STRIPE_API_KEY`     | API key from Stripe to use with their API                  |
+| `SENDGRID_API_KEY`   | API key from SendGrid for sending emails                   |
+| `EMAIL_TO`           | Email to send when new message is sent through site        |
+| `EMAIL_FROM`         | Email to send from when new message is sent through site   |
 
 <hr>
 <br>
@@ -103,6 +106,8 @@ A list of routes and examples can be found [HERE](https://github.com/booshja/Pai
 
 1. [Stripe API](https://api.setlist.fm/docs/1.0/index.html)
     - Payment Intent Token generation
+2. [SendGrid](https://sendgrid.com/)
+    - Email client
 
 <hr>
 <br>
@@ -115,6 +120,7 @@ A list of routes and examples can be found [HERE](https://github.com/booshja/Pai
 -   [Node.js](https://nodejs.org/)
     -   [Generate Changelog](https://github.com/lob/generate-changelog)
     -   [Bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme)
+    -   [SendGrid](https://sendgrid.com/)
 -   [Express](https://expressjs.com/)
     -   [Helmet](https://helmetjs.github.io/)
     -   [Jest](https://jestjs.io/)

@@ -2,6 +2,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 const { ensureAdmin } = require("../middleware/auth");
+const { sendEmail } = require("../helpers/email");
 const Message = require("../models/message");
 const messageNewSchema = require("../schemas/messageNew.json");
 
@@ -25,6 +26,7 @@ router.post("/", async (req, res, next) => {
         }
 
         const message = await Message.create(req.body);
+        if (!process.env.NODE_ENV === "test") await sendEmail();
         return res.status(201).json({ message });
     } catch (err) {
         return next(err);

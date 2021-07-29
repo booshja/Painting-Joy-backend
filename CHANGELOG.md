@@ -1,3 +1,28 @@
+### 0.9.0 (2021-07-29)
+
+##### Chores
+
+*  uninstalled unnecessary package nodemailer ([a4100b6f](https://github.com/booshja/Painting-Joy-backend/commit/a4100b6fcf15ede717a0ec298f372fe6c43b4487))
+
+##### Documentation Changes
+
+*  added API docs ([d813baf4](https://github.com/booshja/Painting-Joy-backend/commit/d813baf42c8678b46decbeee8ab94e701109c532))
+*  updated README.md ([70531bb9](https://github.com/booshja/Painting-Joy-backend/commit/70531bb9e41cc8569fdd7d2153f6d3cba9070a92))
+
+##### New Features
+
+*  added recaptcha v3 ([92c1d007](https://github.com/booshja/Painting-Joy-backend/commit/92c1d0075721621083b5cc134b483b78c07769c2))
+*  added email ([75bab8b4](https://github.com/booshja/Painting-Joy-backend/commit/75bab8b48c68bcc60784a78302601cec6e48cfab))
+*  added helmet for headers security ([f9a571bf](https://github.com/booshja/Painting-Joy-backend/commit/f9a571bf45127f6e11979aba456cb201aad529f7))
+
+##### Other Changes
+
+*  Merge pull request [#17](https://github.com/booshja/Painting-Joy-backend/pull/17) from booshja/docs ([9ffa5fbd](https://github.com/booshja/Painting-Joy-backend/commit/9ffa5fbdc669d9f07fbd661d6aa62a690f39b297))
+
+##### Tests
+
+*  added tests for email.js ([c529c366](https://github.com/booshja/Painting-Joy-backend/commit/c529c3667211e429374bed41f1c96668528fd2d6))
+
 ### 0.8.0 (2021-07-28)
 
 ##### New Features

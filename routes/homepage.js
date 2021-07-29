@@ -28,7 +28,7 @@ const upload = multer({
 
 router.post("/", ensureAdmin, async (req, res, next) => {
     /** POST "/" { homepage } => { homepage }
-     * Creates a new mural
+     * Creates a new set of homepage data
      *
      * hompage should be { greeting, message }
      *
@@ -140,7 +140,7 @@ router.put("/", ensureAdmin, async (req, res, next) => {
 
 router.delete("/image", ensureAdmin, async (req, res) => {
     /** DELETE "/upload" => { message }
-     * Deletes image data from homepage
+     * Deletes image data for homepage
      *
      * Returns { msg: "Deleted." }
      *

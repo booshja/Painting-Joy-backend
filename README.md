@@ -116,6 +116,7 @@ A list of routes and examples can be found [HERE](https://github.com/booshja/Pai
     -   [Generate Changelog](https://github.com/lob/generate-changelog)
     -   [Bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme)
 -   [Express](https://expressjs.com/)
+    -   [Helmet](https://helmetjs.github.io/)
     -   [Jest](https://jestjs.io/)
     -   [Json-Schema](https://json-schema.org/)
     -   [Json Web Token](https://github.com/auth0/node-jsonwebtoken#readme)

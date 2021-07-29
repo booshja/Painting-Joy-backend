@@ -87,7 +87,7 @@ router.get("/", ensureAdmin, async (req, res, next) => {
     /** GET "/" => { [ murals ] }
      * Returns a list of all murals
      *
-     * Returns { id, title, description }
+     * Returns { id, title, description, isArchived }
      *
      * Authorization required: admin
      */

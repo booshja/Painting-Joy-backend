@@ -30,9 +30,10 @@ router.post("/", ensureAdmin, async (req, res, next) => {
     /** POST "/" { item } => { item }
      * Create a new store item
      *
-     * item should be { name, description, price, quantity }
+     * item should be { name, description, price, shipping, quantity }
      *
-     * Returns { id, name, description, price, quantity, created, isSold }
+     * Returns { id, name, description, price, quantity, shipping,
+     *              created, isSold }
      *
      * Authorization required: admin
      */
@@ -80,8 +81,9 @@ router.get("/", async (req, res, next) => {
     /** GET "/" => [ items ]
      * Returns a list of all items
      *
-     * Returns [ { id, name, description, price, quantity, created, isSold},
-     *              { id, name, description, price, quantity, created, isSold}, ...]
+     * Returns [ { id, name, description, price, shipping, quantity,
+     *              created, isSold}, { id, name, description, price,
+     *              shipping, quantity, created, isSold}, ...]
      *
      * Authorization required: none
      */
@@ -99,7 +101,8 @@ router.get("/item/:id", ensureAdmin, async (req, res, next) => {
      *
      * id should be item id
      *
-     * Returns { id name, description, price, quantity, created, isSold }
+     * Returns { id, name, description, price, quantity, shipping, created,
+     *          isSold }
      *
      * Authorization required: admin
      */
@@ -137,8 +140,9 @@ router.get("/available", async (req, res, next) => {
     /** GET "/available" => [ items ]
      * Returns a list of available items
      *
-     * Returns [ { id, name, description, price, quantity, created, isSold},
-     *              { id, name, description, price, quantity, created, isSold}, ...]
+     * Returns [ { id, name, description, price, shipping, quantity, created,
+     *              isSold}, { id, name, description, price, shipping, quantity,
+     *              created, isSold}, ...]
      *
      * Authorization required: none
      */
@@ -154,8 +158,9 @@ router.get("/sold", ensureAdmin, async (req, res, next) => {
     /** GET "/sold" => [ items ]
      * Returns a list of sold items
      *
-     * Returns [ { id, name, description, price, quantity, created, isSold},
-     *              { id, name, description, price, quantity, created, isSold}, ...]
+     * Returns [ { id, name, description, price, shipping, quantity, created,
+     *              isSold}, { id, name, description, price, shipping, quantity,
+     *              created, isSold}, ...]
      *
      * Authorization required: admin
      */
@@ -185,11 +190,13 @@ router.get("/item/:id/quantity", async (req, res, next) => {
 
 router.patch("/update/:id", ensureAdmin, async (req, res, next) => {
     /** PATCH "/update/{id}" { data }=> { item }
-     * Updates an item. NOTE: This is a partial update, not all fields are required.
+     * Updates an item. NOTE: This is a partial update, not all fields are
+     * required.
      *
-     * data can be { name, description, price, quantity }
+     * data can be { name, description, price, shipping, quantity }
      *
-     * Returns { id, name, description, price, quantity, created, isSold }
+     * Returns { id, name, description, price, shipping, quantity, created,
+     *              isSold }
      *
      * Authorization required: admin
      */
@@ -211,7 +218,8 @@ router.patch("/sell/:id", async (req, res, next) => {
     /** PATCH "/sell/{id}" => { item }
      * Decreases quantity of item by 1, marks it as sold out if decreases to 0
      *
-     * Returns { id, name, price, quantity, created, isSold }
+     * Returns { id, name, description, price, shipping, quantity, created,
+     *              isSold }
      *
      * Authorization required: none
      */
@@ -227,7 +235,8 @@ router.patch("/sold/:id", ensureAdmin, async (req, res, next) => {
     /** PATCH "/sold/{id}" => { item }
      * Marks an item as sold, decreases quantity to 0
      *
-     * Returns { id, name, description, price, quantity, created, isSold }
+     * Returns { id, name, description, price, shipping, quantity, created,
+     *              isSold }
      *
      * Authorization required: admin
      */

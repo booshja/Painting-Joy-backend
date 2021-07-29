@@ -318,7 +318,7 @@ router.delete("/order/:orderId/abort", async (req, res, next) => {
 
 router.delete("/order/:orderId", ensureAdmin, async (req, res, next) => {
     /** DELETE "/order/{orderId}" => { msg }
-     * Deletes an order from the db by id
+     * Deletes an order by id
      *
      * Note: This is a logical delete.
      *      Records will still be kept in the database.

@@ -105,7 +105,7 @@ class Mural {
                     title,
                     description
             FROM murals
-            WHERE id = $1`,
+            WHERE id = $1 AND is_archived = false`,
             [id]
         );
         const mural = result.rows[0];

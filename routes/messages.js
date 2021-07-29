@@ -134,7 +134,7 @@ router.delete("/delete/:id", ensureAdmin, async (req, res, next) => {
     /** DELETE "/delete/{id}" => { msg: "Deleted." }
      * Delete a message by id
      *
-     * Returns { msg: "Deleted" }
+     * Returns { msg: "Deleted." }
      *
      * Authorization required: admin
      */

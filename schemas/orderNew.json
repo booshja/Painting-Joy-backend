@@ -41,6 +41,10 @@
         "amount": {
             "type": "number",
             "minimum": 1
+        },
+        "token": {
+            "type": "string",
+            "minLength": 1
         }
     },
     "additionalProperties": true,

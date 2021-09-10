@@ -12,8 +12,8 @@ const router = express.Router({ mergeParams: true });
 // multer options
 const upload = multer({
     limits: {
-        // limits filesize to 1 megabyte
-        fileSize: 1000000,
+        // limits filesize to 5 megabyte
+        fileSize: 5000000,
     },
     fileFilter(req, file, cb) {
         // restricts file types to png, jpg, jpeg
@@ -153,7 +153,7 @@ router.get("/mural/:muralId/image/:imageNum", async (req, res) => {
     /** GET "/mural/:muralId/image/:imageNum" => image
      * Returns the image associated with the mural
      *
-     * Returns image data
+     * Returns image
      *
      * Authoriation required: none
      **/

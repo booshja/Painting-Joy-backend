@@ -266,7 +266,9 @@ class Item {
         if (!id || !data) throw new BadRequestError("Missing input");
 
         // prepare data for partial update
-        const { setCols, values } = sqlForPartialUpdate(data, {});
+        const { setCols, values } = sqlForPartialUpdate(data, {
+            isSold: "is_sold",
+        });
         const idVarIdx = "$" + (values.length + 1);
 
         // prepare sql query statement for partial update

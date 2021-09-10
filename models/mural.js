@@ -103,7 +103,10 @@ class Mural {
         const result = await db.query(
             `SELECT id,
                     title,
-                    description
+                    description,
+                    image1,
+                    image2,
+                    image3
             FROM murals
             WHERE id = $1 AND is_archived = false`,
             [id]

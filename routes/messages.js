@@ -3,6 +3,7 @@ const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 const { ensureAdmin } = require("../middleware/auth");
 const { sendEmail } = require("../helpers/email");
+const { validateHuman } = require("../helpers/recaptcha");
 const Message = require("../models/message");
 const messageNewSchema = require("../schemas/messageNew.json");
 
@@ -18,14 +19,25 @@ router.post("/", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    // validate recaptcha
+    const human = await validateHuman(req.body.token);
+    if (!human) {
+        return res.status(400).json({
+            errors: ["You've been detected as a bot."],
+        });
+    }
+
     try {
+        // validate form data
         const validator = jsonschema.validate(req.body, messageNewSchema);
         if (!validator.valid) {
             const errors = validator.errors.map((e) => e.stack);
             throw new BadRequestError(errors);
         }
 
+        // create new message in db
         const message = await Message.create(req.body);
+        // send email to site owner for notification of message
         if (!process.env.NODE_ENV === "test") await sendEmail();
         return res.status(201).json({ message });
     } catch (err) {

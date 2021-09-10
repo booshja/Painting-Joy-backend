@@ -12,6 +12,10 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 200
+        },
+        "token": {
+            "type": "string",
+            "minLength": 1
         }
     },
     "additionalProperties": false,

@@ -1,29 +1,34 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
-const stripe = require("stripe")(process.env.STRIPE_API_KEY);
+const stripe = require("stripe")(process.env.SECRET_STRIPE_API_KEY);
 const { BadRequestError } = require("../expressError");
 const { ensureAdmin } = require("../middleware/auth");
 const Order = require("../models/order");
 const Item = require("../models/item");
 const orderNewSchema = require("../schemas/orderNew.json");
+const { validateHuman } = require("../helpers/recaptcha");
 
 const router = express.Router({ mergeParams: true });
 
-const calculateOrderAmount = (listItems) => {
+const calculateOrderAmount = (cart) => {
     /** Calculates total order amount
      * Do this on the server to prevent client-side manipulation
      *
-     * Accepts [ listItems ]
-     *      listItems should be an array of items objects associated w/ order
+     * Accepts [ cart ]
+     *      cart should be an array of items objects associated w/ order
      *
      * Returns totalAmount
      */
+    // if nothing in cart array, return false to throw error
+    if (cart === undefined || cart.length === 0) return false;
+
     let totalAmount = 0;
-    for (item of listItems) {
+    for (item of cart) {
         totalAmount = totalAmount + +item.price + +item.shipping;
     }
 
-    return totalAmount;
+    const total = totalAmount.toFixed(2).toString().replace(".", "");
+    return total;
 };
 
 router.post("/order/:orderId/info", async (req, res, next) => {
@@ -38,6 +43,14 @@ router.post("/order/:orderId/info", async (req, res, next) => {
      *
      * Authorization required: none
      */
+    // validate recaptcha
+    const human = await validateHuman(req.body.token);
+    if (!human) {
+        return res.status(400).json({
+            errors: ["You've been detected as a bot."],
+        });
+    }
+
     try {
         // validate json schema for order
         const validator = jsonschema.validate(req.body, orderNewSchema);
@@ -59,7 +72,6 @@ router.post("/checkout", async (req, res, next) => {
      * Creates order, adds items to it, removes items from inventory
      *
      * items should be [ {item}, {item}, {item}, ... ]
-     *      item should be { itemId, quantity }
      *
      * Returns { order, notAdded }
      *
@@ -67,7 +79,7 @@ router.post("/checkout", async (req, res, next) => {
      */
     try {
         // if no ids or nothing in ids, throw BadRequestError
-        if (!req.body.items || Object.keys(req.body.items).length === 0)
+        if (!req.body || Object.keys(req.body).length === 0)
             throw new BadRequestError("No item ids.");
 
         // create new order
@@ -75,16 +87,15 @@ router.post("/checkout", async (req, res, next) => {
 
         const notAdded = [];
 
-        for (item of req.body.items) {
+        for (item of req.body) {
             // decrease item quantity, add item to order
-            for (let i = 0; i < item.quantity; i++) {
-                try {
-                    await Order.addItem(order.id, item.id);
-                } catch (err) {
-                    // if error add item to notAdded array
-                    notAdded.push(item.id);
-                    continue;
-                }
+            try {
+                await Item.sell(item.id);
+                await Order.addItem(order.id, item.id);
+            } catch (err) {
+                // if error add item to notAdded array
+                notAdded.push(item.id);
+                continue;
             }
         }
 
@@ -130,8 +141,9 @@ router.post("/create-payment-intent", async (req, res, next) => {
      * Authorization required: none
      */
     try {
+        const listItems = req.body;
         // get totalAmount of all items in order
-        const totalAmount = calculateOrderAmount(req.body.listItems);
+        const totalAmount = calculateOrderAmount(listItems);
 
         // if 0 or undefined returned, return BadRequestError
         if (!totalAmount)
@@ -139,12 +151,13 @@ router.post("/create-payment-intent", async (req, res, next) => {
 
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: calculateOrderAmount(listItems),
+            amount: totalAmount,
             currency: "usd",
         });
 
         return res.send({
             clientSecret: paymentIntent.client_secret,
+            amount: totalAmount,
         });
     } catch (err) {
         return next(err);
@@ -285,8 +298,9 @@ router.delete("/order/:orderId/abort", async (req, res, next) => {
 
         // add back items into db availability
         for (item of order.listItems) {
+            const qty = await Item.getQuantity(+item.id);
             await Item.update(item.id, {
-                quantity: item.quantity + 1,
+                quantity: +qty.quantity + 1,
                 is_sold: false,
             });
         }

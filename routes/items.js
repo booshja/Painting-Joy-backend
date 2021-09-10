@@ -12,8 +12,8 @@ const router = express.Router({ mergeParams: true });
 // multer options
 const upload = multer({
     limits: {
-        // limits filesize to 1 megabyte
-        fileSize: 1000000,
+        // limits filesize to 5 megabyte
+        fileSize: 5000000,
     },
     fileFilter(req, file, cb) {
         // restricts file types to png, jpg, jpeg
@@ -265,7 +265,7 @@ router.delete("/item/:imageId/image", ensureAdmin, async (req, res) => {
 });
 
 router.delete("/delete/:id", ensureAdmin, async (req, res, next) => {
-    /** DELETE "/delete/{id}" => { item }
+    /** DELETE "/delete/{id}" => { message }
      * Deletes an item
      *
      * Returns { msg: "Deleted." }

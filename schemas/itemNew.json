@@ -21,6 +21,9 @@
         },
         "quantity": {
             "type": "number"
+        },
+        "isSold": {
+            "type": "boolean"
         }
     },
     "additionalProperties": false,

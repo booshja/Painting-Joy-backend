@@ -4,6 +4,8 @@ const multer = require("multer");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { ensureAdmin } = require("../middleware/auth");
 const Homepage = require("../models/homepage");
+const Item = require("../models/item");
+const Mural = require("../models/mural");
 const homepageNewSchema = require("../schemas/homepageNew.json");
 const homepageUpdateSchema = require("../schemas/homepageUpdate.json");
 
@@ -12,8 +14,8 @@ const router = express.Router({ mergeParams: true });
 // multer options
 const upload = multer({
     limits: {
-        // limits filesize to 1 megabyte
-        fileSize: 1000000,
+        // limits filesize to 5 megabyte
+        fileSize: 5000000,
     },
     fileFilter(req, file, cb) {
         // restricts file types to png, jpg, jpeg
@@ -86,7 +88,19 @@ router.get("/", async (req, res, next) => {
      */
     try {
         const homepage = await Homepage.getData();
-        return res.status(200).json({ homepage });
+        const murals = await Mural.getActive();
+        const items = await Item.getAll();
+        return res.status(200).json({
+            homepage: {
+                id: homepage.id,
+                greeting: homepage.greeting,
+                message: homepage.message,
+                mural_id: murals[0].id,
+                mural_title: murals[0].title,
+                item_id: items[items.length - 1].id,
+                item_title: items[items.length - 1].name,
+            },
+        });
     } catch (err) {
         return next(err);
     }
@@ -110,6 +124,7 @@ router.get("/image", async (req, res) => {
         res.set("Content-Type", "image/png");
         res.status(200).send(image);
     } catch (err) {
+        console.log(err);
         res.status(404).send(err);
     }
 });

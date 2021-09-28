@@ -1,7 +1,7 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
-const { ensureAdmin } = require("../middleware/auth");
+const { checkJwt } = require("../middleware/checkJwt");
 const { sendEmail } = require("../helpers/email");
 const { validateHuman } = require("../helpers/recaptcha");
 const Message = require("../models/message");
@@ -45,7 +45,7 @@ router.post("/", async (req, res, next) => {
     }
 });
 
-router.get("/", ensureAdmin, async (req, res, next) => {
+router.get("/", checkJwt, async (req, res, next) => {
     /** GET "/" => { messages }
      * Get a list of all messages
      *
@@ -62,7 +62,7 @@ router.get("/", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.get("/message/:id", ensureAdmin, async (req, res, next) => {
+router.get("/message/:id", checkJwt, async (req, res, next) => {
     /** GET "/{id}" => { message }
      * Get a message by id
      *
@@ -78,7 +78,7 @@ router.get("/message/:id", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.get("/active", ensureAdmin, async (req, res, next) => {
+router.get("/active", checkJwt, async (req, res, next) => {
     /** GET "/active" => { [ messages ] }
      * Get a list of non-archived messages
      *
@@ -95,7 +95,7 @@ router.get("/active", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.get("/archived", ensureAdmin, async (req, res, next) => {
+router.get("/archived", checkJwt, async (req, res, next) => {
     /** GET "/archived" => { [ messages ] }
      * Get a list of archived messages
      *
@@ -112,7 +112,7 @@ router.get("/archived", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.patch("/archive/:id", ensureAdmin, async (req, res, next) => {
+router.patch("/archive/:id", checkJwt, async (req, res, next) => {
     /** PATCH "/archive/{id}" => { message }
      * Mark a message as "archived" by id
      *
@@ -128,7 +128,7 @@ router.patch("/archive/:id", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.patch("/unarchive/:id", ensureAdmin, async (req, res, next) => {
+router.patch("/unarchive/:id", checkJwt, async (req, res, next) => {
     /** PATCH "/unarchive/{id}" => { message }
      * Mark a message as active by id
      *
@@ -144,7 +144,7 @@ router.patch("/unarchive/:id", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.delete("/delete/:id", ensureAdmin, async (req, res, next) => {
+router.delete("/delete/:id", checkJwt, async (req, res, next) => {
     /** DELETE "/delete/{id}" => { msg: "Deleted." }
      * Delete a message by id
      *

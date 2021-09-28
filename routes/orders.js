@@ -288,6 +288,9 @@ router.delete("/order/:orderId/abort", async (req, res, next) => {
         // get order from db
         const order = await Order.get(+req.params.orderId);
 
+        if (order.status !== "Pending")
+            return res.status(400).json({ error: "Order not pending" });
+
         // add back items into db availability
         for (item of order.listItems) {
             const qty = await Item.getQuantity(+item.id);

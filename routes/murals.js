@@ -2,7 +2,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const multer = require("multer");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { ensureAdmin } = require("../middleware/auth");
+const { checkJwt } = require("../middleware/checkJwt");
 const Mural = require("../models/mural");
 const muralNewSchema = require("../schemas/muralNew.json");
 const muralUpdateSchema = require("../schemas/muralUpdate.json");
@@ -26,7 +26,7 @@ const upload = multer({
     },
 });
 
-router.post("/", ensureAdmin, async (req, res, next) => {
+router.post("/", checkJwt, async (req, res, next) => {
     /** POST "/" { mural } => { mural }
      * Creates a new mural
      *
@@ -52,7 +52,7 @@ router.post("/", ensureAdmin, async (req, res, next) => {
 
 router.post(
     "/upload/:muralId/image/:imageNum",
-    ensureAdmin,
+    checkJwt,
     upload.single("upload"),
     async (req, res) => {
         /** POST "/" { file upload } => { message }
@@ -83,7 +83,7 @@ router.post(
     }
 );
 
-router.get("/", ensureAdmin, async (req, res, next) => {
+router.get("/", checkJwt, async (req, res, next) => {
     /** GET "/" => { [ murals ] }
      * Returns a list of all murals
      *
@@ -115,7 +115,7 @@ router.get("/active", async (req, res, next) => {
     }
 });
 
-router.get("/archived", ensureAdmin, async (req, res, next) => {
+router.get("/archived", checkJwt, async (req, res, next) => {
     /** GET, "/archived" => { [ murals ] }
      * Returns a list of all archived murals
      *
@@ -172,7 +172,7 @@ router.get("/mural/:muralId/image/:imageNum", async (req, res) => {
     }
 });
 
-router.patch("/mural/:id", ensureAdmin, async (req, res, next) => {
+router.patch("/mural/:id", checkJwt, async (req, res, next) => {
     /** PATCH "/{id}" { mural } => { mural }
      * Partial update of a mural by id
      *
@@ -197,7 +197,7 @@ router.patch("/mural/:id", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.patch("/mural/:id/archive", ensureAdmin, async (req, res, next) => {
+router.patch("/mural/:id/archive", checkJwt, async (req, res, next) => {
     /** PATCH "/mural/{id}/archive" => { mural }
      * Updates a mural as archived
      *
@@ -213,7 +213,7 @@ router.patch("/mural/:id/archive", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.patch("/mural/:id/unarchive", ensureAdmin, async (req, res, next) => {
+router.patch("/mural/:id/unarchive", checkJwt, async (req, res, next) => {
     /** PATCH "/mural/{id}/unarchive" => { mural }
      * Updates a mural as NOT archived
      *
@@ -229,32 +229,25 @@ router.patch("/mural/:id/unarchive", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.delete(
-    "/mural/:muralId/image/:imageNum",
-    ensureAdmin,
-    async (req, res) => {
-        /** DELETE "/upload" => {message}
-         * Deletes image data from a mural
-         *
-         * Returns { msg: "Deleted." }
-         *
-         * Authorization required: admin
-         */
-        try {
-            const imageName = "image" + req.params.imageNum;
-            // delete mural image by muralId and imageName
-            const message = await Mural.deleteImage(
-                +req.params.imageId,
-                imageName
-            );
-            res.status(200).send({ message });
-        } catch (err) {
-            res.status(400).send(err);
-        }
+router.delete("/mural/:muralId/image/:imageNum", checkJwt, async (req, res) => {
+    /** DELETE "/upload" => {message}
+     * Deletes image data from a mural
+     *
+     * Returns { msg: "Deleted." }
+     *
+     * Authorization required: admin
+     */
+    try {
+        const imageName = "image" + req.params.imageNum;
+        // delete mural image by muralId and imageName
+        const message = await Mural.deleteImage(+req.params.imageId, imageName);
+        res.status(200).send({ message });
+    } catch (err) {
+        res.status(400).send(err);
     }
-);
+});
 
-router.delete("/mural/:id", ensureAdmin, async (req, res, next) => {
+router.delete("/mural/:id", checkJwt, async (req, res, next) => {
     /** DELETE "/{id}" => { msg: "Deleted." }
      * Deletes a mural
      *

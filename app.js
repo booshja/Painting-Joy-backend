@@ -4,7 +4,6 @@ const cors = require("cors");
 
 const { NotFoundError } = require("./expressError");
 
-const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/auth");
 const homepageRoutes = require("./routes/homepage");
 const igPostsRoutes = require("./routes/igposts");
@@ -18,10 +17,9 @@ const morgan = require("morgan");
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: "http://localhost:3000/" }));
 app.use(express.json());
 app.use(morgan("common"));
-app.use(authenticateJWT);
 
 app.use("/auth", authRoutes);
 app.use("/homepage", homepageRoutes);

@@ -2,7 +2,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const multer = require("multer");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { ensureAdmin } = require("../middleware/auth");
+const { checkJwt } = require("../middleware/checkJwt");
 const Homepage = require("../models/homepage");
 const Item = require("../models/item");
 const Mural = require("../models/mural");
@@ -28,7 +28,7 @@ const upload = multer({
     },
 });
 
-router.post("/", ensureAdmin, async (req, res, next) => {
+router.post("/", checkJwt, async (req, res, next) => {
     /** POST "/" { homepage } => { homepage }
      * Creates a new set of homepage data
      *
@@ -54,7 +54,7 @@ router.post("/", ensureAdmin, async (req, res, next) => {
 
 router.post(
     "/image",
-    ensureAdmin,
+    checkJwt,
     upload.single("upload"),
     async (req, res) => {
         /** POST "/image" { file upload } => { message }
@@ -118,6 +118,7 @@ router.get("/image", async (req, res) => {
         // get homepage image
         const image = await Homepage.getImage();
         //if no image, throw NotFoundError
+        if (!image) console.log("Didn't find image!!!!!!!!!");
         if (!image) throw new NotFoundError("No image found.");
 
         //response header, use set
@@ -129,7 +130,7 @@ router.get("/image", async (req, res) => {
     }
 });
 
-router.put("/", ensureAdmin, async (req, res, next) => {
+router.put("/", checkJwt, async (req, res, next) => {
     /** PUT "/" { homepage } => { homepage }
      * Updates the homepage data
      *
@@ -153,7 +154,7 @@ router.put("/", ensureAdmin, async (req, res, next) => {
     }
 });
 
-router.delete("/image", ensureAdmin, async (req, res) => {
+router.delete("/image", checkJwt, async (req, res) => {
     /** DELETE "/upload" => { message }
      * Deletes image data for homepage
      *

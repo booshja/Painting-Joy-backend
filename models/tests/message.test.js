@@ -72,40 +72,6 @@ describe("create", () => {
     });
 });
 
-/***************************************** get */
-
-describe("get", () => {
-    it("gets post by id", async () => {
-        const message = await Message.get(testMessageIds[0]);
-        expect(message).toEqual({
-            id: expect.any(Number),
-            email: "1@email.com",
-            name: "Tester1",
-            message: "This is a test 1.",
-            received: expect.any(Date),
-            isArchived: false,
-        });
-    });
-
-    it("throws BadRequestError if no id", async () => {
-        try {
-            await Message.get();
-            fail();
-        } catch (err) {
-            expect(err instanceof BadRequestError).toBeTruthy();
-        }
-    });
-
-    it("throws NotFoundError if message not found", async () => {
-        try {
-            await Message.get(-1);
-            fail();
-        } catch (err) {
-            expect(err instanceof NotFoundError).toBeTruthy();
-        }
-    });
-});
-
 /************************************** getAll */
 
 describe("getAll", () => {
@@ -143,54 +109,6 @@ describe("getAll", () => {
                 message: "This is a test 4.",
                 received: expect.any(Date),
                 isArchived: true,
-            },
-        ]);
-    });
-});
-
-/*********************************** getActive */
-
-describe("getActive", () => {
-    it("gets all non-archived messages", async () => {
-        const messages = await Message.getActive();
-        expect(messages).toEqual([
-            {
-                id: expect.any(Number),
-                email: "1@email.com",
-                name: "Tester1",
-                message: "This is a test 1.",
-                received: expect.any(Date),
-            },
-            {
-                id: expect.any(Number),
-                email: "2@email.com",
-                name: "Tester2",
-                message: "This is a test 2.",
-                received: expect.any(Date),
-            },
-            {
-                id: expect.any(Number),
-                email: "3@email.com",
-                name: "Tester3",
-                message: "This is a test 3.",
-                received: expect.any(Date),
-            },
-        ]);
-    });
-});
-
-/********************************* getArchived */
-
-describe("getArchived", () => {
-    it("gets all archived messages", async () => {
-        const messages = await Message.getArchived();
-        expect(messages).toEqual([
-            {
-                id: expect.any(Number),
-                email: "4@email.com",
-                name: "Tester4",
-                message: "This is a test 4.",
-                received: expect.any(Date),
             },
         ]);
     });

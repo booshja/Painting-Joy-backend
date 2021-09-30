@@ -4,34 +4,6 @@ const { BadRequestError, NotFoundError } = require("../expressError");
 class Homepage {
     /** Homepage Model */
 
-    static async create(data) {
-        /** Create new record for homepage CRM data
-         *
-         * Accepts data
-         *      Data should be: { greeting, message }
-         *
-         * Returns { id, greeting, message }
-         *
-         * Throws BadRequestError if no data or missing data
-         */
-        // check for missing / incomplete data
-        const keys = Object.keys(data);
-        if (keys.length === 0) throw new BadRequestError("No data.");
-        if (!data.greeting || !data.message)
-            throw new BadRequestError("Missing data.");
-
-        // query db for creating new homepage data
-        const result = await db.query(
-            `INSERT INTO homepages (greeting, message)
-            VALUES ($1, $2)
-            RETURNING id, greeting, message`,
-            [data.greeting, data.message]
-        );
-        const info = result.rows[0];
-
-        return info;
-    }
-
     static async getData() {
         /** Get the latest record of homepage data
          *

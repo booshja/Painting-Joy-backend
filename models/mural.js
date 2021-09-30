@@ -54,23 +54,6 @@ class Mural {
         return result.rows;
     }
 
-    static async getArchived() {
-        /** Get an array of all archived murals
-         *
-         * Returns [{ id, title, description }, { id, title, description }, ...]
-         */
-        // query db for list of murals
-        const result = await db.query(
-            `SELECT id,
-                    title,
-                    description
-                FROM murals
-                WHERE is_archived = true`
-        );
-
-        return result.rows;
-    }
-
     static async getActive() {
         /** Get an array of all non-archived murals
          *

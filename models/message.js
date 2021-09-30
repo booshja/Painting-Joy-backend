@@ -37,39 +37,6 @@ class Message {
         return message;
     }
 
-    static async get(id) {
-        /** Get a message from id
-         *
-         * Accepts id
-         *
-         * Returns { id, email, name, message, received, isArchived }
-         *
-         * Throws BadRequestError if no id
-         * Throws NotFoundError if no message found
-         */
-        // check for missing input
-        if (!id) throw new BadRequestError("No id provided.");
-
-        // query db to get message
-        const result = await db.query(
-            `SELECT id,
-                    email,
-                    name,
-                    message,
-                    received,
-                    is_archived AS "isArchived"
-                FROM messages
-                WHERE id=$1`,
-            [id]
-        );
-        const message = result.rows[0];
-
-        // if no record returned, no message found, throw NotFoundError
-        if (!message) throw new NotFoundError(`No message: ${id}`);
-
-        return message;
-    }
-
     static async getAll() {
         /** Get an array of messages archived AND active
          *
@@ -85,46 +52,6 @@ class Message {
                     received,
                     is_archived AS "isArchived"
                 FROM messages`
-        );
-
-        return result.rows;
-    }
-
-    static async getActive() {
-        /** Get an array of messages that are NOT marked as archived
-         *
-         * Returns [{ id, email, name, message, received },
-         *              { id, email, name, message, received }, ...]
-         */
-        // query db for list of all non-archived messages
-        const result = await db.query(
-            `SELECT id,
-                    email,
-                    name,
-                    message,
-                    received
-                FROM messages
-                WHERE is_archived = false`
-        );
-
-        return result.rows;
-    }
-
-    static async getArchived() {
-        /** Get an array of messages that ARE marked as archived
-         *
-         * Returns [{ id, email, name, message, received },
-         *              { id, email, name, message, received }, ...]
-         */
-        // query db for list of all archived messages
-        const result = await db.query(
-            `SELECT id,
-                    email,
-                    name,
-                    message,
-                    received
-                FROM messages
-                WHERE is_archived = true`
         );
 
         return result.rows;

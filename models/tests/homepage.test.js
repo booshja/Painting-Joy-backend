@@ -18,38 +18,6 @@ afterAll(async function () {
     await db.end();
 });
 
-/************************************** create */
-
-describe("create", () => {
-    let newHomepage = {
-        greeting: "Hi! This is my page!",
-        message: "This is a test message!",
-    };
-
-    it("creates a new homepage record", async () => {
-        let homepage = await Homepage.create(newHomepage);
-        expect(homepage).toEqual({ id: expect.any(Number), ...newHomepage });
-    });
-
-    it("throws BadRequestError for no data", async () => {
-        try {
-            await Homepage.create({});
-            fail();
-        } catch (err) {
-            expect(err instanceof BadRequestError).toBeTruthy();
-        }
-    });
-
-    it("throws BadRequestError for missing data", async () => {
-        try {
-            await Homepage.create({ greeting: "Wassup!" });
-            fail();
-        } catch (err) {
-            expect(err instanceof BadRequestError).toBeTruthy();
-        }
-    });
-});
-
 /************************************* getData */
 
 describe("getData", () => {

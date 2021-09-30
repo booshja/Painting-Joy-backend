@@ -115,22 +115,6 @@ router.get("/active", async (req, res, next) => {
     }
 });
 
-router.get("/archived", checkJwt, async (req, res, next) => {
-    /** GET, "/archived" => { [ murals ] }
-     * Returns a list of all archived murals
-     *
-     * Returns [ {id, title, description }, {id, title, description }, ...]
-     *
-     * Authorization required: admin
-     */
-    try {
-        const murals = await Mural.getArchived();
-        return res.status(200).json({ murals });
-    } catch (err) {
-        return next(err);
-    }
-});
-
 router.get("/mural/:id", async (req, res, next) => {
     /** GET "/{id}" => { mural }
      * Returns a mural by id

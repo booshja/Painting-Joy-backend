@@ -151,31 +151,6 @@ describe("GET, /murals/active", () => {
     });
 });
 
-/************************ GET /murals/archived */
-
-describe("GET, /murals/archived", () => {
-    it("returns a list of all archived murals", async () => {
-        const resp = await request(app)
-            .get("/murals/archived")
-            .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toBe(200);
-        expect(resp.body).toEqual({
-            murals: [
-                {
-                    id: testMuralIds[2],
-                    title: "Test3",
-                    description: "This is test mural 3!",
-                },
-            ],
-        });
-    });
-
-    it("gives unauth for non-admin", async () => {
-        const resp = await request(app).get("/murals/archived");
-        expect(resp.statusCode).toBe(401);
-    });
-});
-
 /*********************** GET /murals/mural/:id */
 
 describe("GET, /murals/mural/:id", () => {

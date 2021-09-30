@@ -136,58 +136,6 @@ router.get("/item/:itemId/image", async (req, res) => {
     }
 });
 
-router.get("/available", async (req, res, next) => {
-    /** GET "/available" => [ items ]
-     * Returns a list of available items
-     *
-     * Returns [ { id, name, description, price, shipping, quantity, created,
-     *              isSold}, { id, name, description, price, shipping, quantity,
-     *              created, isSold}, ...]
-     *
-     * Authorization required: none
-     */
-    try {
-        const items = await Item.getAllAvailable();
-        return res.status(200).json({ items });
-    } catch (err) {
-        return next(err);
-    }
-});
-
-router.get("/sold", checkJwt, async (req, res, next) => {
-    /** GET "/sold" => [ items ]
-     * Returns a list of sold items
-     *
-     * Returns [ { id, name, description, price, shipping, quantity, created,
-     *              isSold}, { id, name, description, price, shipping, quantity,
-     *              created, isSold}, ...]
-     *
-     * Authorization required: admin
-     */
-    try {
-        const items = await Item.getAllSold();
-        return res.status(200).json({ items });
-    } catch (err) {
-        return next(err);
-    }
-});
-
-router.get("/item/:id/quantity", async (req, res, next) => {
-    /** GET "/item/{id}/quantity" => { quantity }
-     * Returns the current available quantity of an item by id
-     *
-     * Returns { quantity }
-     *
-     * Authorization required: none
-     */
-    try {
-        const quantity = await Item.getQuantity(req.params.id);
-        return res.status(200).json(quantity);
-    } catch (err) {
-        return next(err);
-    }
-});
-
 router.patch("/update/:id", checkJwt, async (req, res, next) => {
     /** PATCH "/update/{id}" { data }=> { item }
      * Updates an item. NOTE: This is a partial update, not all fields are
@@ -208,23 +156,6 @@ router.patch("/update/:id", checkJwt, async (req, res, next) => {
         }
 
         const item = await Item.update(+req.params.id, req.body);
-        return res.status(200).json({ item });
-    } catch (err) {
-        return next(err);
-    }
-});
-
-router.patch("/sell/:id", async (req, res, next) => {
-    /** PATCH "/sell/{id}" => { item }
-     * Decreases quantity of item by 1, marks it as sold out if decreases to 0
-     *
-     * Returns { id, name, description, price, shipping, quantity, created,
-     *              isSold }
-     *
-     * Authorization required: none
-     */
-    try {
-        const item = await Item.sell(+req.params.id);
         return res.status(200).json({ item });
     } catch (err) {
         return next(err);

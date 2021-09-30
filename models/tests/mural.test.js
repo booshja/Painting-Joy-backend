@@ -103,21 +103,6 @@ describe("getAll", () => {
     });
 });
 
-/********************************* getArchived */
-
-describe("getArchived", () => {
-    it("gets all the archived murals", async () => {
-        let murals = await Mural.getArchived();
-        expect(murals).toEqual([
-            {
-                id: testMuralIds[3],
-                title: "Test Mural 4",
-                description: "This is test mural #4!",
-            },
-        ]);
-    });
-});
-
 /*********************************** getActive */
 
 describe("getActive", () => {

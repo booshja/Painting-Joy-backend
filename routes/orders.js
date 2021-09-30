@@ -107,27 +107,6 @@ router.post("/checkout", async (req, res, next) => {
     }
 });
 
-router.post("/order/:orderId/add/:itemId", checkJwt, async (req, res, next) => {
-    /** POST "/order/{orderId}/add/{itemId}" => { order }
-     * Adds an existing item to an existing order by orderId & itemId
-     *
-     * Returns { id, email, name, street, unit, city, stateCode, zipcode,
-     *              phone, transactionId, status, amount, listItems }
-     * Where listItems is an array of all items associated with the order.
-     *
-     * Authorization required: admin
-     */
-    try {
-        const message = await Order.addItem(
-            +req.params.orderId,
-            req.params.itemId
-        );
-        return res.status(200).json({ message });
-    } catch (err) {
-        return next(err);
-    }
-});
-
 router.post("/create-payment-intent", async (req, res, next) => {
     /** POST "/create-payment-intent" => { payment intent }
      * Creates a payment intent through Stripe and returns the client secret
@@ -252,29 +231,6 @@ router.patch("/order/:orderId/complete", checkJwt, async (req, res, next) => {
         return next(err);
     }
 });
-
-router.patch(
-    "/order/:orderId/remove/:itemId",
-    checkJwt,
-    async (req, res, next) => {
-        /** PATCH "/order/{orderId}/remove/{itemId}" => { msg }
-         * Removes an item from the order
-         *
-         * Returns { msg: "Item removed." }
-         *
-         * Authorization required: admin
-         */
-        try {
-            const message = await Order.removeItem(
-                +req.params.orderId,
-                req.params.itemId
-            );
-            return res.status(200).json({ message });
-        } catch (err) {
-            return next(err);
-        }
-    }
-);
 
 router.delete("/order/:orderId/abort", async (req, res, next) => {
     /** DELETE "/order/{orderId}/abort" => { message }

@@ -147,41 +147,6 @@ describe("POST, /orders/order/:orderId/info", () => {
     });
 });
 
-/***** POST /orders/order/:orderId/add/:itemId */
-
-describe("POST, /orders/order/:orderId/add/:itemId", () => {
-    it("adds an item to an order by orderId & itemId", async () => {
-        const resp = await request(app)
-            .post(`/orders/order/${testOrderIds[0]}/add/${testItemIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toBe(200);
-        expect(resp.body).toEqual({
-            message: {
-                msg: "Added.",
-            },
-        });
-    });
-
-    it("gives unauth for non-admin", async () => {
-        const resp = await request(app).post("/orders/order/1/add/1");
-        expect(resp.statusCode).toBe(401);
-    });
-
-    it("gives not found for invalid order id", async () => {
-        const resp = await request(app)
-            .post(`/orders/order/${-1}/add/${testItemIds[1]}`)
-            .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toBe(404);
-    });
-
-    it("gives not found for invalid item id", async () => {
-        const resp = await request(app)
-            .post(`/orders/order/${testOrderIds[0]}/add/${-1}`)
-            .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toBe(404);
-    });
-});
-
 /******************* GET /orders/order:orderId */
 
 describe("GET, /orders/order:orderId", () => {
@@ -382,46 +347,6 @@ describe("PATCH, /orders/order/:orderId/complete", () => {
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .patch(`/orders/order/${-1}/complete`)
-            .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toBe(404);
-    });
-});
-
-/* PATCH /orders/order/:orderId/remove/:itemId */
-
-describe("PATCH, /orders/order/:orderId/remove/:itemId", () => {
-    it("removes an item from an order by orderId & itemId", async () => {
-        await db.query(
-            `INSERT INTO orders_items(order_id, item_id)
-                VALUES($1, $2)`,
-            [testOrderIds[0], testItemIds[1]]
-        );
-        const resp = await request(app)
-            .patch(`/orders/order/${testOrderIds[0]}/remove/${testItemIds[1]}`)
-            .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toBe(200);
-        expect(resp.body).toEqual({
-            message: {
-                msg: "Item removed.",
-            },
-        });
-    });
-
-    it("gives unauth for non-admin", async () => {
-        const resp = await request(app).patch("/orders/order/1/remove/1");
-        expect(resp.statusCode).toBe(401);
-    });
-
-    it("gives not found for invalid order id", async () => {
-        const resp = await request(app)
-            .patch(`/orders/order/${-1}/remove/${testItemIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
-        expect(resp.statusCode).toBe(404);
-    });
-
-    it("gives not found for invalid item id", async () => {
-        const resp = await request(app)
-            .get(`/orders/order/${testOrderIds[0]}/remove/${-1}`)
             .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toBe(404);
     });

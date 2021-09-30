@@ -173,51 +173,6 @@ class Item {
         return result.rows;
     }
 
-    static async getAllAvailable() {
-        /** Gets an array of items that are NOT sold
-         *
-         * Returns [{ id, name, description, price, shipping, quantity,
-         *              created }, { id, name, description, price, shipping,
-         *              quantity, created }, ...]
-         */
-        // query db for list of all non-sold items
-        const result = await db.query(
-            `SELECT id,
-                    name,
-                    description,
-                    price,
-                    shipping,
-                    quantity,
-                    created
-                FROM items
-                WHERE is_sold = false`
-        );
-
-        return result.rows;
-    }
-
-    static async getAllSold() {
-        /** Gets an array of items that ARE sold
-         *
-         * Returns [{ id, name, description, price, quantity, created },
-         *              { id, name, description, price, quantity, created }, ...]
-         */
-        // query db for list of all sold items
-        const result = await db.query(
-            `SELECT id,
-                    name,
-                    description,
-                    price,
-                    shipping,
-                    quantity,
-                    created
-                FROM items
-                WHERE is_sold = true`
-        );
-
-        return result.rows;
-    }
-
     static async uploadImage(id, data) {
         /** Updates item with image data
          *

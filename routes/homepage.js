@@ -28,30 +28,6 @@ const upload = multer({
     },
 });
 
-router.post("/", checkJwt, async (req, res, next) => {
-    /** POST "/" { homepage } => { homepage }
-     * Creates a new set of homepage data
-     *
-     * hompage should be { greeting, message }
-     *
-     * Returns { id, greeting, message }
-     *
-     * Authorization required: admin
-     */
-    try {
-        const validator = jsonschema.validate(req.body, homepageNewSchema);
-        if (!validator.valid) {
-            const errors = validator.errors.map((e) => e.stack);
-            throw new BadRequestError(errors);
-        }
-
-        const homepage = await Homepage.create(req.body);
-        return res.status(201).json({ homepage });
-    } catch (err) {
-        return next(err);
-    }
-});
-
 router.post(
     "/image",
     checkJwt,

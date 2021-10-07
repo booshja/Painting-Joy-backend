@@ -4,7 +4,6 @@ const cors = require("cors");
 
 const { NotFoundError } = require("./expressError");
 
-const authRoutes = require("./routes/auth");
 const homepageRoutes = require("./routes/homepage");
 const igPostsRoutes = require("./routes/igposts");
 const itemsRoutes = require("./routes/items");
@@ -21,7 +20,6 @@ app.use(cors({ origin: "http://localhost:3000/" }));
 app.use(express.json());
 app.use(morgan("common"));
 
-app.use("/auth", authRoutes);
 app.use("/homepage", homepageRoutes);
 app.use("/igposts", igPostsRoutes);
 app.use("/items", itemsRoutes);

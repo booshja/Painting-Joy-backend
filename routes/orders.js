@@ -6,7 +6,7 @@ const Order = require("../models/order");
 const Item = require("../models/item");
 const orderNewSchema = require("../schemas/orderNew.json");
 const { validateHuman } = require("../helpers/recaptcha");
-const { checkJwt } = require("../middleware/checkJwt");
+const checkJwt = require("../middleware/checkJwt");
 
 const router = express.Router({ mergeParams: true });
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
-const { checkJwt } = require("../middleware/checkJwt");
+const checkJwt = require("../middleware/checkJwt");
 const { sendEmail } = require("../helpers/email");
 const { validateHuman } = require("../helpers/recaptcha");
 const Message = require("../models/message");

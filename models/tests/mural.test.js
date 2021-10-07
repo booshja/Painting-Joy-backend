@@ -137,6 +137,9 @@ describe("get", () => {
             id: testMuralIds[0],
             title: "Test Mural 1",
             description: "This is test mural #1!",
+            image1: null,
+            image2: null,
+            image3: null,
         });
     });
 

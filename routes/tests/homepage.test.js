@@ -1,20 +1,17 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
-const { createAdminToken } = require("../../helpers/tokens");
 const Homepage = require("../../models/homepage");
 
-let adminToken;
+const token = process.env.AUTH0_TEST_TOKEN;
 
 beforeAll(async () => {
     await db.query("DELETE FROM homepages");
 
-    await Homepage.create({
+    await Homepage.update({
         greeting: "Initial test greeting",
         message: "Initial test message",
     });
-
-    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -40,6 +37,10 @@ describe("GET /homepage", () => {
                 id: expect.any(Number),
                 greeting: "Initial test greeting",
                 message: "Initial test message",
+                item_id: expect.any(Number),
+                item_title: expect.any(String),
+                mural_id: expect.any(Number),
+                mural_title: expect.any(String),
             },
         });
     });
@@ -55,7 +56,7 @@ describe("PUT /homepage", () => {
                 greeting: "Hi this is a put test!",
                 message: "This is a test put message!",
             })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             homepage: {
@@ -66,7 +67,7 @@ describe("PUT /homepage", () => {
         });
     });
 
-    it("gives unauth for non-admin", async () => {
+    it("gives unauth for unauthorized", async () => {
         const resp = await request(app).put("/homepage").send({
             greeting: "Hello there!",
             message: "Welcome to my website!",
@@ -80,7 +81,7 @@ describe("PUT /homepage", () => {
             .send({
                 greeting: "Oh, hello!",
             })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(400);
     });
 
@@ -88,7 +89,7 @@ describe("PUT /homepage", () => {
         const resp = await request(app)
             .put("/homepage")
             .send()
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(400);
     });
 });

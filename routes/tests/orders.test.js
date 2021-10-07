@@ -1,12 +1,11 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
-const { createAdminToken } = require("../../helpers/tokens");
 const { calculateOrderAmount } = require("../orders");
 const Item = require("../../models/item");
 const Order = require("../../models/order");
 
-let adminToken;
+const token = process.env.AUTH0_TEST_TOKEN;
 const testItemIds = [];
 let testOrderIds = [];
 
@@ -38,8 +37,6 @@ beforeAll(async () => {
 
     const order2 = await Order.create();
     testOrderIds.push(order2.id);
-
-    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -60,12 +57,7 @@ describe("POST, /orders/checkout", () => {
     it("creates order, adds item to it, removes items from inventory", async () => {
         const resp = await request(app)
             .post(`/orders/checkout`)
-            .send({
-                items: [
-                    { id: testItemIds[0], quantity: 1 },
-                    { id: -1, quantity: 2 },
-                ],
-            });
+            .send([{ id: testItemIds[0] }, { id: -1 }, { id: -1 }]);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
@@ -88,7 +80,7 @@ describe("POST, /orders/checkout", () => {
                         description: "This is item 1!",
                         price: "100.99",
                         shipping: "1.99",
-                        quantity: 1,
+                        quantity: 0,
                     },
                 ],
             },
@@ -153,7 +145,7 @@ describe("GET, /orders/order:orderId", () => {
     it("gets an order by id", async () => {
         const resp = await request(app)
             .get(`/orders/order/${testOrderIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
@@ -182,7 +174,7 @@ describe("GET, /orders/order:orderId", () => {
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .get(`/orders/order/${-1}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -193,7 +185,7 @@ describe("GET, /orders/", () => {
     it("gets a list of all orders", async () => {
         const resp = await request(app)
             .get("/orders/")
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body.orders).toEqual([
             {
@@ -240,7 +232,7 @@ describe("PATCH, /orders/order/:orderId/confirm", () => {
         const resp = await request(app)
             .patch(`/orders/order/${testOrderIds[0]}/confirm`)
             .send({ transactionId: "abcd1234" })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
@@ -260,16 +252,11 @@ describe("PATCH, /orders/order/:orderId/confirm", () => {
         });
     });
 
-    it("gives unauth for non-admin", async () => {
-        const resp = await request(app).patch("/orders/order/1/confirm");
-        expect(resp.statusCode).toBe(401);
-    });
-
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .patch(`/orders/order/${-1}/confirm`)
             .send({ transactionId: "nope" })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -280,7 +267,7 @@ describe("PATCH, /orders/order/:orderId/ship", () => {
     it("updates an order's status to 'Shipped' by id", async () => {
         const resp = await request(app)
             .patch(`/orders/order/${testOrderIds[1]}/ship`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
@@ -308,7 +295,7 @@ describe("PATCH, /orders/order/:orderId/ship", () => {
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .patch(`/orders/order/${-1}/ship`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -319,7 +306,7 @@ describe("PATCH, /orders/order/:orderId/complete", () => {
     it("updates an order's status to 'Completed' by id", async () => {
         const resp = await request(app)
             .patch(`/orders/order/${testOrderIds[1]}/complete`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             order: {
@@ -347,7 +334,7 @@ describe("PATCH, /orders/order/:orderId/complete", () => {
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .patch(`/orders/order/${-1}/complete`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -371,7 +358,7 @@ describe("DELETE, /orders/order:orderId", () => {
 
         const checkResp = await request(app)
             .get(`/orders/order/${testOrderIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(checkResp.statusCode).toEqual(404);
     });
 
@@ -387,7 +374,7 @@ describe("DELETE, /orders/order/:orderId", () => {
     it("deletes an order by id", async () => {
         const resp = await request(app)
             .delete(`/orders/order/${testOrderIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: {
@@ -397,7 +384,7 @@ describe("DELETE, /orders/order/:orderId", () => {
 
         const checkResp = await request(app)
             .get(`/orders/order/${testOrderIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(checkResp.statusCode).toEqual(404);
     });
 
@@ -409,7 +396,7 @@ describe("DELETE, /orders/order/:orderId", () => {
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .delete(`/orders/order/${-1}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -433,6 +420,6 @@ describe("calculateOrderAmount", () => {
             },
         ];
         const total = calculateOrderAmount(listItems);
-        expect(total).toBe(4431.5);
+        expect(total).toBe("443150");
     });
 });

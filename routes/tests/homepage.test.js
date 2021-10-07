@@ -26,6 +26,36 @@ afterAll(async () => {
     await db.end();
 });
 
+/************************ POST /homepage/image */
+
+describe("POST /homepage/image", () => {
+    it("works", async () => {
+        const resp = await request(app)
+            .post("/homepage/image")
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({ message: { msg: "Upload successful." } });
+    });
+});
+
+/************************* GET /homepage/image */
+
+describe("GET /homepage/image", () => {
+    it("works", async () => {
+        await request(app)
+            .post("/homepage/image")
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        const resp = await request(app).get("/homepage/image");
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.headers["content-type"]).toEqual("image/png");
+    });
+});
+
 /******************************* GET /homepage */
 
 describe("GET /homepage", () => {
@@ -91,5 +121,23 @@ describe("PUT /homepage", () => {
             .send()
             .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(400);
+    });
+});
+
+/************************* DELETE /homepage/image */
+
+describe("DELETE /homepage/image", () => {
+    it("works", async () => {
+        await request(app)
+            .post("/homepage/image")
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        const resp = await request(app)
+            .delete("/homepage/image")
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({ message: { msg: "Deleted." } });
     });
 });

@@ -1,6 +1,8 @@
 const axios = require("axios");
 
 async function validateHuman(token) {
+    if (process.env.NODE_ENV === "test") return true;
+
     const secret = process.env.RECAPTCHA_SECRET;
 
     try {
@@ -9,7 +11,7 @@ async function validateHuman(token) {
         );
         const data = resp.data;
 
-        return process.env.NODE_ENV === "test" ? true : data.success;
+        return data.success;
     } catch (err) {
         console.log("Recaptcha error: ", err);
     }

@@ -146,7 +146,7 @@ class Homepage {
             `UPDATE homepages
                 SET image = null
                 WHERE id = $1`,
-            [id]
+            [id.id]
         );
 
         return { msg: "Deleted." };

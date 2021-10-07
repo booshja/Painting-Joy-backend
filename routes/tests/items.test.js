@@ -91,6 +91,38 @@ describe("POST, /items/", () => {
     });
 });
 
+/****************** POST /items/upload/:itemId */
+
+describe("POST /items/upload/:itemId", () => {
+    it("works", async () => {
+        const resp = await request(app)
+            .post(`/items/upload/${testItemIds[0]}`)
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({ message: { msg: "Upload successful." } });
+    });
+});
+
+/************************* GET /items/item/:itemId/image */
+
+describe("GET /homepage/image", () => {
+    it("works", async () => {
+        await request(app)
+            .post(`/items/upload/${testItemIds[0]}`)
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        const resp = await request(app).get(
+            `/items/item/${testItemIds[0]}/image`
+        );
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.headers["content-type"]).toEqual("image/png");
+    });
+});
+
 /********************************* GET /items/ */
 
 describe("GET, /items/", () => {

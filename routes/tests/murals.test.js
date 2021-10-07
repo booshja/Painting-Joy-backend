@@ -87,6 +87,40 @@ describe("POST, /murals", () => {
     });
 });
 
+/********** POST /murals/upload/:muralId/image/:imageNum */
+
+describe("POST /murals/upload/:muralId/image/:imageNum", () => {
+    it("works", async () => {
+        const resp = await request(app)
+            .post(`/murals/upload/${testMuralIds[0]}/image/1`)
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({
+            message: { msg: "Upload successful: image1" },
+        });
+    });
+});
+
+/************* GET /murals/mural/:muralId/image/:imageNum */
+
+describe("GET /homepage/image", () => {
+    it("works", async () => {
+        await request(app)
+            .post(`/murals/upload/${testMuralIds[0]}/image/1`)
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        const resp = await request(app).get(
+            `/murals/mural/${testMuralIds[0]}/image/1`
+        );
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.headers["content-type"]).toEqual("image/png");
+    });
+});
+
 /********************************* GET /murals */
 
 describe("GET, /murals/", () => {
@@ -307,5 +341,23 @@ describe("DELETE, /murals/mural/:id", () => {
             .delete("/murals/mural/-2")
             .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
+    });
+});
+
+/********* DELETE /murals/mural/:muralId/image/:imageNum */
+
+describe("DELETE /mural/:muralId/image/:imageNum", () => {
+    it("works", async () => {
+        await request(app)
+            .post(`/murals/upload/${testMuralIds[0]}/image/1`)
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        const resp = await request(app)
+            .delete(`/murals/mural/${testMuralIds[0]}/image/1`)
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({ message: { msg: "Deleted: image1" } });
     });
 });

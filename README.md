@@ -48,17 +48,18 @@ This app uses the following environmental variables:
 | -------------------- | ---------------------------------------------------------- |
 | `DATABASE_URI`       | Postgres URI                                               |
 | `PORT`               | Port the server listens on                                 |
-| `ADMIN_KEY`          | Value referencing the current user for session             |
 | `SECRET_KEY`         | Secret key                                                 |
 | `NODE_ENV`           | Whether the app is in production, developement, or testing |
 | `BCRYPT_WORK_FACTOR` | # of rounds of encryption for Bcrypt to use                |
 | `KEY`                | Encryption/Decryption password for Postgres                |
 | `ALGORITHM`          | Encryption algorithm to use for Postgres encryption        |
-| `STRIPE_API_KEY`     | API key from Stripe to use with their API                  |
 | `SENDGRID_API_KEY`   | API key from SendGrid for sending emails                   |
 | `EMAIL_TO`           | Email to send when new message is sent through site        |
 | `EMAIL_FROM`         | Email to send from when new message is sent through site   |
-| `RECAPTCHA_SECRET`   | Server secret for recaptcha v3                             |
+| `RECAPTCHA_SECRET`   | Server secret for recaptcha v2                             |
+| `AUTH0_AUDENCE`      | Audience variable for Auth0                                |
+| `AUTH0_DOMAIN`       | Domain variable for Auth0                                  |
+| `AUTH0_TEST_TOKEN`   | Auth0 Authorization Token for Testing                      |
 
 <hr>
 <br>
@@ -90,9 +91,9 @@ This project uses pre-commit hooks with ESLint and Prettier.
 
 **_Browse Murals/General Art_**: Returns data for general site browsing.
 
-**_E-Commerce_**: Uses the Stripe API to process payments for an online art store.
+**_E-Commerce_**: Uses the Stripe API data to accept orders for the online art store.
 
-**_Custom CMS / Admin Dashboard_**: Custom CMS Routes for the artist to manage their posts, homepage, an Instagram feed, as well as the store.
+**_Custom CMS / Admin Dashboard_**: Custom CMS Routes for the artist to manage their posts, homepage, as well as the store.
 
 <hr>
 <br>
@@ -110,6 +111,8 @@ A list of routes and usage can be found [HERE](https://github.com/booshja/Painti
     - Payment Intent Token generation
 2. [SendGrid](https://sendgrid.com/)
     - Email client
+3. [Google reCAPTCHA](https://developers.google.com/recaptcha/)
+4. [Auth0](https://a0.to/)
 
 <hr>
 <br>
@@ -125,10 +128,12 @@ A list of routes and usage can be found [HERE](https://github.com/booshja/Painti
     -   [SendGrid](https://sendgrid.com/)
     -   [reCAPTCHA](https://developers.google.com/recaptcha/docs/v3)
 -   [Express](https://expressjs.com/)
+    -   [Auth0](https://a0.to/)
+    -   [express-jwt](https://github.com/auth0/express-jwt)
     -   [Helmet](https://helmetjs.github.io/)
     -   [Jest](https://jestjs.io/)
     -   [JSON-Schema](https://json-schema.org/)
-    -   [JSON Web Token](https://github.com/auth0/node-jsonwebtoken#readme)
+    -   [jwks-rsa](https://github.com/auth0/node-jwks-rsa)
     -   [Morgan](https://expressjs.com/en/resources/middleware/morgan.html)
     -   [Multer](https://expressjs.com/en/resources/middleware/multer.html)
     -   [node-pg](https://node-postgres.com/)
@@ -149,6 +154,7 @@ Reach out to me at the following places:
 -   Website: [jacobandes.dev](jacobandes.dev)
 -   Twitter: [@booshja](https://twitter.com/booshja)
 -   Email: [jacob.andes@gmail.com](mailto:jacob.andes@gmail.com)
+-   Email: [admin@jacobandes.dev](mailto:admin@jacobandes.dev)
 
 <hr>
 <br>

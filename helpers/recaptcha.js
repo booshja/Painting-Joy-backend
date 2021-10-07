@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 async function validateHuman(token) {
+    // function for checking reCAPTCHA values
     if (process.env.NODE_ENV === "test") return true;
 
     const secret = process.env.RECAPTCHA_SECRET;

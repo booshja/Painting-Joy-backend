@@ -1,10 +1,9 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
-const { createAdminToken } = require("../../helpers/tokens");
 const Message = require("../../models/message");
 
-let adminToken;
+const token = process.env.AUTH0_TEST_TOKEN;
 const testMessageIds = [];
 
 beforeAll(async () => {
@@ -24,8 +23,6 @@ beforeAll(async () => {
 
     testMessageIds.push(msg1.id);
     testMessageIds.push(msg2.id);
-
-    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -80,7 +77,7 @@ describe("GET, /messages/", () => {
     it("returns a list of all messages", async () => {
         const resp = await request(app)
             .get("/messages")
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             messages: [
@@ -116,7 +113,7 @@ describe("PATCH, /messages/archive/:id", () => {
     it("archives a message by id", async () => {
         const resp = await request(app)
             .patch(`/messages/archive/${testMessageIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             message: {
@@ -138,7 +135,7 @@ describe("PATCH, /messages/archive/:id", () => {
     it("gives not found for non-matching id", async () => {
         const resp = await request(app)
             .patch("/messages/archive/-1")
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toEqual(404);
     });
 });
@@ -160,7 +157,7 @@ describe("PATCH, /messages/unarchive/:id", () => {
 
         const resp = await request(app)
             .patch(`/messages/unarchive/${newMsgId}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             message: {
@@ -182,7 +179,7 @@ describe("PATCH, /messages/unarchive/:id", () => {
     it("gives not found for non-matching id", async () => {
         const resp = await request(app)
             .patch("/messages/unarchive/-1")
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toEqual(404);
     });
 });
@@ -193,7 +190,7 @@ describe("DELETE, /messages/delete/:id", () => {
     it("deletes a message by id", async () => {
         const resp = await request(app)
             .delete(`/messages/delete/${testMessageIds[1]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
             message: { msg: "Deleted." },
@@ -208,7 +205,7 @@ describe("DELETE, /messages/delete/:id", () => {
     it("gives not found for non-matching id", async () => {
         const resp = await request(app)
             .delete(`/messages/delete/-1`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toEqual(404);
     });
 });

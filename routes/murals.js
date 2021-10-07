@@ -2,7 +2,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 const multer = require("multer");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { checkJwt } = require("../middleware/checkJwt");
+const checkJwt = require("../middleware/checkJwt");
 const Mural = require("../models/mural");
 const muralNewSchema = require("../schemas/muralNew.json");
 const muralUpdateSchema = require("../schemas/muralUpdate.json");
@@ -224,7 +224,7 @@ router.delete("/mural/:muralId/image/:imageNum", checkJwt, async (req, res) => {
     try {
         const imageName = "image" + req.params.imageNum;
         // delete mural image by muralId and imageName
-        const message = await Mural.deleteImage(+req.params.imageId, imageName);
+        const message = await Mural.deleteImage(+req.params.muralId, imageName);
         res.status(200).send({ message });
     } catch (err) {
         res.status(400).send(err);

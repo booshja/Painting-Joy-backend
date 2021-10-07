@@ -1,7 +1,7 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
-const { checkJwt } = require("../middleware/checkJwt");
+const checkJwt = require("../middleware/checkJwt");
 const IGPost = require("../models/igpost");
 const igPostsNewSchema = require("../schemas/igPostsNew.json");
 

@@ -1,10 +1,9 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
-const { createAdminToken } = require("../../helpers/tokens");
 const Item = require("../../models/item");
 
-let adminToken;
+const token = process.env.AUTH0_TEST_TOKEN;
 const testItemIds = [];
 
 beforeAll(async () => {
@@ -27,8 +26,6 @@ beforeAll(async () => {
         quantity: 2,
     });
     testItemIds.push(item2.id);
-
-    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -56,7 +53,7 @@ describe("POST, /items/", () => {
                 shipping: 100.88,
                 quantity: 9,
             })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(201);
         expect(resp.body).toEqual({
             item: {
@@ -81,7 +78,7 @@ describe("POST, /items/", () => {
         const resp = await request(app)
             .post("/items")
             .send()
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(400);
     });
 
@@ -89,8 +86,40 @@ describe("POST, /items/", () => {
         const resp = await request(app)
             .post("/items")
             .send({ name: "Uh oh!" })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(400);
+    });
+});
+
+/****************** POST /items/upload/:itemId */
+
+describe("POST /items/upload/:itemId", () => {
+    it("works", async () => {
+        const resp = await request(app)
+            .post(`/items/upload/${testItemIds[0]}`)
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.body).toEqual({ message: { msg: "Upload successful." } });
+    });
+});
+
+/************************* GET /items/item/:itemId/image */
+
+describe("GET /homepage/image", () => {
+    it("works", async () => {
+        await request(app)
+            .post(`/items/upload/${testItemIds[0]}`)
+            .attach("upload", "routes/tests/assets/Rainbow-logo_not_final.png")
+            .set("Authorization", `Bearer ${token}`);
+
+        const resp = await request(app).get(
+            `/items/item/${testItemIds[0]}/image`
+        );
+
+        expect(resp.statusCode).toBe(200);
+        expect(resp.headers["content-type"]).toEqual("image/png");
     });
 });
 
@@ -131,9 +160,7 @@ describe("GET, /items/", () => {
 
 describe("GET, /items/item/:id", () => {
     it("get an item by id", async () => {
-        const resp = await request(app)
-            .get(`/items/item/${testItemIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+        const resp = await request(app).get(`/items/item/${testItemIds[0]}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             item: {
@@ -147,11 +174,6 @@ describe("GET, /items/item/:id", () => {
                 isSold: false,
             },
         });
-    });
-
-    it("gives unauth for non-admin", async () => {
-        const resp = await request(app).get("/items/item/1");
-        expect(resp.statusCode).toBe(401);
     });
 });
 
@@ -168,7 +190,7 @@ describe("PATCH, /items/update/:id", () => {
                 shipping: 10000.99,
                 quantity: 7,
             })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             item: {
@@ -197,7 +219,7 @@ describe("PATCH, /items/update/:id", () => {
             .send({
                 name: "Updated Twice!",
             })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             item: {
@@ -217,7 +239,7 @@ describe("PATCH, /items/update/:id", () => {
         const resp = await request(app)
             .patch(`/items/update/${testItemIds[1]}`)
             .send()
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(400);
     });
 });
@@ -228,7 +250,7 @@ describe("PATCH, /items/sold/:id", () => {
     it("decreases quantity and marks sold", async () => {
         const resp = await request(app)
             .patch(`/items/sold/${testItemIds[1]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             item: {
@@ -252,7 +274,7 @@ describe("PATCH, /items/sold/:id", () => {
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .patch(`/items/sold/-1`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -263,7 +285,7 @@ describe("DELETE, /items/delete/:id", () => {
     it("deletes an item by id", async () => {
         const resp = await request(app)
             .delete(`/items/delete/${testItemIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: {
@@ -280,7 +302,7 @@ describe("DELETE, /items/delete/:id", () => {
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .delete(`/items/delete/-1`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
     });
 });

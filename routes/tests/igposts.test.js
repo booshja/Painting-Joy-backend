@@ -1,11 +1,10 @@
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
-const { createAdminToken } = require("../../helpers/tokens");
 const IGPost = require("../../models/igpost");
 
 const testIgPostIds = [];
-let adminToken;
+const token = process.env.AUTH0_TEST_TOKEN;
 
 beforeAll(async () => {
     await db.query("DELETE FROM igposts");
@@ -25,8 +24,6 @@ beforeAll(async () => {
         imageUrl: "example.com/image2.jpg",
     });
     testIgPostIds.push(igpost2.igId);
-
-    adminToken = createAdminToken({ isAdmin: true });
 });
 
 beforeEach(async () => {
@@ -53,7 +50,7 @@ describe("POST, /igposts/", () => {
                 permUrl: "www.example.com/new1",
                 imageUrl: "www.example.com/new1.jpg",
             })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(201);
         expect(resp.body).toEqual({
             igPost: {
@@ -79,7 +76,7 @@ describe("POST, /igposts/", () => {
         const resp = await request(app)
             .post("/igposts/")
             .send()
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(400);
     });
 
@@ -89,7 +86,7 @@ describe("POST, /igposts/", () => {
             .send({
                 igId: "nahhh",
             })
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(400);
     });
 });
@@ -125,7 +122,7 @@ describe("GET, /igposts/post/:id", () => {
     it("gets an igpost by id", async () => {
         const resp = await request(app)
             .get(`/igposts/post/${testIgPostIds[0]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             igPost: {
@@ -145,7 +142,7 @@ describe("GET, /igposts/post/:id", () => {
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .get("/igposts/post/-1")
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
     });
 });
@@ -156,7 +153,7 @@ describe("DELETE, /igposts/:id", () => {
     it("deletes an igpost by id", async () => {
         const resp = await request(app)
             .delete(`/igposts/delete/${testIgPostIds[1]}`)
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             message: {
@@ -173,7 +170,7 @@ describe("DELETE, /igposts/:id", () => {
     it("gives not found for invalid id", async () => {
         const resp = await request(app)
             .delete("/igposts/delete/-1")
-            .set("authorization", `Bearer ${adminToken}`);
+            .set("Authorization", `Bearer ${token}`);
         expect(resp.statusCode).toBe(404);
     });
 });

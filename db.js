@@ -4,6 +4,7 @@ const { getDatabaseUri } = require("./config");
 let db;
 
 if (process.env.NODE_ENV === "production") {
+    // db config
     db = new Client({
         connectionString: getDatabaseUri(),
         ssl: {

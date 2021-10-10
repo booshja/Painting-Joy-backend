@@ -1,69 +1,7 @@
 # API Routes Guide
 
-## /admin
-
-<br>
-
-### **POST /admin/token**
-
-#### **Authorization**: None
-
-#### **Request**:
-
-_POST_: Returns JWT for authentication
-
-Parameters:
-
-| name     | type | description      |
-| -------- | ---- | ---------------- |
-| username | body | admin's username |
-| password | body | admin's password |
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "token": "hereisatokenbackforyou"
-}
-```
-
-<hr>
-<br>
-
 ## /homepage
 
-<br>
-
-### **POST /homepage**
-
-#### **Authorization**: Administrator
-
-#### **Request**:
-
-_POST_: Creates a new set of homepage data
-
-Parameters:
-
-| name     | type | description                     |
-| -------- | ---- | ------------------------------- |
-| greeting | body | text for "greeting" on homepage |
-| message  | body | text for "message" on homepage  |
-
-#### **Response**:
-
-```js
-HTTP/1.1 201 OK
-{
-    "homepage": {
-        "id": 1,
-        "greeting": "Hello there!",
-        "message": "Welcome to my wonderful website!"
-    }
-}
-```
-
-<hr>
 <br>
 
 ### **POST /homepage/image**
@@ -78,7 +16,7 @@ Parameters:
 
 | name   | type | description              |
 | ------ | ---- | ------------------------ |
-| upload | file | jpg/jpeg/png image < 1mb |
+| upload | file | jpg/jpeg/png image < 5mb |
 
 #### **Response**:
 
@@ -201,146 +139,6 @@ HTTP/1.1 200 OK
 <hr>
 <br>
 
-## /igposts
-
-<br>
-
-### **POST /igposts/**
-
-#### **Authorization**: Administrator
-
-#### **Request**:
-
-_POST_: Creates a new igpost
-
-Parameters:
-
-| name      | type | description           |
-| --------- | ---- | --------------------- |
-| ig_id     | body | instagram id for post |
-| caption   | body | caption of post       |
-| perm_url  | body | url of post           |
-| image_url | body | url of image          |
-
-#### **Response**:
-
-```js
-HTTP/1.1 201 OK
-{
-    "igPost": {
-        "ig_id": "thisisanigid",
-        "caption": "Look at my post!",
-        "perm_url": "example.com/post",
-        "image_url": "example.com/image"
-    }
-}
-```
-
-<hr>
-<br>
-
-### **GET /igposts/**
-
-#### **Authorization**: None
-
-#### **Request**:
-
-_GET_: Returns a list of igposts
-
-Parameters:
-
-None.
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "igPosts": [
-        {
-        "ig_id": "thisisanigid",
-        "caption": "Look at my post!",
-        "perm_url": "example.com/post",
-        "image_url": "example.com/image"
-        },
-        {
-        "ig_id": "thisisanigid",
-        "caption": "Look at my post!",
-        "perm_url": "example.com/post",
-        "image_url": "example.com/image"
-        },
-        {
-        "ig_id": "thisisanigid",
-        "caption": "Look at my post!",
-        "perm_url": "example.com/post",
-        "image_url": "example.com/image"
-        },
-    ]
-}
-```
-
-<hr>
-<br>
-
-### **GET /igposts/post/:ig-id**
-
-#### **Authorization**: Administrator
-
-#### **Request**:
-
-_GET_: Returns an igpost by igid
-
-Parameters:
-
-| name  | type | description           |
-| ----- | ---- | --------------------- |
-| ig-id | url  | instagram id for post |
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "igPost": {
-        "ig_id": "thisisanigid",
-        "caption": "Look at my post!",
-        "perm_url": "example.com/post",
-        "image_url": "example.com/image"
-    }
-}
-```
-
-<hr>
-<br>
-
-### **DELETE /igposts/delete/:ig-id**
-
-#### **Authorization**: Administrator
-
-#### **Request**:
-
-_DELETE_: Deletes an igpost by ig-id
-
-Parameters:
-
-| name  | type | description           |
-| ----- | ---- | --------------------- |
-| ig-id | url  | instagram id for post |
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "message": {
-        "msg": "Deleted."
-    }
-}
-```
-
-<hr>
-<br>
-
 ## /items
 
 <br>
@@ -396,7 +194,7 @@ Parameters:
 
 | name   | type | description              |
 | ------ | ---- | ------------------------ |
-| upload | file | jpg/jpeg/png image < 1mb |
+| upload | file | jpg/jpeg/png image < 5mb |
 
 #### **Response**:
 
@@ -522,144 +320,6 @@ image
 <hr>
 <br>
 
-### **GET /items/available**
-
-#### **Authorization**: None
-
-#### **Request**:
-
-_GET_: Returns a list of available store items
-
-Parameters:
-
-None.
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "items": [
-        {
-            "id": 1,
-            "name": "The Mona Lisa",
-            "description": "This is a painting made with paint",
-            "price": 12.88,
-            "shipping": 45000.99,
-            "quantity": 6,
-            "created": -date-,
-            "isSold": false
-        },
-        {
-            "id": 1,
-            "name": "The Mona Lisa",
-            "description": "This is a painting made with paint",
-            "price": 12.88,
-            "shipping": 45000.99,
-            "quantity": 6,
-            "created": -date-,
-            "isSold": false
-        },
-        {
-            "id": 1,
-            "name": "The Mona Lisa",
-            "description": "This is a painting made with paint",
-            "price": 12.88,
-            "shipping": 45000.99,
-            "quantity": 6,
-            "created": -date-,
-            "isSold": false
-        },
-    ]
-}
-```
-
-<hr>
-<br>
-
-### **GET /items/sold**
-
-#### **Authorization**: Administrator
-
-#### **Request**:
-
-_GET_: Returns a list of sold store items
-
-Parameters:
-
-None.
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "items": [
-        {
-            "id": 1,
-            "name": "The Mona Lisa",
-            "description": "This is a painting made with paint",
-            "price": 12.88,
-            "shipping": 45000.99,
-            "quantity": 6,
-            "created": -date-,
-            "isSold": true
-        },
-        {
-            "id": 1,
-            "name": "The Mona Lisa",
-            "description": "This is a painting made with paint",
-            "price": 12.88,
-            "shipping": 45000.99,
-            "quantity": 6,
-            "created": -date-,
-            "isSold": true
-        },
-        {
-            "id": 1,
-            "name": "The Mona Lisa",
-            "description": "This is a painting made with paint",
-            "price": 12.88,
-            "shipping": 45000.99,
-            "quantity": 6,
-            "created": -date-,
-            "isSold": true
-        },
-    ]
-}
-```
-
-<hr>
-<br>
-
-### **GET /items/item/:item-id/quantity**
-
-#### **Authorization**: None
-
-#### **Request**:
-
-_GET_: Returns a store item's quantity
-
-Parameters:
-
-| name    | type | description |
-| ------- | ---- | ----------- |
-| item-id | url  | item id     |
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "quantity": {
-        "quantity": 6
-    }
-}
-```
-
-<hr>
-<br>
-
 ### **PATCH /items/update/:item-id**
 
 #### **Authorization**: Administrator
@@ -679,41 +339,6 @@ Parameters:
 | price       | body | item price          |
 | shipping    | body | item shipping price |
 | quantity    | body | item quantity       |
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "item": {
-        "id": 1,
-        "name": "The Mona Lisa",
-        "description": "This is a lovely painting!",
-        "price": 12.89,
-        "shipping": 1000.99,
-        "quantity": 6,
-        "created": -date-,
-        "isSold": false,
-    }
-}
-```
-
-<hr>
-<br>
-
-### **PATCH /items/sell/:item-id**
-
-#### **Authorization**: Administrator
-
-#### **Request**:
-
-_PATCH_: Decreases quantity of item by 1, marks it as sold if decreases to 0
-
-Parameters:
-
-| name    | type | description |
-| ------- | ---- | ----------- |
-| item-id | url  | item id     |
 
 #### **Response**:
 
@@ -913,38 +538,6 @@ HTTP/1.1 200 OK
 <hr>
 <br>
 
-### **GET /messages/message/:message-id**
-
-#### **Authorization**: Administrator
-
-#### **Request**:
-
-_GET_: Get a message by message-id
-
-Parameters:
-
-| name       | type | description |
-| ---------- | ---- | ----------- |
-| message-id | url  | message id  |
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "messages": {
-            "id": 1,
-            "name": "Bob Ross",
-            "email": "collector@email.com",
-            "message": "Hi I love your art!",
-            "isArchived": false
-        }
-}
-```
-
-<hr>
-<br>
-
 ### **GET /messages/active**
 
 #### **Authorization**: Administrator
@@ -952,52 +545,6 @@ HTTP/1.1 200 OK
 #### **Request**:
 
 _GET_: Gets a list of non-archived messages
-
-Parameters:
-
-None.
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "messages": [
-        {
-            "id": 1,
-            "name": "Bob Ross",
-            "email": "collector@email.com",
-            "message": "Hi I love your art!",
-            "received": -date-
-        },
-        {
-            "id": 1,
-            "name": "Bob Ross",
-            "email": "collector@email.com",
-            "message": "Hi I love your art!",
-            "received": -date-
-        },
-        {
-            "id": 1,
-            "name": "Bob Ross",
-            "email": "collector@email.com",
-            "message": "Hi I love your art!",
-            "received": -date-
-        },
-    ],
-}
-```
-
-<hr>
-<br>
-
-### **GET /messages/archived**
-
-#### **Authorization**: Administrator
-
-#### **Request**:
-
-_GET_: Gets a list of archived messages
 
 Parameters:
 
@@ -1246,46 +793,6 @@ HTTP/1.1 200 OK
 #### **Request**:
 
 _GET_: Returns a list of all non-archived murals
-
-Parameters:
-
-None.
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "murals": [
-        {
-            "id": 1,
-            "title": "Cloud Wall",
-            "description": "A beautiful wall of clouds!"
-        },
-        {
-            "id": 1,
-            "title": "Cloud Wall",
-            "description": "A beautiful wall of clouds!"
-        },
-        {
-            "id": 1,
-            "title": "Cloud Wall",
-            "description": "A beautiful wall of clouds!"
-        },
-    ]
-}
-```
-
-<hr>
-<br>
-
-### **GET /murals/archived**
-
-#### **Authorization**: Administrator
-
-#### **Request**:
-
-_GET_: Returns a list of all archived murals
 
 Parameters:
 
@@ -1632,63 +1139,6 @@ HTTP/1.1 200 OK
 <hr>
 <br>
 
-### **POST /orders/**
-
-#### **Authorization**: Administrator
-
-_POST_: Adds an existing item to an existing order by order-id & item-id
-
-Parameters
-
-| name     | type | description |
-| -------- | ---- | ----------- |
-| order-id | url  | order id    |
-| item-id  | url  | item id     |
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "order": {
-        "id": 1,
-        "email": "Pending",
-        "name": "Pending",
-        "street": "Pending",
-        "unit": "Pending",
-        "city": "Pending",
-        "stateCode": "Pending",
-        "zipcode": "Pending",
-        "phone": "Pending",
-        "transactionId": "Pending",
-        "status": "Pending",
-        "amount": "Pending",
-        "listItems": [
-            {
-                "id": 1,
-                "name": "The Mona Lisa",
-                "description": "A quick sketch from the other day!",
-                "price": "99.99",
-                "shipping": "12.99",
-                "created": -date-
-            },
-            {
-                "id": 1,
-                "name": "The Mona Lisa",
-                "description":"A quick sketch from the other day!" ,
-                "price":"99.99",
-                "shipping": "12.99",
-                "created":-date-
-            },
-            ...
-        ]
-    }
-}
-```
-
-<hr>
-<br>
-
 ### **POST /orders/create-payment-intent**
 
 #### **Authorization**: None
@@ -1936,33 +1386,6 @@ HTTP/1.1 200 OK
         "status": "Completed",
         "amount": "10000.99",
         "transactionId": "asdf98afs67tafse",
-    }
-}
-```
-
-<hr>
-<br>
-
-### **PATCH /orders/order/:order-id/remove/:item-id**
-
-#### **Authorization**: Administrator
-
-_PATCH_: Removes an item from the order
-
-Parameters
-
-| name     | type | description |
-| -------- | ---- | ----------- |
-| order-id | url  | order id    |
-| item-id  | url  | item id     |
-
-#### **Response**:
-
-```js
-HTTP/1.1 200 OK
-{
-    "message": {
-        "msg": "Item removed."
     }
 }
 ```

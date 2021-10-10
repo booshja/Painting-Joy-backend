@@ -27,7 +27,7 @@ app.use(morgan("common"));
 
 // express routes
 app.use("/homepage", homepageRoutes);
-app.use("/igposts", igPostsRoutes);
+// app.use("/igposts", igPostsRoutes);
 app.use("/items", itemsRoutes);
 app.use("/messages", messagesRoutes);
 app.use("/murals", muralsRoutes);

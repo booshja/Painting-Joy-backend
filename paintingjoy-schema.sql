@@ -1,14 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TABLE admins (
-    username VARCHAR(25) PRIMARY KEY,
-    password TEXT NOT NULL,
-    email VARCHAR(40) NOT NULL CHECK (position('@' IN email) > 1),
-    first_name VARCHAR(20) NOT NULL,
-    secret_question VARCHAR(100) NOT NULL,
-    secret_answer VARCHAR(100) NOT NULL
-);
-
 CREATE TABLE homepages (
     id SERIAL PRIMARY KEY,
     greeting VARCHAR(50) NOT NULL,

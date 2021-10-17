@@ -21,7 +21,7 @@ const app = express();
 
 // express use
 app.use(helmet());
-app.use(cors({ origin: "https://paintingjoy.art/" }));
+app.use(cors({ origin: "https://paintingjoy.art" }));
 app.use(express.json());
 app.use(morgan("common"));
 

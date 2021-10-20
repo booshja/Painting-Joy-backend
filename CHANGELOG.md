@@ -1,3 +1,33 @@
+## 1.0.0 (2021-10-20)
+
+##### Documentation Changes
+
+*  updated README ([12970bd0](https://github.com/booshja/Painting-Joy-backend/commit/12970bd0b7bfb48bf0c139a90f9c3a519439d791))
+*  updated API guide ([0a043a5d](https://github.com/booshja/Painting-Joy-backend/commit/0a043a5d19c998b0c846c6774c6684085f480f69))
+*  updated README ([ba755b97](https://github.com/booshja/Painting-Joy-backend/commit/ba755b97df9888123c7a5e7c27715b72cd027a20))
+*  updated comments ([cea3341b](https://github.com/booshja/Painting-Joy-backend/commit/cea3341bf5f31c8ad034dc614912530a7d9c8989))
+*  updated README.md ([3aa0aec2](https://github.com/booshja/Painting-Joy-backend/commit/3aa0aec20d359783d5b8614114cba558c47c7edd))
+
+##### New Features
+
+*  added auth0 ([3c95df11](https://github.com/booshja/Painting-Joy-backend/commit/3c95df114bc3958ac6d33f2574c0c2ce268829b0))
+
+##### Refactors
+
+*  removed / ([fa793d62](https://github.com/booshja/Painting-Joy-backend/commit/fa793d6254c044f2bda76de49538ff6a65444559))
+*  fixed cors issue for production ([d0dbfc96](https://github.com/booshja/Painting-Joy-backend/commit/d0dbfc96696b4cfb33c44e705aa607385eb049f8))
+*  removed unnecessary table in db setup file ([f38af3bc](https://github.com/booshja/Painting-Joy-backend/commit/f38af3bc66fd75c71f78eb99a52597083883e3f2))
+*  DRY ([16a45e6d](https://github.com/booshja/Painting-Joy-backend/commit/16a45e6d7414fa3e40e9af89bdbb979c80611018))
+*  added pending status check ([ded6253a](https://github.com/booshja/Painting-Joy-backend/commit/ded6253a975eb3e83399cf5ddd7cb4861e13ac1d))
+*  updates for front end functionality ([98e3d8c0](https://github.com/booshja/Painting-Joy-backend/commit/98e3d8c0a6e76de3ab3c459d772a4c1a579dc611))
+*  bumped up security fix for dependency ([c6438487](https://github.com/booshja/Painting-Joy-backend/commit/c6438487aad7553ec0138ecf1b172f528e7ff4a0))
+
+##### Tests
+
+*  added image tests ([8ce10cd9](https://github.com/booshja/Painting-Joy-backend/commit/8ce10cd94b191756af2201a0cf387e838a67af7c))
+*  fixed failing tests from dev tweaks ([687ea395](https://github.com/booshja/Painting-Joy-backend/commit/687ea3958292551d8d4850a41dc94d4fab961bf1))
+*  added more coverage for testing ([0820a1df](https://github.com/booshja/Painting-Joy-backend/commit/0820a1df95e3b59b7ee684f3b68716235fb0504e))
+
 ### 0.9.0 (2021-07-29)
 
 ##### Chores

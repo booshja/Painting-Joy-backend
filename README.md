@@ -18,7 +18,7 @@ Set Up:
 ```
 git clone git@github.com:booshja/Painting-Joy-backend.git
 cd Painting-Joy-backend
-npm i
+npm install
 createdb {database name here}
 createdb {test database name here}
 ```
@@ -69,7 +69,7 @@ This app uses the following environmental variables:
 This app uses Jest and Supertest for testing. Tests can be run using:
 
 ```
-npm i
+npm install
 npm test
 ```
 
@@ -91,9 +91,9 @@ This project uses pre-commit hooks with ESLint and Prettier.
 
 **_Browse Murals/General Art_**: Returns data for general site browsing.
 
-**_E-Commerce_**: Uses the Stripe API data to accept orders for the online art store.
+**_E-Commerce_**: Uses the Stripe API to generate a payment token for payment processing.
 
-**_Custom CMS / Admin Dashboard_**: Custom CMS Routes for the artist to manage their posts, homepage, as well as the store.
+**_Custom CMS / Admin Dashboard_**: Custom CMS Routes for the artist to manage their posts, homepage, as well as their store.
 
 <hr>
 <br>
@@ -109,40 +109,84 @@ A list of routes and usage can be found [HERE](https://github.com/booshja/Painti
 
 1. [Stripe API](https://api.setlist.fm/docs/1.0/index.html)
     - Payment Intent Token generation
+    - Chosen because they're one of the best in the industry with payment processing, including fantastic SDK's, documentation, and tutorials.
 2. [SendGrid](https://sendgrid.com/)
     - Email client
+    - Chosen for quick and easy email generation.
 3. [Google reCAPTCHA](https://developers.google.com/recaptcha/)
+    - Human verification for Contact Form
+    - Chosen to filter bots from Contact Form submission.
 4. [Auth0](https://a0.to/)
+    - Authentication and Authorization service
+    - Chosen because of the ease of use of their SDK and API, as well as the additional features of Google, Facebook, and other login options.
+
+<hr>
+<br>
+
+## **Project Proposal**:
+
+Step 1 - [General Project Ideas](https://github.com/booshja/Painting-Joy-School-Docs/blob/main/Proposals/step1-ideas.md)
+Step 2 - [PaintingJoy.art Propsal](https://github.com/booshja/Painting-Joy-School-Docs/blob/main/Proposals/step2-proposal.md)
+
+## **User Flows**
+
+See the repo directory [HERE.](https://github.com/booshja/Painting-Joy-School-Docs/tree/main/User-Flows)
+
+_Note:_ These user flows were from the original proposal, and contain flows for Authentication/Admin that may not be present in the final project due to the addition of auth0.
+
+## **Database Schema**
+
+-   [Original Proposal File](https://github.com/booshja/Painting-Joy-School-Docs/blob/main/Database-Schema/DB_Schema.png)
+-   [Current Updated Database Schema](https://github.com/booshja/Painting-Joy-School-Docs/blob/main/Database-Schema/final_db_schema.png)
 
 <hr>
 <br>
 
 ## **Tech Stack**:
 
--   [JavaScript](https://developer.mozilla.org/en-US/docs/javascript)
+-   [JavaScript](https://developer.mozilla.org/en-US/docs/javascript) - Front End Code
     -   [ESLint](https://eslint.org/)
+        -   Linting
     -   [Prettier](https://prettier.io/)
--   [Node.js](https://nodejs.org/)
+        -   Formatting
+-   [Node.js](https://nodejs.org/) - Back End Code
     -   [Generate Changelog](https://github.com/lob/generate-changelog)
-    -   [Bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme)
+        -   Changelog Generation
     -   [SendGrid](https://sendgrid.com/)
+        -   API for sending Emails
     -   [reCAPTCHA](https://developers.google.com/recaptcha/docs/v3)
--   [Express](https://expressjs.com/)
+        -   Human/Bot Detection
+-   [Express](https://expressjs.com/) - Server Framework
     -   [Auth0](https://a0.to/)
+        -   Authentication and Authorization Service
     -   [express-jwt](https://github.com/auth0/express-jwt)
+        -   JWT Package for Express
     -   [Helmet](https://helmetjs.github.io/)
+        -   Security enhancements through headers
     -   [Jest](https://jestjs.io/)
+        -   Testing Framework
     -   [JSON-Schema](https://json-schema.org/)
+        -   Input JSON verification
     -   [jwks-rsa](https://github.com/auth0/node-jwks-rsa)
+        -   auth0 dependency
     -   [Morgan](https://expressjs.com/en/resources/middleware/morgan.html)
+        -   Logging
     -   [Multer](https://expressjs.com/en/resources/middleware/multer.html)
+        -   Image parsing through use of buffer
     -   [node-pg](https://node-postgres.com/)
+        -   Node package for interacting with PostgreSQL Database
     -   [pg-format](https://github.com/datalanche/node-pg-format)
+        -   Node package for prevention of SQL-Injection with PostgreSQL Database
     -   [Stripe](https://github.com/stripe/stripe-node)
+        -   Payment processing API
     -   [SuperTest](https://github.com/visionmedia/supertest#readme)
+        -   Integration Testing
 -   [PostgreSQL](https://www.postgresql.org/)
+    -   SQL Relational Database
 -   [Heroku](https://heroku.com/)
+    -   Node app hosting built on top of AWS
 -   [VSCode](https://code.visualstudio.com/)
+    -   My code editor of choice
 
 <hr>
 <br>

@@ -26,12 +26,12 @@ CREATE TABLE messages (
     is_archived BOOLEAN NOT NULL DEFAULT false
 );
 
-CREATE TABLE igposts (
-    ig_id TEXT PRIMARY KEY,
-    caption VARCHAR(100) NOT NULL,
-    perm_url VARCHAR(100) NOT NULL,
-    image_url VARCHAR(100) NOT NULL
-);
+-- CREATE TABLE igposts (
+--     ig_id TEXT PRIMARY KEY,
+--     caption VARCHAR(100) NOT NULL,
+--     perm_url VARCHAR(100) NOT NULL,
+--     image_url VARCHAR(100) NOT NULL
+-- );
 
 CREATE TABLE items (
     id SERIAL PRIMARY KEY,

@@ -128,11 +128,17 @@ A list of routes and usage can be found [HERE](https://github.com/booshja/Painti
 Step 1 - [General Project Ideas](https://github.com/booshja/Painting-Joy-School-Docs/blob/main/Proposals/step1-ideas.md)
 Step 2 - [PaintingJoy.art Propsal](https://github.com/booshja/Painting-Joy-School-Docs/blob/main/Proposals/step2-proposal.md)
 
+<hr>
+<br>
+
 ## **User Flows**
 
 See the repo directory [HERE.](https://github.com/booshja/Painting-Joy-School-Docs/tree/main/User-Flows)
 
 _Note:_ These user flows were from the original proposal, and contain flows for Authentication/Admin that may not be present in the final project due to the addition of auth0.
+
+<hr>
+<br>
 
 ## **Database Schema**
 
@@ -144,7 +150,7 @@ _Note:_ These user flows were from the original proposal, and contain flows for 
 
 ## **Tech Stack**:
 
--   [JavaScript](https://developer.mozilla.org/en-US/docs/javascript) - Front End Code
+-   [JavaScript](https://developer.mozilla.org/en-US/docs/javascript)
     -   [ESLint](https://eslint.org/)
         -   Linting
     -   [Prettier](https://prettier.io/)
@@ -187,6 +193,13 @@ _Note:_ These user flows were from the original proposal, and contain flows for 
     -   Node app hosting built on top of AWS
 -   [VSCode](https://code.visualstudio.com/)
     -   My code editor of choice
+
+<hr>
+<br>
+
+## **Changelog**
+
+View Changelog [HERE.](https://github.com/booshja/Painting-Joy-backend/blob/main/CHANGELOG.md)
 
 <hr>
 <br>

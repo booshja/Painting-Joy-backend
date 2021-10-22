@@ -12,7 +12,7 @@ const checkJwt = jwt({
         jwksUri: `https://paintingjoy.us.auth0.com/.well-known/jwks.json`,
     }),
     audience: audience,
-    issuer: domain,
+    issuer: `https://${domain}/`,
     algorithms: ["RS256"],
 });
 
